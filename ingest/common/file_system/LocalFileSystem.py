@@ -5,6 +5,9 @@ from model.db.File import File
 
 
 class LocalFileSystem(AbstractFileSystem):
+    """
+    FileSystem storing files on local disk
+    """
     def create_dir(self, path):
         return os.makedirs(path, exist_ok=True)
 

@@ -4,6 +4,10 @@ from model.db.File import File
 
 
 class FileSystem:
+    """
+    Wraps the different file systems we have (e.g LocalFileSystem)
+    You pass in a File object and based on the FileSystem it uses we delegate the read/write operations
+    """
     def __init__(self):
         self.file_systems = {
             FileSystemEnum.LOCAL: LocalFileSystem()
