@@ -1,124 +1,81 @@
-# Accessi2U
-Repository for the Accessi2U FYDP Project 2025
+# Turborepo starter
 
-##  🚧 Under Construction 🚧
-Notes in this section are mostly just my draft notes for communication
+This is an official starter Turborepo.
 
-### Milestones
-I think we can agree on breaking this entire app down into four key milestones 
-from a technical perspective
+## Using this example
 
-1. Rendering - Given a room, render the room, rooms around it, corridors, stairs etc on the same floor
-2. Routing - Generate a route between two rooms
-3. Position fixing - Be able to fix the user's position given a room
-4. Accessibility - Be able to adjust routes based on acessibility criteria
+Run the following command:
 
-After that, a lot of our work will be more UX-oriented in nature
-
-### Rendering
-Some design goals for rendering:
-- Relatively efficient - we don't want to render more than we need to.
-I'll leave this as a loose goal though because it doesn't really matter yet
-- Flexible - main design goal, I want to be able to have this logic generically work for rendering a heirarchial structure
-
-#### Data Model
-The data model for this relies on rendering entites, rendering entities are simply units of rendering and contain a link to a geoJSON to render.
-An entity can be anything, a room, a corridor, a floor etc. For now we'll restrict them to only being Polygons
-Entities live in a heirarchy, each entity has a parent. 
-Each RenderingEntity links to a Room or Floor or Building object in our database. 
-This leads to the following data model
-
-```
-schema Room {
-    id int
-    external_id string
-    created_at Date
-    updated_at Date
-    
-    room_type RoomTypeEnum(...) // figure these out from data, these will likely map rm_standard or use_type
-    name string // map from rm_name
-    
-    floor_id int 
-    render_entity_id int
-}
-
-schema Floor {
-    id int
-    external_id string
-    created_at Date
-    updated_at Date
-    
-    floorNum int
-    
-    render_entity_id int
-}
-
-schema Building {
-    id int
-    external_id string
-    created_at Date
-    updated_at Date
-    
-    name
-    
-    render_entity_id int
-}
-
-schema RenderEntity {
-    id int
-    created_at Date
-    updated_at Date
-    
-    parent_id int?
-    file_id int
-}
-
-schema File {
-    id int
-    created_at Date
-    updated_at Date
-    
-    provider FileProviderEnum("Local", "S3")
-    remote_id string
-}
+```sh
+npx create-turbo@latest
 ```
 
-Parents are as follows:
-Rooms -> Floors -> Buildings 
+## What's inside?
 
-#### Logic - Rendering
-Assume rendering operations always have a reference point, and that reference point is a room. 
-We get a rendering request for a room:
-1. Find the room in our DB
-2. Find the rendering entity
-3. Find all sibling rendering entities 
-4. Find all child rendering entities 
-5. Recursively go up the parents until we get to a root (likely a building)
-6. This is the set of rendering entites we need to render on the map
+This Turborepo includes the following packages/apps:
 
-#### Logic - Ingest
-We have:
-- Rooms - each room is a feature with a geometry (Polygon) and properties
-- Floors - each floor is a feature with a geometry (Polygon, MultiPolygon) and properties
-- Buildings - each room is a feature with a geometry (Polygon) and properties
+### Apps and Packages
 
-We need the data model above so rough steps are, for each file we:
-- Go over each building/floor/room
-- Create the rendering entity 
-- Create the object (room/floor/building) with reference to the rendering entity
+- `docs`: a [Next.js](https://nextjs.org/) app
+- `web`: another [Next.js](https://nextjs.org/) app
+- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
+- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
+- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
 
-Do this in the order Building - Floor - Room so the parents are always populated (avoids topo sort)
+Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
-#### Ingest Architecture
-Simple. In-Memory. Geopandas used. Each step should be unaware of steps before and after it. 
-Rough idea: 
-- each step takes in a dict representing all the outputs from the previous step as key-val pairs, val is array of pydantic model defined
-- each step outputs one thing
-- each step is responsible for ensuring that the input it requires is present and well formed
+### Utilities
 
-Breaking this down into steps
-- Creating a rendering entity is common as long as we know the parent
+This Turborepo has some additional tools already setup for you:
 
+- [TypeScript](https://www.typescriptlang.org/) for static type checking
+- [ESLint](https://eslint.org/) for code linting
+- [Prettier](https://prettier.io) for code formatting
 
+### Build
 
+To build all apps and packages, run the following command:
 
+```
+cd my-turborepo
+pnpm build
+```
+
+### Develop
+
+To develop all apps and packages, run the following command:
+
+```
+cd my-turborepo
+pnpm dev
+```
+
+### Remote Caching
+
+Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+
+By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
+
+```
+cd my-turborepo
+npx turbo login
+```
+
+This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+
+Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+
+```
+npx turbo link
+```
+
+## Useful Links
+
+Learn more about the power of Turborepo:
+
+- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
+- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
+- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
+- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
+- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
+- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
