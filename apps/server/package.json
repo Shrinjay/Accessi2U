@@ -1,0 +1,38 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "server.ts",
+  "license": "MIT",
+  "type": "module",
+  "exports": "./src/server.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon --esm src/server.ts",
+    "start:prod": "node build/server.js",
+    "typesense:reset": "ts-node --esm ./src/scripts/reset-typesense.ts",
+    "typesense:reparse": "ts-node --esm ./src/scripts/reparse-typesense.ts",
+    "operations:ingest": "ts-node --esm ./src/scripts/ingest-products-from-ai.ts"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.12"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.26.0",
+    "@trpc/server": "10.45.2",
+    "@types/ws": "^8.5.10",
+    "axios": "^1.7.2",
+    "chalk": "^5.3.0",
+    "cors": "^2.8.5",
+    "database": "*",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "ts-node": "^10.9.2",
+    "typesense": "^1.8.2",
+    "winston": "^3.13.0",
+    "winston-transport": "^4.7.0",
+    "ws": "^8.17.0",
+    "yup": "^1.4.0"
+  }
+}

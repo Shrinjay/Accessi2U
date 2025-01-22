@@ -1,0 +1,166 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["backend"]
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  supabaseUserId String @unique
+
+  name      String?
+  email     String? @unique
+
+  searches Search[]
+  collections CollectionUser[]
+
+  @@index(supabaseUserId)
+  @@map("users")
+  @@schema("backend")
+}
+
+model Item {
+  id       Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Items are stored in a separate storage layer
+  // This allows us to modify the underlying storage layer in the future
+  storage ItemStorageLayer
+  externalId String @unique
+
+  searches SearchItem[]
+  collections CollectionItem[]
+
+  @@schema("backend")
+  @@map("items")
+}
+
+model Search {
+  id       Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  query String
+
+  // The user who initiated the search
+  user User? @relation(fields: [userId], references: [id])
+  userId Int?
+
+  // The items returned
+  items SearchItem[]
+  scrapingJobs ScrapingJob[]
+
+  @@schema("backend")
+  @@map("searches")
+}
+
+model ScrapingJob {
+  id       Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  search Search @relation(fields: [searchId], references: [id])
+  searchId Int
+
+  externalId String @unique
+
+  // The status of the scraping job
+  status ScrapingJobStatus
+
+  @@schema("backend")
+  @@map("scraping_jobs")
+}
+
+model SearchItem {
+  id       Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // The search that this item is associated with
+  search Search @relation(fields: [searchId], references: [id])
+  searchId Int
+
+  // The item that was returned
+  item Item @relation(fields: [itemId], references: [id])
+  itemId Int
+
+  @@schema("backend")
+  @@map("search_items")
+}
+
+model Collection {
+  id       Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  // The items in the collection
+  items CollectionItem[]
+  users CollectionUser[]
+
+  @@schema("backend")
+  @@map("collections")
+}
+
+model CollectionUser {
+  id       Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // The user who created the collection
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+
+  // The collection that the user is associated with
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId Int
+
+  @@unique([userId, collectionId])
+
+  @@schema("backend")
+  @@map("collection_users")
+}
+
+model CollectionItem {
+  id       Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // The collection that this item is associated with
+  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId Int
+
+  // The item that was added to the collection
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  itemId Int
+
+  @@unique([collectionId, itemId])
+  @@schema("backend")
+  @@map("collection_items")
+}
+
+
+enum ScrapingJobStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+
+  @@schema("backend")
+}
+
+enum ItemStorageLayer {
+  TYPESENSE
+
+  @@schema("backend")
+}
