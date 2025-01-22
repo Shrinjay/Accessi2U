@@ -1,9 +1,9 @@
 import { Outlet, RootRoute, Route, Router, RouterProvider } from '@tanstack/router'
 import styled from 'styled-components'
 
-import { GlobalStyle } from 'styles'
+import { GlobalStyle } from '../../styles'
 
-import { Home } from 'components/features'
+import { Home } from '../features'
 
 const rootRoute = new RootRoute({ component: () => <Outlet /> })
 
