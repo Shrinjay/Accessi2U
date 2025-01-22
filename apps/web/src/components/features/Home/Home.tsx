@@ -3,15 +3,17 @@ import styled from 'styled-components'
 
 import * as Styled from './styled'
 import StartScreen from '../../StartScreen'
+import PathMap from '../../PathMap'
 
 export const Home = () => {
    return (
       <HomeContainer>
-        <StartScreen />
-         <Styled.Gif
+        {/* <StartScreen /> */}
+        <PathMap/>
+         {/* <Styled.Gif
             src="https://media.giphy.com/media/Dh5q0sShxgp13DwrvG/giphy.gif"
             alt="I have no idea what I'm doing"
-         />
+         /> */}
       </HomeContainer>
    )
 }

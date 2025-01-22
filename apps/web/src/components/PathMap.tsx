@@ -1,10 +1,10 @@
 import React from "react";
 import { TileLayer, GeoJSON, MapContainer, LayersControl, useMap } from "react-leaflet";
 import L, { divIcon} from "leaflet";
-import buildings from "./EngBuildings.json";
-import rooms from "./rooms.json"
-import rooms_centroids from "./rooms_centroids.json"
-// import floor_centroids from "./floor_centroids.csv"
+import buildings from "../../../ingest/data/Eng_Buildings.json";
+import rooms from "../../../ingest/data/rooms_partial.json";
+import rooms_centroids from "../../../ingest/data/rooms_centroids_partial.json";
+// import floor_centroids from "../../../ingest/data/floors_centroids_partial.json"
 import { useSwipeable} from "react-swipeable";
 
 
