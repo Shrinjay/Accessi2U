@@ -8,7 +8,7 @@ check-python:
 	@python3 --version > /dev/null || (echo "Python3 is not installed. Please install Python and try again." && exit 1)
 
 check-pipreq:
-	@pipreq --version > /dev/null || python3 -m pip install pipreqs
+	@pipreqs --version > /dev/null || python3 -m pip install pipreqs
 
 check-alembic:
 	@alembic --version > /dev/null || pip install alembic
@@ -36,7 +36,7 @@ run-local-docker-db:
 migrate-local-docker-db: check-alembic
 	@alembic upgrade head
 
-run: setup-local-dirs run-local-docker-db install-python-dependencies run-ingest
+run: setup-local-dirs run-local-docker-db install-python-dependencies migrate-local-docker-db run-ingest
 
 run-ingest:
 	@python3 main.py
