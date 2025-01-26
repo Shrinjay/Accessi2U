@@ -14,7 +14,7 @@ check-alembic:
 	@alembic --version > /dev/null || pip install alembic
 
 regenerate-requirements:
-	@pipreq .
+	@pipreqs . --force
 
 # Install python dependencies
 install-python-dependencies: check-python check-pipreq check-alembic
