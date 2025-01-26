@@ -36,7 +36,7 @@ run-local-docker-db:
 migrate-local-docker-db: check-alembic
 	@alembic upgrade head
 
-run: run-ingest install-python-dependencies run-local-docker-db
+run: run-ingest install-python-dependencies run-local-docker-db setup-local-dirs
 
 run-ingest:
 	@python3 main.py
