@@ -27,7 +27,7 @@ setup-local-dirs:
 
 # Runners
 run-local-docker-db:
-	@docker run --name ingest-postgres \
+	@docker ps | grep ingest-postgres > /dev/null || docker run --name ingest-postgres \
  		-e POSTGRES_PASSWORD=postgres \
  		-e POSTGRES_USER=postgres \
  		-e POSTGRES_DB=ingest \
@@ -36,7 +36,7 @@ run-local-docker-db:
 migrate-local-docker-db: check-alembic
 	@alembic upgrade head
 
-run: run-ingest install-python-dependencies run-local-docker-db setup-local-dirs
+run: setup-local-dirs run-local-docker-db install-python-dependencies run-ingest
 
 run-ingest:
 	@python3 main.py
