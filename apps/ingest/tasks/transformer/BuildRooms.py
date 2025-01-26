@@ -21,8 +21,6 @@ class BuildRooms(luigi.Task):
     """
     Takes in a map of ID -> Features for a room/building/floor
     and builds rendering entity models out of it
-
-    TODO: Have this save these entities to database
     """
     file_path = luigi.PathParameter()
     file_system = FileSystem()
@@ -49,7 +47,7 @@ class BuildRooms(luigi.Task):
 
         session = sqlmodel.Session(engine)
 
-        with session.begin():
+        with session:
             for room in room_by_id.values():
                 session.add(room)
 

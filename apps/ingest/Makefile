@@ -17,7 +17,7 @@ regenerate-requirements:
 	@pipreq .
 
 # Install python dependencies
-install-python-dependencies: check-python
+install-python-dependencies: check-python check-pipreq check-alembic
 	@pip install -r requirements.txt
 
 # Setup

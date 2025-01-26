@@ -43,7 +43,6 @@ class BuildRenderingEntities(luigi.Task):
 
     def run(self):
         feature_dict_by_id: typing.Dict[int, str] = load_as_json(self.input())
-        print(self.input())
         features_by_id: typing.Dict[int, UnitFeature] = {id: UnitFeature.parse_obj(json.loads(feature)) for id, feature in feature_dict_by_id.items()}
         rendering_entities_by_id = {id: self._build_rendering_entity(feature) for id, feature in features_by_id.items()}
 
