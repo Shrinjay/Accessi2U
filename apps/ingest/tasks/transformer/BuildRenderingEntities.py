@@ -1,11 +1,15 @@
 import json
 
 import luigi
+import luigi.contrib.postgres
 import typing
 import uuid
+import sqlmodel
 
+from common.env.env import DATABASE_URL, DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD
 from common.file_system.FileSystem import FileSystem
 from common.file_system import FileSystemEnum
+from common.db import engine
 
 from model.UnitFeatureCollection import UnitFeature
 from model.db.RenderingEntity import RenderingEntity
@@ -18,11 +22,13 @@ class BuildRenderingEntities(luigi.Task):
     """
     Takes in a map of ID -> Features for a room/building/floor
     and builds rendering entity models out of it
-    
-    TODO: Have this save these entities to database 
+
+    TODO: Have this save these entities to database
     """
     file_path = luigi.PathParameter()
     file_system = FileSystem()
+
+    TABLE_NAME = 'renderingentity'
 
     def requires(self):
         return BuildIDMap(self.file_path)
@@ -37,6 +43,24 @@ class BuildRenderingEntities(luigi.Task):
 
     def run(self):
         feature_dict_by_id: typing.Dict[int, str] = load_as_json(self.input())
+        print(self.input())
         features_by_id: typing.Dict[int, UnitFeature] = {id: UnitFeature.parse_obj(json.loads(feature)) for id, feature in feature_dict_by_id.items()}
         rendering_entities_by_id = {id: self._build_rendering_entity(feature) for id, feature in features_by_id.items()}
-        print(rendering_entities_by_id)
+
+        session = sqlmodel.Session(engine)
+
+        with session:
+            for id, rendering_entity in rendering_entities_by_id.items():
+                session.add(rendering_entity)
+            session.commit()
+
+            for id, rendering_entity in rendering_entities_by_id.items():
+                session.refresh(rendering_entity)
+
+        local_output = self.output()
+        with local_output.open('w') as f:
+            f.write(json.dumps({k: v.json() for k, v in rendering_entities_by_id.items()}))
+
+
+    def output(self):
+        return luigi.LocalTarget('out/rendering_entities_by_id.json')

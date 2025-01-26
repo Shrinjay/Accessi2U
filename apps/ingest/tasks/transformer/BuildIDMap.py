@@ -2,7 +2,7 @@ import luigi
 import json
 import typing
 
-from tasks.loader.LoadJSON import LoadJson
+from tasks.extractor.ExtractJson import ExtractJson
 from tasks.util.json import load_as_json
 from model.UnitFeatureCollection import UnitFeatureCollection, UnitFeature
 
@@ -15,7 +15,7 @@ class BuildIDMap(luigi.Task):
     file_path = luigi.PathParameter(exists=True)
 
     def requires(self):
-        return LoadJson(self.file_path)
+        return ExtractJson(self.file_path)
 
     def run(self):
         unit_data = load_as_json(self.input())
@@ -29,6 +29,3 @@ class BuildIDMap(luigi.Task):
 
     def output(self):
         return luigi.LocalTarget('out/id_map.json')
-
-
-        
