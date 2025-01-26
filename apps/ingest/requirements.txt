@@ -1,7 +1,6 @@
 alembic==1.13.2
 luigi==3.6.0
 pydantic==2.10.6
-SQLAlchemy==2.0.31
 SQLAlchemy==2.0.37
 sqlmodel==0.0.22
 python-dotenv==1.0.1
