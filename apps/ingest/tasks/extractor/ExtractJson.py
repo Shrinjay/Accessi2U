@@ -1,7 +1,7 @@
 import luigi
 
 
-class LoadJson(luigi.ExternalTask):
+class ExtractJson(luigi.ExternalTask):
     """
     Utility task to wrap a JSON file
     """

@@ -14,11 +14,11 @@ class AbstractFileSystem(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def exists(self, file: File):
+    def exists(self, file: File) -> bool:
         pass
 
     @abc.abstractmethod
-    def read(self, file: File):
+    def read(self, file: File) -> str:
         pass
 
     @abc.abstractmethod
