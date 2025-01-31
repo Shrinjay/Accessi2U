@@ -50,8 +50,7 @@ class BuildRooms(luigi.Task):
         with session:
             for room in room_by_id.values():
                 session.add(room)
-
-        session.commit()
+                session.commit()
 
     def output(self):
         return luigi.contrib.postgres.PostgresTarget(

@@ -46,7 +46,11 @@ stop-local-docker-db:
 	@docker stop ingest-postgres
 	@docker rm ingest-postgres
 
-clean: stop-local-docker-db
+remove-tmp:
+	@rm -rf out
+
+
+clean: stop-local-docker-db remove-tmp
 
 # Util
 install-psycopg2-mac:
