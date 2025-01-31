@@ -1,37 +1,51 @@
 import React, { useCallback } from "react";
-import {Button} from "./components/ui/button"
-import { Field } from "./components/ui/field"
-import {useForm} from 'react-hook-form';
+// import {Button} from "./components/ui/button"
+// import { Field } from "./components/ui/field"
+// import {useForm} from 'react-hook-form';
 import Select from 'react-select';
+import rooms from "../../../ingest/data/rooms_partial.json";
 
 export default function SelectLocations() {
-    const options = [
-        {value:"E7 1234", label:"E7 1234 (Ideas Clinic)"},
-        {value:"E7 2234", label:"E7 2234 (Ideas Clinic 2nd Floor)"},
-        {value:"E7 1236", label:"E7 1236"},
-        {value:"E7 1238", label:"E7 1238"},
-        {value:"E5 1234", label:"E5 1234"},
-        {value:"CPH 1856", label:"CPH 1856 (POETS)"},
-        {value:"E5 5432", label:"E5 5432"},
-        {value:"E7 3551", label:"E7 3551 (Event Space)"},
-        {value:"CPH 1850", label:"CPH 1850 (EngSoc Office)"},
-        {value:"CPH 1844", label:"CPH 1844"},
-        {value:"CPH 1843", label:"CPH 1843"},
-        {value:"E7 1123", label:"E7 1123"}
-    ]
+    const [options, setOptions] = React.useState([]);
+    const [startPoint, setStart] = React.useState("");
+    const [endPoint, setEnd] = React.useState("");
 
+    // https://stackoverflow.com/questions/73412077/how-to-use-json-data-for-react-select
+    React.useEffect(() => {
+        const getOptions = async () => {
+            try {
+                setOptions(
+                    rooms["features"].map(({properties}) => ({
+                        floor_Name: properties.FL_NM,
+                        building: properties.alt_bl_id,
+                        department: properties.Departments_name,
+                        room_type: properties.USE_TYPE,
+                        room_number: properties.NAME,
+                        label: properties.RM_NM,
+                        value: properties.RM_NM,
+                    }))
+                );
+            } catch (error){
+                setOptions([{label: "ERROR", value:"ERROR"}])
+            }
+        }
 
+        getOptions();
+    }, []);
 
     return (
         <div>
-            <Field>
-                <Select isClearable options={options}/>
-            </Field>
+            <Select isClearable 
+                options={options} 
+                onChange={setStart} 
+                required id="start-location"/>
 
-            <Field>
-                <Select isClearable options={options}/>
-            </Field>
-            <Button>Let's Go!</Button>
+            <Select
+                isClearable options={options}
+                onChange={setEnd}
+                required
+                id="end-location"/>
+
         </div>
     );
 }

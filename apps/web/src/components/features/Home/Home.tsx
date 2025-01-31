@@ -4,12 +4,13 @@ import styled from 'styled-components'
 import * as Styled from './styled'
 import StartScreen from '../../StartScreen'
 import PathMap from '../../PathMap'
+import SelectLocations from '../../SelectLocations'
 
 export const Home = () => {
    return (
       <HomeContainer>
         {/* <StartScreen /> */}
-        <PathMap/>
+        <SelectLocations/>
          {/* <Styled.Gif
             src="https://media.giphy.com/media/Dh5q0sShxgp13DwrvG/giphy.gif"
             alt="I have no idea what I'm doing"
