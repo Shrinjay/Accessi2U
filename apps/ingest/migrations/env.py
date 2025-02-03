@@ -8,6 +8,7 @@ from common.env.env import DATABASE_URL
 from model.db.RenderingEntity import RenderingEntity
 from model.db.Room import Room
 from model.db.Floor import Floor
+from model.db.Building import Building
 from model.db.File import File
 
 # this is the Alembic Config object, which provides
@@ -23,7 +24,9 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = [Room.metadata, Floor.metadata]
+# target_metadata = [Room.metadata]
+# target_metadata = [Floor.metadata]
+target_metadata = [Building.metadata]
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

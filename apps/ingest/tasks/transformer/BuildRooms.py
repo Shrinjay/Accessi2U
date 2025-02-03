@@ -29,8 +29,8 @@ class BuildRooms(luigi.Task):
 
     def requires(self):
         return [
-            BuildIDMap(self.file_path, entity_type="room"),
-            BuildRenderingEntities(self.file_path, entity_type="room")
+            BuildIDMap(self.file_path, entity_type=self.TABLE_NAME),
+            BuildRenderingEntities(self.file_path, entity_type=self.TABLE_NAME)
         ]
 
     def _build_room(self, feature_id: int, feature: UnitFeature, rendering_entity: RenderingEntity) -> Room:
