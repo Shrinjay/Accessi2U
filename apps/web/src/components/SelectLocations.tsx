@@ -4,7 +4,7 @@ import React, { useCallback } from "react";
 // import {useForm} from 'react-hook-form';
 import Select from 'react-select';
 import rooms from "../../../ingest/data/rooms_partial.json";
-import { Button, VStack, StackSeparator, Switch} from "@chakra-ui/react";
+import { Button, VStack, StackSeparator} from "@chakra-ui/react";
 
 export default function SelectLocations() {
     const [options, setOptions] = React.useState([]);
