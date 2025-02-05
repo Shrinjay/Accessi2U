@@ -1,5 +1,10 @@
+import sqlmodel
+
+from common.env.env import DATABASE_URL
 from common.file_system.LocalFileSystem import LocalFileSystem
 from common.file_system import FileSystemEnum
+from common.db import engine
+
 from model.db.File import File
 
 
@@ -22,9 +27,18 @@ class FileSystem:
     def read(self, file: File):
         return self.file_systems[file.file_system].read(file)
 
-    def write(self, file_system: FileSystemEnum, external_id: str, content):
+    def write(self, file_system: FileSystemEnum, external_id: str, content) -> File:
         file = File(external_id=external_id, file_system=file_system)
 
+        # write to file system
         self.file_systems[file.file_system].write(file, content)
+
+        # save to database
+        session = sqlmodel.Session(engine)
+
+        with session:
+            session.add(file)
+            session.commit()
+            session.refresh(file)
 
         return file

@@ -14,10 +14,10 @@ class LocalFileSystem(AbstractFileSystem):
     def exists(self, file: File):
         return os.path.exists(file.external_id)
 
-    def read(self, file: File):
+    def read(self, file: File) -> str:
         with open(file.external_id, 'r') as f:
             return f.read()
 
     def write(self, file: File, content):
-        with open(file.external_id, 'w') as f:
+        with open(file.external_id, 'w+', os.O_CREAT) as f:
             f.write(content)
