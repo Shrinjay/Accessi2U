@@ -4,6 +4,7 @@ import React, { useCallback } from "react";
 // import {useForm} from 'react-hook-form';
 import Select from 'react-select';
 import rooms from "../../../ingest/data/rooms_partial.json";
+import { Checkbox } from "./ui/checkbox";
 import { Button, VStack, StackSeparator} from "@chakra-ui/react";
 
 export default function SelectLocations() {
@@ -26,7 +27,6 @@ export default function SelectLocations() {
                         building: properties.alt_bl_id,
                         department: properties.Departments_name,
                         room_type: properties.USE_TYPE,
-                        room_number: properties.NAME,
                         label: properties.RM_NM,
                         value: properties.RM_NM,
                     }))
@@ -53,18 +53,38 @@ export default function SelectLocations() {
 
     return (
         <div>
-            <VStack separator={<StackSeparator/>} gap ={6}>
+            <VStack gap ={4}>
+            <label>Start Room</label>
             <Select isClearable 
+                isDisabled={isLoading}
                 defaultValue={startPoint}
                 options={options} 
                 onChange={setStart} 
                 required id="start-location"/>
+            <label>End room</label>
             <Select
+                isDisabled={isLoading}
                 defaultValue={endPoint}
                 isClearable options={options}
                 onChange={setEnd}
                 required
                 id="end-location"/>
+
+            <Checkbox 
+            disabled={isLoading} 
+            checked={accessible}
+            onCheckedChange={(e) => setAccessible(!!e.checked)}
+            >
+                Accessible
+            </Checkbox>
+            <Checkbox
+                disabled={isLoading}
+                checked={indoors}
+                onCheckedChange={(e) => setIndoors(!!e.checked)}
+            >
+                Indoors
+            </Checkbox>
+
             <Button 
                 loading={isLoading} 
                 loadingText="Loading"
