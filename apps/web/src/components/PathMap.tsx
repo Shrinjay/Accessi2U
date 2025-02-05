@@ -1,11 +1,12 @@
 import React from "react";
-import { TileLayer, GeoJSON, MapContainer, LayersControl, useMap } from "react-leaflet";
+import { TileLayer, GeoJSON, MapContainer, LayersControl, useMap, Marker, Popup } from "react-leaflet";
 import L, { divIcon} from "leaflet";
-import buildings from "./EngBuildings.json";
-import rooms from "./rooms.json"
-import rooms_centroids from "./rooms_centroids.json"
-// import floor_centroids from "./floor_centroids.csv"
+import buildings from "../../../ingest/data/Eng_Buildings.json";
+import rooms from "../../../ingest/data/rooms_partial.json";
+import rooms_centroids from "../../../ingest/data/rooms_centroids_partial.json";
+// import floor_centroids from "../../../ingest/data/floors_centroids_partial.json"
 import { useSwipeable} from "react-swipeable";
+import 'leaflet/dist/leaflet.css';
 
 
 const floorList = ["RCH_01", "RCH_02", "RCH_03", "CPH_01", "E2_01", "E2_02"]
@@ -81,6 +82,12 @@ export default function PathMap() {
 function ChangeView({center}) {
     const map = useMap();
     map.panTo(center);
+
+    React.useEffect(() => {
+        setTimeout(() => { 
+            map.invalidateSize(); 
+        }, 250); 
+    }, [map])
     return null;
 }
 
@@ -152,14 +159,15 @@ function FloorMap({ curFloor, roomList, center }) {
                 minZoom={18}
             >
                 <ChangeView center={center}/>
-                <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}.png" maxZoom={21} />
+                <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}.png" 
+                    maxZoom={21} tms={true}/>
                 <LayersControl position={"topright"}>
                     <LayersControl.Overlay checked name={'Eng Buildings'}>
                         <GeoJSON data={buildings} style={setColor}/>
                     </LayersControl.Overlay>
-                    {/* <LayersControl.Overlay checked name={'Eng Floors'}>
+                    {/* { <LayersControl.Overlay checked name={'Eng Floors'}>
                         <GeoJSON data={floors} style={setColor} filter={floorFilter} key={curFloor} />
-                    </LayersControl.Overlay> */}
+                    </LayersControl.Overlay> } */}
                     <LayersControl.Overlay checked name={'Eng Rooms'}>
                         <GeoJSON data={rooms} style={setColor} filter={floorFilter} key={curFloor} />
                     </LayersControl.Overlay>
@@ -169,9 +177,7 @@ function FloorMap({ curFloor, roomList, center }) {
                     <LayersControl.Overlay checked={false} name={'Other Room Numbers'}>
                         <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={otherNumFilter} key={curFloor}/>
                     </LayersControl.Overlay>
-
                 </LayersControl>
-
             </MapContainer>
         </div>
     )
