@@ -10,33 +10,32 @@ from common.db import engine
 
 from model.UnitFeatureCollection import UnitFeature
 from model.db.RenderingEntity import RenderingEntity
-from model.db.Room import Room
+from model.db.Floor import Floor
 
 from tasks.transformer.BuildIDMap import BuildIDMap
 from tasks.transformer.BuildRenderingEntities import BuildRenderingEntities
 from tasks.util.json import load_as_json
 
-
-class BuildRooms(luigi.Task):
+class BuildFloors(luigi.Task):
     """
-    Takes in a map of ID -> Features for a room/building/floor
+    Takes in a map of ID -> Features for a floors
     and builds rendering entity models out of it
     """
     file_path = luigi.PathParameter()
     file_system = FileSystem()
 
-    TABLE_NAME = 'room'
+    TABLE_NAME = 'floor'
 
     def requires(self):
         return [
             BuildIDMap(self.file_path, entity_type=self.TABLE_NAME),
             BuildRenderingEntities(self.file_path, entity_type=self.TABLE_NAME)
         ]
+    
+    def _build_floor(self, feature_id: int, feature: UnitFeature, rendering_entity: RenderingEntity) -> Floor:
+        name = feature.properties['FL_NM']
 
-    def _build_room(self, feature_id: int, feature: UnitFeature, rendering_entity: RenderingEntity) -> Room:
-        name = feature.properties['RM_NM']
-
-        return Room(
+        return Floor(
             name=name,
             rendering_entity_id=rendering_entity.id,
         )
@@ -46,13 +45,13 @@ class BuildRooms(luigi.Task):
         features_by_id: typing.Dict[int, UnitFeature] = {id: UnitFeature.parse_obj(json.loads(feature)) for id, feature in feature_str_by_id.items()}
         rendering_entities_by_id: typing.Dict[int, RenderingEntity] = {id: RenderingEntity.parse_obj(json.loads(rendering_entity)) for id, rendering_entity in rendering_entities_str_by_id.items()}
 
-        room_by_id: typing.Dict[int, Room] = {id: self._build_room(id, feature, rendering_entities_by_id[id]) for id, feature in features_by_id.items()}
+        floor_by_id: typing.Dict[int, Floor] = {id: self._build_floor(id, feature, rendering_entities_by_id[id]) for id, feature in features_by_id.items()}
 
         session = sqlmodel.Session(engine)
 
         with session:
-            for room in room_by_id.values():
-                session.add(room)
+            for floor in floor_by_id.values():
+                session.add(floor)
                 session.commit()
 
     def output(self):

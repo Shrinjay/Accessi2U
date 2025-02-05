@@ -26,12 +26,13 @@ class BuildRenderingEntities(luigi.Task):
     TODO: Have this save these entities to database
     """
     file_path = luigi.PathParameter()
+    entity_type = luigi.Parameter()
     file_system = FileSystem()
 
     TABLE_NAME = 'renderingentity'
 
     def requires(self):
-        return BuildIDMap(self.file_path)
+        return BuildIDMap(self.file_path, entity_type=self.entity_type)
 
     def _build_rendering_entity(self, feature: UnitFeature):
         geometry = feature.geometry
@@ -62,4 +63,4 @@ class BuildRenderingEntities(luigi.Task):
 
 
     def output(self):
-        return luigi.LocalTarget('out/rendering_entities_by_id.json')
+        return luigi.LocalTarget(f'out/rendering_entities_{self.entity_type}.json')

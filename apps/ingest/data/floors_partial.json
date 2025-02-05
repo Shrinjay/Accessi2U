@@ -1,5 +1,8 @@
 {
   "type": "FeatureCollection",
+  "properties": {
+    "exceededTransferLimit": true
+  },
   "features": [
     {
       "type": "Feature",
