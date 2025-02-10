@@ -1,9 +1,9 @@
 import { extendTheme } from "@chakra-ui/react"
 
-// import { colors } from "./colors"
+import { colors } from "./colors"
 
 export const theme = extendTheme({
-   // colors,
+   colors,
    breakpoints: {
       lg: "1200px",
       "3xl": "1600px",
