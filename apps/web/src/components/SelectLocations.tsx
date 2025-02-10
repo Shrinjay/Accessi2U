@@ -4,8 +4,7 @@ import React, { useCallback } from "react";
 // import {useForm} from 'react-hook-form';
 import Select from 'react-select';
 import rooms from "../../../ingest/data/rooms_partial.json";
-import { Checkbox } from "./ui/checkbox";
-import { Button, VStack, StackSeparator} from "@chakra-ui/react";
+import { Button, Checkbox, VStack } from "@chakra-ui/react";
 
 export default function SelectLocations() {
     const [options, setOptions] = React.useState([]);
@@ -22,7 +21,7 @@ export default function SelectLocations() {
             try {
                 setIsLoading(true)
                 setOptions(
-                    rooms["features"].map(({properties}) => ({
+                    rooms["features"].map(({ properties }) => ({
                         floor_Name: properties.FL_NM,
                         building: properties.alt_bl_id,
                         department: properties.Departments_name,
@@ -32,8 +31,8 @@ export default function SelectLocations() {
                     }))
                 );
                 setIsLoading(false)
-            } catch (error){
-                setOptions([{label: "ERROR", value:"ERROR"}])
+            } catch (error) {
+                setOptions([{ label: "ERROR", value: "ERROR" }])
             }
         }
         getOptions();
@@ -49,53 +48,53 @@ export default function SelectLocations() {
 
     const pathSelected = () => {
         setIsLoading(true);
-    } 
+    }
 
     return (
         <div>
-            <VStack gap ={4}>
-            <label>Start Room</label>
-            <Select isClearable 
-                isDisabled={isLoading}
-                defaultValue={startPoint}
-                options={options} 
-                onChange={setStart} 
-                required id="start-location"/>
-            <label>End room</label>
-            <Select
-                isDisabled={isLoading}
-                defaultValue={endPoint}
-                isClearable options={options}
-                onChange={setEnd}
-                required
-                id="end-location"/>
+            <VStack gap={4}>
+                <label>Start Room</label>
+                <Select isClearable
+                    isDisabled={isLoading}
+                    defaultValue={startPoint}
+                    options={options}
+                    onChange={setStart}
+                    required id="start-location" />
+                <label>End room</label>
+                <Select
+                    isDisabled={isLoading}
+                    defaultValue={endPoint}
+                    isClearable options={options}
+                    onChange={setEnd}
+                    required
+                    id="end-location" />
 
-            <Checkbox 
-            disabled={isLoading} 
-            checked={accessible}
-            onCheckedChange={(e) => setAccessible(!!e.checked)}
-            >
-                Accessible
-            </Checkbox>
-            <Checkbox
-                disabled={isLoading}
-                checked={indoors}
-                onCheckedChange={(e) => setIndoors(!!e.checked)}
-            >
-                Indoors
-            </Checkbox>
+                <Checkbox
+                    disabled={isLoading}
+                    checked={accessible}
+                    onCheckedChange={(e) => setAccessible(!!e.checked)}
+                >
+                    Accessible
+                </Checkbox>
+                <Checkbox
+                    disabled={isLoading}
+                    checked={indoors}
+                    onCheckedChange={(e) => setIndoors(!!e.checked)}
+                >
+                    Indoors
+                </Checkbox>
 
-            <Button 
-                loading={isLoading} 
-                loadingText="Loading"
-                spinnerPlacement="start"
-                size="lg" 
-                variant="surface"
-                disabled={!completedInfo}
-                onClick = {pathSelected}
-            >
-                Submit
-            </Button>
+                <Button
+                    loading={isLoading}
+                    loadingText="Loading"
+                    spinnerPlacement="start"
+                    size="lg"
+                    variant="surface"
+                    disabled={!completedInfo}
+                    onClick={pathSelected}
+                >
+                    Submit
+                </Button>
             </VStack>
 
         </div>
