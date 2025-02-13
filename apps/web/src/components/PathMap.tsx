@@ -1,5 +1,5 @@
 import React from "react";
-import { TileLayer, GeoJSON, MapContainer, LayersControl, useMap, Marker, Popup } from "react-leaflet";
+import { TileLayer, GeoJSON, MapContainer, LayersControl, useMap, LayerGroup} from "react-leaflet";
 import L, { divIcon} from "leaflet";
 import buildings from "../../../ingest/data/Eng_Buildings.json";
 import rooms from "../../../ingest/data/rooms_partial.json";
@@ -164,13 +164,15 @@ function FloorMap({ curFloor, roomList, center, checkedIndex }) {
 
     const customMarkerIcon = (text) =>
         divIcon({
+          className: "icon",
           html: text,
-          className: "icon"
+          iconSize: [30,30],
+          iconAnchor: [10,5]
     });
 
     const setIcon = ({ properties }, latlng) => {
         return L.marker(latlng, { icon: customMarkerIcon(properties.rm_id) });
-      };
+    };
 
     const floorFilter = ({ properties }) => {
         // https://gis.stackexchange.com/questions/189988/filtering-geojson-data-to-include-in-leaflet-map
@@ -210,25 +212,20 @@ function FloorMap({ curFloor, roomList, center, checkedIndex }) {
                 minZoom={18}
             >
                 <ChangeView center={center}/>
-                <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}.png" 
+                <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/light_nolabels/{z}/{x}/{y}.png" 
                     maxZoom={21} tms={true}/>
-                <LayersControl position={"topright"}>
-                    <LayersControl.Overlay checked name={'Eng Buildings'}>
-                        <GeoJSON data={buildings} style={setColor}/>
-                    </LayersControl.Overlay>
-                    {/* { <LayersControl.Overlay checked name={'Eng Floors'}>
-                        <GeoJSON data={floors} style={setColor} filter={floorFilter} key={curFloor} />
-                    </LayersControl.Overlay> } */}
-                    <LayersControl.Overlay checked name={'Eng Rooms'}>
-                        <GeoJSON data={rooms} style={setColor} filter={floorFilter} key={curFloor} />
-                    </LayersControl.Overlay>
-                    <LayersControl.Overlay checked name={'Classroom Numbers'}>
-                        <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={classNumFilter} key={curFloor}/>
-                    </LayersControl.Overlay>
-                    <LayersControl.Overlay checked={false} name={'Other Room Numbers'}>
-                        <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={otherNumFilter} key={curFloor}/>
-                    </LayersControl.Overlay>
-                </LayersControl>
+                <LayerGroup>
+                    <GeoJSON data={buildings} style={setColor}/>
+                    <GeoJSON data={rooms} style={setColor} filter={floorFilter} key={curFloor} />
+                    <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={classNumFilter} key={curFloor}/>
+
+                    <LayersControl position={"topright"}>
+                        <LayersControl.Overlay checked={false} name={'Other Room Numbers'}>
+                            <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={otherNumFilter} key={curFloor}/>
+                        </LayersControl.Overlay>
+                    </LayersControl>
+                </LayerGroup>
+
             </MapContainer>
         </div>
     )
