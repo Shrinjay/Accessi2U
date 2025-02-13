@@ -56,7 +56,7 @@ export default function PathMap() {
     const [curFloor, setCurFloor] = React.useState(floorList[0]);
     const [center, setCenter] = React.useState([43.47028851150243,-80.54072575754529])
     const [stepListOpen, setStepListOpen] = React.useState(false);
-    const [checkedIndex, setCheckedIndex] = React.useState(2);
+    const [checkedIndex, setCheckedIndex] = React.useState(-1);
 
     React.useEffect(() => {
         setCurFloor(floorList[floorIndex])
@@ -119,12 +119,21 @@ function FloorMap({ curFloor, roomList, center, checkedIndex }) {
         }
 
         if (checkedIndex < 0) {
-            // all rooms on route
-            return {
-                weight: 1,
-                fillColor: "blue",
-                color: 'white'
-            };
+            if ((properties["USE_TYPE"] == "Stairs") || (properties["USE_TYPE"] == "Elevators")) {
+                return {
+                    // rooms on route
+                    weight: 1,
+                    fillColor: "blue",
+                    color: 'white'
+                };
+            } else {
+                return {
+                    // rooms on route
+                    weight: 1,
+                    fillColor: "purple",
+                    color: 'white'
+                };
+            }
         } else {
             // at least 1 step marked as completed
             if (roomList.indexOf(properties["RM_NM"]) <= checkedIndex) {
@@ -132,6 +141,13 @@ function FloorMap({ curFloor, roomList, center, checkedIndex }) {
                 return {
                     weight: 1,
                     fillColor: "yellow",
+                    color: 'white'
+                };
+            } else if ((properties["USE_TYPE"] == "Stairs") || (properties["USE_TYPE"] == "Elevators")) {
+                // staircase or elevator on route
+                return {
+                    weight: 1,
+                    fillColor: "blue",
                     color: 'white'
                 };
             } else {
