@@ -77,7 +77,7 @@ export default function PathMap() {
     return (
         <>
             <div {...swipeHandlers}>
-                {floorIndex + 1}: {curFloor} <br/>
+                {floorIndex + 1}: {curFloor}
                 {checkedIndex}
                 {stepListOpen ? (<>
                 <RouteChecklist 
@@ -90,7 +90,8 @@ export default function PathMap() {
                     curFloor={curFloor}
                     roomList={roomList} 
                     center={center} 
-                    checkedIndex={checkedIndex}/>  
+                    checkedIndex={checkedIndex}
+                    key={curFloor}/> 
                 </>)}
             </div>
         </>
@@ -214,6 +215,7 @@ function FloorMap({ curFloor, roomList, center, checkedIndex }) {
     return (
         <div className="map">
             <MapContainer
+                dragging={false}
                 center={center}
                 zoom={19.5}
                 boxZoom={false}
