@@ -6,6 +6,7 @@ import rooms from "../../../ingest/data/rooms_partial.json";
 import rooms_centroids from "../../../ingest/data/rooms_centroids_partial.json";
 // import floor_centroids from "../../../ingest/data/floors_centroids_partial.json"
 import { useSwipeable} from "react-swipeable";
+import RouteChecklist from "./RouteChecklist"
 import 'leaflet/dist/leaflet.css';
 
 
@@ -68,20 +69,29 @@ export default function PathMap() {
         onSwipedRight: () => setFloorIndex(Math.max(floorIndex - 1, 0)),
         onSwipedUp: () => setStepListOpen(true),
         onSwipedDown: () => setStepListOpen(false),
-        swipeDuration: 200,
+        swipeDuration: 300,
         preventScrollOnSwipe: false,
         trackMouse: true
     })
 
     return (
         <>
-            <div style={{ position: 'relative', width: "100%", height: "100vh" }} {...swipeHandlers}>
-                {floorIndex + 1}: {curFloor}
-                <FloorMap 
-                curFloor={curFloor} 
-                roomList={roomList} 
-                center={center} 
-                checkedIndex={checkedIndex}/>
+            <div {...swipeHandlers}>
+                {floorIndex + 1}: {curFloor} <br/>
+                {checkedIndex}
+                {stepListOpen ? (<>
+                <RouteChecklist 
+                    roomList={roomList} 
+                    checkedIndex={checkedIndex}
+                    setCheckedIndex={setCheckedIndex}
+                    setStepListOpen={setStepListOpen}/>
+                </>) : (<>
+                    <FloorMap 
+                    curFloor={curFloor}
+                    roomList={roomList} 
+                    center={center} 
+                    checkedIndex={checkedIndex}/>  
+                </>)}
             </div>
         </>
     )
