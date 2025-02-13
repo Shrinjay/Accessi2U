@@ -10,7 +10,7 @@ import 'leaflet/dist/leaflet.css';
 
 
 const floorList = ["RCH_01", "RCH_02", "RCH_03", "CPH_01", "E2_01", "E2_02"]
-const roomList = ["RCH 101", "RCH 122", "RCH 123", "RCH 119", "RCH 103", "RCH 105", "RCH 212", "RCH 301"]
+const roomList = ["RCH 101", "RCH 122", "RCH 123", "RCH 119", "RCH 103", "RCH 105", "RCH 120", "RCH 212", "RCH 301"]
 const floorCentroidMap = {DWE_01:[-80.5395194675902,43.47007771086484],
     DWE_02:[-80.53952030998597,43.47007907367728],
     DWE_03:[-80.5396902053169,43.469992313962365],
@@ -55,6 +55,8 @@ export default function PathMap() {
     const [floorIndex, setFloorIndex] = React.useState(0);
     const [curFloor, setCurFloor] = React.useState(floorList[0]);
     const [center, setCenter] = React.useState([43.47028851150243,-80.54072575754529])
+    const [stepListOpen, setStepListOpen] = React.useState(false);
+    const [checkedIndex, setCheckedIndex] = React.useState(2);
 
     React.useEffect(() => {
         setCurFloor(floorList[floorIndex])
@@ -64,6 +66,8 @@ export default function PathMap() {
     const swipeHandlers = useSwipeable({
         onSwipedLeft: () => setFloorIndex(Math.min(floorIndex + 1, floorList.length - 1)),
         onSwipedRight: () => setFloorIndex(Math.max(floorIndex - 1, 0)),
+        onSwipedUp: () => setStepListOpen(true),
+        onSwipedDown: () => setStepListOpen(false),
         swipeDuration: 200,
         preventScrollOnSwipe: false,
         trackMouse: true
@@ -73,7 +77,11 @@ export default function PathMap() {
         <>
             <div style={{ position: 'relative', width: "100%", height: "100vh" }} {...swipeHandlers}>
                 {floorIndex + 1}: {curFloor}
-                <FloorMap curFloor={curFloor} roomList={roomList} center={center} />
+                <FloorMap 
+                curFloor={curFloor} 
+                roomList={roomList} 
+                center={center} 
+                checkedIndex={checkedIndex}/>
             </div>
         </>
     )
@@ -91,24 +99,51 @@ function ChangeView({center}) {
     return null;
 }
 
-function FloorMap({ curFloor, roomList, center }) {
+function FloorMap({ curFloor, roomList, center, checkedIndex }) {
 
     const setColor = ({ properties }) => {
-        if (roomList.includes(properties["RM_NM"])){
-            return {
-                weight: 1,
-                fillColor: "yellow",
-                color: 'white'
-            };
-        } else {
+        if (!(roomList.includes(properties["RM_NM"]))){
+            // rooms not in the route
             return {
                 weight: 1,
                 fillColor: "black",
                 color: 'white'
             };
+        } else if ((roomList[0] == properties["RM_NM"]) || (roomList[roomList.length - 1]==properties["RM_NM"])){
+            // first and last rooms
+            return {
+                weight: 1,
+                fillColor: "green",
+                color: 'white'
+            };
         }
 
-
+        if (checkedIndex < 0) {
+            // all rooms on route
+            return {
+                weight: 1,
+                fillColor: "blue",
+                color: 'white'
+            };
+        } else {
+            // at least 1 step marked as completed
+            if (roomList.indexOf(properties["RM_NM"]) <= checkedIndex) {
+                // room has been visited
+                return {
+                    weight: 1,
+                    fillColor: "yellow",
+                    color: 'white'
+                };
+            } else {
+                // room is unvisited
+                return {
+                    weight: 1,
+                    fillColor: "purple",
+                    color: 'white'
+                };
+            }
+        }
+      
     };
 
     const customMarkerIcon = (text) =>

@@ -11,8 +11,8 @@ export const Home = () => {
    return (
          <HomeContainer>
          {/* <StartScreen /> */}
-         <SelectLocations/>
-         {/* <PathMap/> */}
+         {/* <SelectLocations/> */}
+         <PathMap/>
             {/* <Styled.Gif
                src="https://media.giphy.com/media/Dh5q0sShxgp13DwrvG/giphy.gif"
                alt="I have no idea what I'm doing"
