@@ -124,7 +124,7 @@ function FloorMap({ curFloor, roomList, center, checkedIndex }) {
             // first and last rooms
             return {
                 weight: 1,
-                fillColor: "green",
+                fillColor: "purple",
                 color: 'white'
             };
         }
@@ -134,14 +134,14 @@ function FloorMap({ curFloor, roomList, center, checkedIndex }) {
                 return {
                     // rooms on route
                     weight: 1,
-                    fillColor: "blue",
+                    fillColor: "#ff9900",
                     color: 'white'
                 };
             } else {
                 return {
                     // rooms on route
                     weight: 1,
-                    fillColor: "purple",
+                    fillColor: "#ffff00",
                     color: 'white'
                 };
             }
@@ -151,21 +151,21 @@ function FloorMap({ curFloor, roomList, center, checkedIndex }) {
                 // room has been visited
                 return {
                     weight: 1,
-                    fillColor: "yellow",
+                    fillColor: "#ffffcc",
                     color: 'white'
                 };
             } else if ((properties["USE_TYPE"] == "Stairs") || (properties["USE_TYPE"] == "Elevators")) {
                 // staircase or elevator on route
                 return {
                     weight: 1,
-                    fillColor: "blue",
+                    fillColor: "#ff9900",
                     color: 'white'
                 };
             } else {
                 // room is unvisited
                 return {
                     weight: 1,
-                    fillColor: "purple",
+                    fillColor: "#ffff00",
                     color: 'white'
                 };
             }
