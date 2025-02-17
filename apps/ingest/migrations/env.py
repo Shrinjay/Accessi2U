@@ -10,6 +10,9 @@ from model.db.Room import Room
 from model.db.Floor import Floor
 from model.db.Building import Building
 from model.db.File import File
+from model.db.Edge import Edge
+from model.db.Node import Node
+from model.db.Adjacency import Adjacency
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -26,7 +29,7 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 # target_metadata = [Room.metadata]
 # target_metadata = [Floor.metadata]
-target_metadata = [Building.metadata]
+target_metadata = [Node.metadata]
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
