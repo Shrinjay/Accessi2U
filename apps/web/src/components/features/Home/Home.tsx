@@ -12,7 +12,8 @@ export const Home = () => {
    return (
       <HomeContainer>
          {/* <StartScreen /> */}
-         <LandingPage />
+         {/* <LandingPage /> */}
+         <SelectLocations />
          {/* <PathMap/> */}
          {/* <Styled.Gif
                src="https://media.giphy.com/media/Dh5q0sShxgp13DwrvG/giphy.gif"

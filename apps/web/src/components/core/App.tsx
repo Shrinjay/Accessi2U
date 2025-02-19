@@ -41,3 +41,4 @@ declare module '@tanstack/router' {
       router: typeof router
    }
 }
+
