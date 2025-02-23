@@ -11,48 +11,73 @@ from common.db import engine
 from model.UnitFeatureCollection import UnitFeature
 from model.db.RenderingEntity import RenderingEntity
 from model.db.Floor import Floor
+from model.db.Building import Building
 
 from tasks.transformer.BuildIDMap import BuildIDMap
 from tasks.transformer.BuildRenderingEntities import BuildRenderingEntities
 from tasks.util.json import load_as_json
+
+from tasks.transformer.BuildBuildings import BuildBuildings
+from constants import FLOOR_DATA_PATH
 
 class BuildFloors(luigi.Task):
     """
     Takes in a map of ID -> Features for a floors
     and builds rendering entity models out of it
     """
-    file_path = luigi.PathParameter()
+    file_path = FLOOR_DATA_PATH
     file_system = FileSystem()
 
-    TABLE_NAME = 'floor'
+    TABLE_NAME = FLOOR_DATA_PATH
 
     def requires(self):
         return [
             BuildIDMap(self.file_path, entity_type=self.TABLE_NAME),
-            BuildRenderingEntities(self.file_path, entity_type=self.TABLE_NAME)
+            BuildRenderingEntities(self.file_path, entity_type=self.TABLE_NAME),
+            BuildBuildings()
         ]
     
-    def _build_floor(self, feature_id: int, feature: UnitFeature, rendering_entity: RenderingEntity) -> Floor:
+    def _build_floor(self, feature_id: int, feature: UnitFeature, rendering_entity: RenderingEntity, buildings_by_name: dict[str, int]) -> Floor:
         name = feature.properties['FL_NM']
+        bl_abbr = feature.properties['BL_ABBR']
+        building_id = buildings_by_name.get(bl_abbr)
 
         return Floor(
             name=name,
             rendering_entity_id=rendering_entity.id,
+            building_id=building_id
         )
 
     def run(self):
-        feature_str_by_id, rendering_entities_str_by_id = [load_as_json(input) for input in self.input()]
+        inputs = self.input()
+        json_targets = [t for t in inputs if isinstance(t, luigi.LocalTarget)]
+        feature_str_by_id, rendering_entities_str_by_id = [
+            load_as_json(t) for t in json_targets
+        ]
+
         features_by_id: typing.Dict[int, UnitFeature] = {id: UnitFeature.parse_obj(json.loads(feature)) for id, feature in feature_str_by_id.items()}
         rendering_entities_by_id: typing.Dict[int, RenderingEntity] = {id: RenderingEntity.parse_obj(json.loads(rendering_entity)) for id, rendering_entity in rendering_entities_str_by_id.items()}
 
-        floor_by_id: typing.Dict[int, Floor] = {id: self._build_floor(id, feature, rendering_entities_by_id[id]) for id, feature in features_by_id.items()}
-
         session = sqlmodel.Session(engine)
-
         with session:
-            for floor in floor_by_id.values():
-                session.add(floor)
-                session.commit()
+            buildings_by_name = {
+                b.name: b.id
+                for b in session.query(Building).all()
+            }
+
+            for id_, feature in features_by_id.items():
+                rendering_entity = rendering_entities_by_id[id_]
+                floor_obj = self._build_floor(
+                    id_,
+                    feature,
+                    rendering_entity,
+                    buildings_by_name
+                )
+                session.add(floor_obj)
+            session.commit()
+
+        with self.output().connect() as conn:
+            self.output().touch(conn)
 
     def output(self):
         return luigi.contrib.postgres.PostgresTarget(
