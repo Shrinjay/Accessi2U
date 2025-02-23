@@ -1,5 +1,5 @@
 import React from "react";
-import { TileLayer, GeoJSON, MapContainer, LayersControl, useMap, LayerGroup} from "react-leaflet";
+import { TileLayer, GeoJSON, MapContainer, LayersControl, useMap, LayerGroup, Popup, FeatureGroup, Polyline} from "react-leaflet";
 import L, { divIcon} from "leaflet";
 import buildings from "../../../ingest/data/Eng_Buildings.json";
 import rooms from "../../../ingest/data/rooms_partial.json";
@@ -8,6 +8,7 @@ import rooms_centroids from "../../../ingest/data/rooms_centroids_partial.json";
 import { useSwipeable} from "react-swipeable";
 import RouteChecklist from "./RouteChecklist"
 import 'leaflet/dist/leaflet.css';
+import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Heading, useDisclosure } from "@chakra-ui/react";
 
 
 const floorList = ["RCH_01", "RCH_02", "RCH_03", "CPH_01", "E2_01", "E2_02"]
@@ -56,8 +57,8 @@ export default function PathMap() {
     const [floorIndex, setFloorIndex] = React.useState(0);
     const [curFloor, setCurFloor] = React.useState(floorList[0]);
     const [center, setCenter] = React.useState([43.47028851150243,-80.54072575754529])
-    const [stepListOpen, setStepListOpen] = React.useState(false);
     const [checkedIndex, setCheckedIndex] = React.useState(-1);
+        const {isOpen, onOpen, onClose} = useDisclosure()
 
     React.useEffect(() => {
         setCurFloor(floorList[floorIndex])
@@ -67,8 +68,8 @@ export default function PathMap() {
     const swipeHandlers = useSwipeable({
         onSwipedLeft: () => setFloorIndex(Math.min(floorIndex + 1, floorList.length - 1)),
         onSwipedRight: () => setFloorIndex(Math.max(floorIndex - 1, 0)),
-        onSwipedUp: () => setStepListOpen(true),
-        onSwipedDown: () => setStepListOpen(false),
+        onSwipedUp: onOpen,
+        onSwipedDown: onClose,
         swipeDuration: 300,
         preventScrollOnSwipe: false,
         trackMouse: true
@@ -77,22 +78,31 @@ export default function PathMap() {
     return (
         <>
             <div {...swipeHandlers}>
-                {floorIndex + 1}: {curFloor}
-                {checkedIndex}
-                {stepListOpen ? (<>
-                <RouteChecklist 
-                    roomList={roomList} 
-                    checkedIndex={checkedIndex}
-                    setCheckedIndex={setCheckedIndex}
-                    setStepListOpen={setStepListOpen}/>
-                </>) : (<>
-                    <FloorMap 
+                <FloorMap 
                     curFloor={curFloor}
                     roomList={roomList} 
                     center={center} 
                     checkedIndex={checkedIndex}
-                    key={curFloor}/> 
-                </>)}
+                    key={curFloor}/>
+                <Button onClick={onOpen} width="100%">
+                    Open Checklist
+                </Button>
+                <Drawer isOpen={isOpen} onClose={onClose} placement="bottom">
+                    <DrawerOverlay/>
+                        <DrawerContent>
+                            <DrawerCloseButton/>
+                            <DrawerHeader>
+                                <Heading size='md'>Step-by-Step Route</Heading>
+                        </DrawerHeader>
+                            <DrawerBody>
+                                <RouteChecklist 
+                                roomList={roomList}
+                                setCheckedIndex={setCheckedIndex}
+                                checkedIndex={checkedIndex}
+                                />
+                            </DrawerBody>
+                        </DrawerContent>
+                    </Drawer>
             </div>
         </>
     )
@@ -212,6 +222,10 @@ function FloorMap({ curFloor, roomList, center, checkedIndex }) {
         }
     };
 
+    const onEachFeature = (feature, layer) => {
+        layer.bindPopup(feature.properties.rm_standard)
+    }
+
     return (
         <div className="map">
             <MapContainer
@@ -228,7 +242,18 @@ function FloorMap({ curFloor, roomList, center, checkedIndex }) {
                     maxZoom={21} tms={true}/>
                 <LayerGroup>
                     <GeoJSON data={buildings} style={setColor}/>
-                    <GeoJSON data={rooms} style={setColor} filter={floorFilter} key={curFloor} />
+                    {/* {rooms.features.map(({feature, index}) => {
+                        return(
+                            <FeatureGroup key={index}>
+                                <Polyline positions={feature.geometry.coordinates}/>
+                            </FeatureGroup>
+                        )
+                    })} */}
+                    <GeoJSON data={rooms} style={setColor} filter={floorFilter} key={curFloor} onEachFeature={onEachFeature}>
+                        {/* <Popup>
+                            test
+                        </Popup> */}
+                    </GeoJSON>
                     <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={classNumFilter} key={curFloor}/>
 
                     <LayersControl position={"topright"}>
