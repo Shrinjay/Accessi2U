@@ -16,7 +16,7 @@ type ContextResult = {
 };
 
 const getJwt = (opts: ContextOptions): string | undefined => {
-  const connectionParams = opts.info.connectionParams;
+  const connectionParams = (opts as any).info.connectionParams;
   const jwtFromConnectionParams = connectionParams?.token;
 
   if (jwtFromConnectionParams) return jwtFromConnectionParams;

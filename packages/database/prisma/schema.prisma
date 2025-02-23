@@ -1,166 +1,147 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["multiSchema"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["backend"]
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Adjacency {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime? @db.Timestamp(6)
+  updated_at DateTime? @db.Timestamp(6)
+  node_id    Int?
+  edge_id    Int?
+  edge       Edge?     @relation(fields: [edge_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  node       Node?     @relation(fields: [node_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  supabaseUserId String @unique
+  @@unique([node_id, edge_id], map: "uix_adjacency_node_edge")
+  @@index([id], map: "ix_adjacency_id")
 
-  name      String?
-  email     String? @unique
-
-  searches Search[]
-  collections CollectionUser[]
-
-  @@index(supabaseUserId)
-  @@map("users")
-  @@schema("backend")
+  @@map("adjacency")
 }
 
-model Item {
-  id       Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Building {
+  id                  Int              @id @default(autoincrement())
+  created_at          DateTime?        @db.Timestamp(6)
+  updated_at          DateTime?        @db.Timestamp(6)
+  name                String           @db.VarChar(255)
+  rendering_entity_id Int?
+  renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  edge                Edge[]
+  node                Node[]
 
-  // Items are stored in a separate storage layer
-  // This allows us to modify the underlying storage layer in the future
-  storage ItemStorageLayer
-  externalId String @unique
+  @@index([id], map: "ix_building_id")
 
-  searches SearchItem[]
-  collections CollectionItem[]
-
-  @@schema("backend")
-  @@map("items")
+  @@map("building")
 }
 
-model Search {
-  id       Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Edge {
+  id          Int         @id @default(autoincrement())
+  created_at  DateTime?   @db.Timestamp(6)
+  updated_at  DateTime?   @db.Timestamp(6)
+  building_id Int?
+  floor_id    Int?
+  room_id     Int?
+  adjacency   Adjacency[]
+  building    Building?   @relation(fields: [building_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  floor       Floor?      @relation(fields: [floor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  room        Room?       @relation(fields: [room_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  query String
+  @@unique([room_id, building_id, floor_id], map: "uix_edge_room_building_floor")
+  @@index([id], map: "ix_edge_id")
 
-  // The user who initiated the search
-  user User? @relation(fields: [userId], references: [id])
-  userId Int?
-
-  // The items returned
-  items SearchItem[]
-  scrapingJobs ScrapingJob[]
-
-  @@schema("backend")
-  @@map("searches")
+  @@map("edge")
 }
 
-model ScrapingJob {
-  id       Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model File {
+  id              Int               @id @default(autoincrement())
+  created_at      DateTime?         @db.Timestamp(6)
+  updated_at      DateTime?         @db.Timestamp(6)
+  external_id     String            @db.VarChar
+  file_system     FileSystemEnum?
+  renderingentity RenderingEntity[]
 
-  search Search @relation(fields: [searchId], references: [id])
-  searchId Int
-
-  externalId String @unique
-
-  // The status of the scraping job
-  status ScrapingJobStatus
-
-  @@schema("backend")
-  @@map("scraping_jobs")
+  @@map("file")
 }
 
-model SearchItem {
-  id       Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Floor {
+  id                  Int              @id @default(autoincrement())
+  created_at          DateTime?        @db.Timestamp(6)
+  updated_at          DateTime?        @db.Timestamp(6)
+  name                String           @db.VarChar(255)
+  rendering_entity_id Int?
+  edge                Edge[]
+  renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  node                Node[]
 
-  // The search that this item is associated with
-  search Search @relation(fields: [searchId], references: [id])
-  searchId Int
+  @@index([id], map: "ix_floor_id")
 
-  // The item that was returned
-  item Item @relation(fields: [itemId], references: [id])
-  itemId Int
-
-  @@schema("backend")
-  @@map("search_items")
+  @@map("floor")
 }
 
-model Collection {
-  id       Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Node {
+  id          Int           @id @default(autoincrement())
+  created_at  DateTime?     @db.Timestamp(6)
+  updated_at  DateTime?     @db.Timestamp(6)
+  node_type   NodeTypeEnum?
+  room_id     Int?
+  building_id Int?
+  floor_id    Int?
+  adjacency   Adjacency[]
+  building    Building?     @relation(fields: [building_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  floor       Floor?        @relation(fields: [floor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  room        Room?         @relation(fields: [room_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  name String
+  @@unique([room_id, building_id, floor_id], map: "uix_node_room_building_floor")
+  @@index([id], map: "ix_node_id")
 
-  // The items in the collection
-  items CollectionItem[]
-  users CollectionUser[]
-
-  @@schema("backend")
-  @@map("collections")
+  @@map("node")
 }
 
-model CollectionUser {
-  id       Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model RenderingEntity {
+  id                    Int               @id @default(autoincrement())
+  created_at            DateTime?         @db.Timestamp(6)
+  updated_at            DateTime?         @db.Timestamp(6)
+  file_id               Int?
+  parent_id             Int?
+  building              Building[]
+  floor                 Floor[]
+  file                  File?             @relation(fields: [file_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  renderingentity       RenderingEntity?  @relation("renderingentityTorenderingentity", fields: [parent_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  other_renderingentity RenderingEntity[] @relation("renderingentityTorenderingentity")
+  room                  Room[]
 
-  // The user who created the collection
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId Int
+  @@index([id], map: "ix_renderingentity_id")
 
-  // The collection that the user is associated with
-  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
-  collectionId Int
-
-  @@unique([userId, collectionId])
-
-  @@schema("backend")
-  @@map("collection_users")
+  @@map("renderingentity")
 }
 
-model CollectionItem {
-  id       Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Room {
+  id                  Int              @id @default(autoincrement())
+  created_at          DateTime?        @db.Timestamp(6)
+  updated_at          DateTime?        @db.Timestamp(6)
+  name                String           @db.VarChar(255)
+  rendering_entity_id Int?
+  edge                Edge[]
+  node                Node[]
+  renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  // The collection that this item is associated with
-  collection Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
-  collectionId Int
+  @@index([id], map: "ix_room_id")
 
-  // The item that was added to the collection
-  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  itemId Int
-
-  @@unique([collectionId, itemId])
-  @@schema("backend")
-  @@map("collection_items")
+  @@map("room")
 }
 
+enum FileSystemEnum {
+  LOCAL
 
-enum ScrapingJobStatus {
-  PENDING
-  IN_PROGRESS
-  COMPLETED
-  FAILED
-
-  @@schema("backend")
+  @@map("filesystem_enum")
 }
 
-enum ItemStorageLayer {
-  TYPESENSE
+enum NodeTypeEnum {
+  ROOM
+  CONNECTION_POINT
 
-  @@schema("backend")
+  @@map("nodetype_enum")
 }
