@@ -1,16 +1,17 @@
 import React from "react";
-import { TileLayer, GeoJSON, MapContainer, LayersControl, useMap, Marker, Popup } from "react-leaflet";
+import { TileLayer, GeoJSON, MapContainer, LayersControl, useMap, LayerGroup} from "react-leaflet";
 import L, { divIcon} from "leaflet";
 import buildings from "../../../ingest/data/Eng_Buildings.json";
 import rooms from "../../../ingest/data/rooms_partial.json";
 import rooms_centroids from "../../../ingest/data/rooms_centroids_partial.json";
 // import floor_centroids from "../../../ingest/data/floors_centroids_partial.json"
 import { useSwipeable} from "react-swipeable";
+import RouteChecklist from "./RouteChecklist"
 import 'leaflet/dist/leaflet.css';
 
 
 const floorList = ["RCH_01", "RCH_02", "RCH_03", "CPH_01", "E2_01", "E2_02"]
-const roomList = ["RCH 101", "RCH 122", "RCH 123", "RCH 119", "RCH 103", "RCH 105", "RCH 212", "RCH 301"]
+const roomList = ["RCH 101", "RCH 122", "RCH 123", "RCH 119", "RCH 103", "RCH 105", "RCH 120", "RCH 212", "RCH 301"]
 const floorCentroidMap = {DWE_01:[-80.5395194675902,43.47007771086484],
     DWE_02:[-80.53952030998597,43.47007907367728],
     DWE_03:[-80.5396902053169,43.469992313962365],
@@ -55,6 +56,8 @@ export default function PathMap() {
     const [floorIndex, setFloorIndex] = React.useState(0);
     const [curFloor, setCurFloor] = React.useState(floorList[0]);
     const [center, setCenter] = React.useState([43.47028851150243,-80.54072575754529])
+    const [stepListOpen, setStepListOpen] = React.useState(false);
+    const [checkedIndex, setCheckedIndex] = React.useState(-1);
 
     React.useEffect(() => {
         setCurFloor(floorList[floorIndex])
@@ -64,16 +67,32 @@ export default function PathMap() {
     const swipeHandlers = useSwipeable({
         onSwipedLeft: () => setFloorIndex(Math.min(floorIndex + 1, floorList.length - 1)),
         onSwipedRight: () => setFloorIndex(Math.max(floorIndex - 1, 0)),
-        swipeDuration: 200,
+        onSwipedUp: () => setStepListOpen(true),
+        onSwipedDown: () => setStepListOpen(false),
+        swipeDuration: 300,
         preventScrollOnSwipe: false,
         trackMouse: true
     })
 
     return (
         <>
-            <div style={{ position: 'relative', width: "100%", height: "100vh" }} {...swipeHandlers}>
+            <div {...swipeHandlers}>
                 {floorIndex + 1}: {curFloor}
-                <FloorMap curFloor={curFloor} roomList={roomList} center={center} />
+                {checkedIndex}
+                {stepListOpen ? (<>
+                <RouteChecklist 
+                    roomList={roomList} 
+                    checkedIndex={checkedIndex}
+                    setCheckedIndex={setCheckedIndex}
+                    setStepListOpen={setStepListOpen}/>
+                </>) : (<>
+                    <FloorMap 
+                    curFloor={curFloor}
+                    roomList={roomList} 
+                    center={center} 
+                    checkedIndex={checkedIndex}
+                    key={curFloor}/> 
+                </>)}
             </div>
         </>
     )
@@ -91,35 +110,80 @@ function ChangeView({center}) {
     return null;
 }
 
-function FloorMap({ curFloor, roomList, center }) {
+function FloorMap({ curFloor, roomList, center, checkedIndex }) {
 
     const setColor = ({ properties }) => {
-        if (roomList.includes(properties["RM_NM"])){
-            return {
-                weight: 1,
-                fillColor: "yellow",
-                color: 'white'
-            };
-        } else {
+        if (!(roomList.includes(properties["RM_NM"]))){
+            // rooms not in the route
             return {
                 weight: 1,
                 fillColor: "black",
                 color: 'white'
             };
+        } else if ((roomList[0] == properties["RM_NM"]) || (roomList[roomList.length - 1]==properties["RM_NM"])){
+            // first and last rooms
+            return {
+                weight: 1,
+                fillColor: "purple",
+                color: 'white'
+            };
         }
 
-
+        if (checkedIndex < 0) {
+            if ((properties["USE_TYPE"] == "Stairs") || (properties["USE_TYPE"] == "Elevators")) {
+                return {
+                    // rooms on route
+                    weight: 1,
+                    fillColor: "#ff9900",
+                    color: 'white'
+                };
+            } else {
+                return {
+                    // rooms on route
+                    weight: 1,
+                    fillColor: "#ffff00",
+                    color: 'white'
+                };
+            }
+        } else {
+            // at least 1 step marked as completed
+            if (roomList.indexOf(properties["RM_NM"]) <= checkedIndex) {
+                // room has been visited
+                return {
+                    weight: 1,
+                    fillColor: "#ffffcc",
+                    color: 'white'
+                };
+            } else if ((properties["USE_TYPE"] == "Stairs") || (properties["USE_TYPE"] == "Elevators")) {
+                // staircase or elevator on route
+                return {
+                    weight: 1,
+                    fillColor: "#ff9900",
+                    color: 'white'
+                };
+            } else {
+                // room is unvisited
+                return {
+                    weight: 1,
+                    fillColor: "#ffff00",
+                    color: 'white'
+                };
+            }
+        }
+      
     };
 
     const customMarkerIcon = (text) =>
         divIcon({
+          className: "icon",
           html: text,
-          className: "icon"
+          iconSize: [30,30],
+          iconAnchor: [10,5]
     });
 
     const setIcon = ({ properties }, latlng) => {
         return L.marker(latlng, { icon: customMarkerIcon(properties.rm_id) });
-      };
+    };
 
     const floorFilter = ({ properties }) => {
         // https://gis.stackexchange.com/questions/189988/filtering-geojson-data-to-include-in-leaflet-map
@@ -151,6 +215,7 @@ function FloorMap({ curFloor, roomList, center }) {
     return (
         <div className="map">
             <MapContainer
+                dragging={false}
                 center={center}
                 zoom={19.5}
                 boxZoom={false}
@@ -159,25 +224,20 @@ function FloorMap({ curFloor, roomList, center }) {
                 minZoom={18}
             >
                 <ChangeView center={center}/>
-                <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}.png" 
+                <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/light_nolabels/{z}/{x}/{y}.png" 
                     maxZoom={21} tms={true}/>
-                <LayersControl position={"topright"}>
-                    <LayersControl.Overlay checked name={'Eng Buildings'}>
-                        <GeoJSON data={buildings} style={setColor}/>
-                    </LayersControl.Overlay>
-                    {/* { <LayersControl.Overlay checked name={'Eng Floors'}>
-                        <GeoJSON data={floors} style={setColor} filter={floorFilter} key={curFloor} />
-                    </LayersControl.Overlay> } */}
-                    <LayersControl.Overlay checked name={'Eng Rooms'}>
-                        <GeoJSON data={rooms} style={setColor} filter={floorFilter} key={curFloor} />
-                    </LayersControl.Overlay>
-                    <LayersControl.Overlay checked name={'Classroom Numbers'}>
-                        <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={classNumFilter} key={curFloor}/>
-                    </LayersControl.Overlay>
-                    <LayersControl.Overlay checked={false} name={'Other Room Numbers'}>
-                        <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={otherNumFilter} key={curFloor}/>
-                    </LayersControl.Overlay>
-                </LayersControl>
+                <LayerGroup>
+                    <GeoJSON data={buildings} style={setColor}/>
+                    <GeoJSON data={rooms} style={setColor} filter={floorFilter} key={curFloor} />
+                    <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={classNumFilter} key={curFloor}/>
+
+                    <LayersControl position={"topright"}>
+                        <LayersControl.Overlay checked={false} name={'Other Room Numbers'}>
+                            <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={otherNumFilter} key={curFloor}/>
+                        </LayersControl.Overlay>
+                    </LayersControl>
+                </LayerGroup>
+
             </MapContainer>
         </div>
     )
