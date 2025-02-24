@@ -8,7 +8,7 @@ import rooms_centroids from "../../../ingest/data/rooms_centroids_partial.json";
 import { useSwipeable} from "react-swipeable";
 import RouteChecklist from "./RouteChecklist"
 import 'leaflet/dist/leaflet.css';
-import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Heading, useDisclosure } from "@chakra-ui/react";
+import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Heading, useDisclosure, Text, Box} from "@chakra-ui/react";
 
 
 const floorList = ["RCH_01", "RCH_02", "RCH_03", "CPH_01", "E2_01", "E2_02"]
@@ -120,7 +120,7 @@ function ChangeView({center}) {
     return null;
 }
 
-function FloorMap({ curFloor, roomList, center, checkedIndex }) {
+function FloorMap({ curFloor, roomList, center, checkedIndex}) {
 
     const setColor = ({ properties }) => {
         if (!(roomList.includes(properties["RM_NM"]))){
@@ -222,10 +222,6 @@ function FloorMap({ curFloor, roomList, center, checkedIndex }) {
         }
     };
 
-    const onEachFeature = (feature, layer) => {
-        layer.bindPopup(feature.properties.rm_standard)
-    }
-
     return (
         <div className="map">
             <MapContainer
@@ -242,18 +238,49 @@ function FloorMap({ curFloor, roomList, center, checkedIndex }) {
                     maxZoom={21} tms={true}/>
                 <LayerGroup>
                     <GeoJSON data={buildings} style={setColor}/>
-                    {/* {rooms.features.map(({feature, index}) => {
-                        return(
+                    {rooms.features.map((feature, index)=> {
+                        return (
                             <FeatureGroup key={index}>
-                                <Polyline positions={feature.geometry.coordinates}/>
+                                <Popup>
+                                    <Box
+                                        bg="white"
+                                        boxShadow="sm"
+                                        display="flex"
+                                        flexDirection="column"
+                                        my="-1"
+                                        columnGap="-2"
+                                        rowGap="-2"
+                                    >
+                                        <Heading size="md" fontSize="lg" textAlign="center" mt="0px">
+                                            {feature.properties.RM_NM}
+                                        </Heading>
+
+                                        <Text fontSize="sm" fontWeight="normal">
+                                            Room Type: {feature.properties.rm_standard}</Text>
+                                        <Text fontSize='sm' fontWeight="normal">
+                                            Department: {feature.properties.Departments_name}</Text>
+
+                                        <Button
+                                            size="sm"
+                                            colorScheme="yellow"
+                                            bg="yellow.500"
+                                            fontSize="14px"
+                                            _hover={{ bg: "#D99A00" }}
+                                            _active={{ bg: "#C78C00" }}
+                                            fontWeight="bold"
+                                            borderRadius="6px"
+                                            px="6px"
+                                            alignSelf="center"
+                                        >
+                                            Report Issue
+                                        </Button>
+                                    </Box>
+                                </Popup>
+                                <GeoJSON data={feature} style={setColor} filter={floorFilter} key={curFloor}/>
                             </FeatureGroup>
                         )
-                    })} */}
-                    <GeoJSON data={rooms} style={setColor} filter={floorFilter} key={curFloor} onEachFeature={onEachFeature}>
-                        {/* <Popup>
-                            test
-                        </Popup> */}
-                    </GeoJSON>
+                    })}
+
                     <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={classNumFilter} key={curFloor}/>
 
                     <LayersControl position={"topright"}>
