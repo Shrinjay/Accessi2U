@@ -1,15 +1,10 @@
 import React from "react";
-import { TileLayer, GeoJSON, MapContainer, LayersControl, useMap, LayerGroup, Popup, FeatureGroup} from "react-leaflet";
-import L, { divIcon} from "leaflet";
-import buildings from "../../../ingest/data/Eng_Buildings.json";
-import rooms from "../../../ingest/data/rooms_partial.json";
-import rooms_centroids from "../../../ingest/data/rooms_centroids_partial.json";
 // import floor_centroids from "../../../ingest/data/floors_centroids_partial.json"
 import { useSwipeable} from "react-swipeable";
 import RouteChecklist from "./RouteChecklist"
 import FloorMap from "./FloorMap"
 import 'leaflet/dist/leaflet.css';
-import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Heading, useDisclosure, Text, Box} from "@chakra-ui/react";
+import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Heading, useDisclosure} from "@chakra-ui/react";
 
 
 const floorList = ["RCH_01", "RCH_02", "RCH_03", "CPH_01", "E2_01", "E2_02"]

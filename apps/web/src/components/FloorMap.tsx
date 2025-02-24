@@ -6,6 +6,7 @@ import rooms from "../../../ingest/data/rooms_partial.json";
 import rooms_centroids from "../../../ingest/data/rooms_centroids_partial.json";
 // import floor_centroids from "../../../ingest/data/floors_centroids_partial.json"
 import 'leaflet/dist/leaflet.css';
+import ReportMenu from './ReportMenu';
 import { Button, Heading, useDisclosure, Text, Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter} from "@chakra-ui/react";
 
 function ChangeView({center}) {
@@ -21,6 +22,7 @@ function ChangeView({center}) {
 }
 
 export default function FloorMap({ curFloor, roomList, center, checkedIndex}) {
+    const [selectedRoom, setSelectedRoom] = React.useState(null)
     const accessibilityMap = {"Y": "True", "N": "False"}
     const {isOpen, onOpen, onClose} = useDisclosure()
 
@@ -174,6 +176,7 @@ export default function FloorMap({ curFloor, roomList, center, checkedIndex}) {
                                             px="6px"
                                             alignSelf="center"
                                             onClick={onOpen}
+                                            onMouseOver={() => setSelectedRoom(feature.properties.RM_NM)}
                                         >
                                             Report Issue
                                         </Button>
@@ -198,18 +201,7 @@ export default function FloorMap({ curFloor, roomList, center, checkedIndex}) {
                 isOpen={isOpen}
                 onClose={onClose}
             >
-                <ModalOverlay/>
-                <ModalContent>
-                    <ModalHeader>Report an Issue</ModalHeader>
-                    <ModalCloseButton/>
-                    <ModalBody>
-                        
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button>Submit</Button>
-                        <Button onClick={onClose}>Cancel</Button>
-                    </ModalFooter>
-                </ModalContent>
+                <ReportMenu onClose={onClose} selectedRoom={selectedRoom}/>
             </Modal>
         </div>
     )
