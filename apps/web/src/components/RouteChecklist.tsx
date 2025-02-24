@@ -1,9 +1,7 @@
 import React from "react";
-import { Checkbox, Drawer, DrawerHeader, DrawerBody, 
-    StackDivider, Heading, Stack, Box, HStack, Text, 
-    DrawerOverlay,
-    DrawerCloseButton,
-    DrawerContent, useDisclosure} from "@chakra-ui/react"
+import { Checkbox, StackDivider, Heading, Stack, Box, HStack, Text, Button, 
+} from "@chakra-ui/react"
+import { theme } from "../styles";
 
 export default function RouteChecklist({roomList, checkedIndex, setCheckedIndex}) {
     const [fullRoomData, setFullRoomData] = React.useState(roomList);
@@ -16,7 +14,7 @@ export default function RouteChecklist({roomList, checkedIndex, setCheckedIndex}
                 const newDict = 
                 {index: i,
                 roomName: roomList[i],
-                instructions: "Turn Left"
+                instructions: "Go to this location next"
                 }
                 newRooms.push(newDict);
             }
@@ -37,7 +35,7 @@ export default function RouteChecklist({roomList, checkedIndex, setCheckedIndex}
         <>
             <Stack divider={<StackDivider/>} spacing='3'>
                 {fullRoomData.map((room) => 
-                <Box key={room}>
+                <Box key={room} style={theme}>
                     <HStack>
                         <Heading size = 'sm' textTransform='uppercase'>
                             {room.roomName}
@@ -53,7 +51,21 @@ export default function RouteChecklist({roomList, checkedIndex, setCheckedIndex}
                     <Text>
                         {room.instructions}
                     </Text>
+
                 </Box>)}
+                <Button 
+                        alignSelf="center" 
+                        mb="2" width="100%"
+                        colorScheme="yellow"
+                        bg="yellow.500"
+                        fontSize="14px"
+                        _hover={{ bg: "#D99A00" }}
+                        _active={{ bg: "#C78C00" }}
+                        fontWeight="bold"
+                        borderRadius="6px"
+                        px="6px">
+                            Route Completed
+                    </Button>
             </Stack>
         </>
     )

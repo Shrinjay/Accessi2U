@@ -23,8 +23,15 @@ function ChangeView({center}) {
 
 export default function FloorMap({ curFloor, roomList, center, checkedIndex}) {
     const [selectedRoom, setSelectedRoom] = React.useState(null)
+    const [selectedRoomName, setSelectedRoomName] = React.useState(null)
     const accessibilityMap = {"Y": "True", "N": "False"}
     const {isOpen, onOpen, onClose} = useDisclosure()
+
+    React.useEffect(() => {
+        if (selectedRoom != null){
+            setSelectedRoomName({value: selectedRoom.properties.RM_NM, label: selectedRoom.properties.RM_NM})
+        }
+    }, [selectedRoom]);
 
     const setColor = ({ properties }) => {
         if (!(roomList.includes(properties["RM_NM"]))){
@@ -176,7 +183,7 @@ export default function FloorMap({ curFloor, roomList, center, checkedIndex}) {
                                             px="6px"
                                             alignSelf="center"
                                             onClick={onOpen}
-                                            onMouseOver={() => setSelectedRoom(feature.properties.RM_NM)}
+                                            onMouseOver={() => setSelectedRoom(feature)}
                                         >
                                             Report Issue
                                         </Button>
@@ -201,7 +208,7 @@ export default function FloorMap({ curFloor, roomList, center, checkedIndex}) {
                 isOpen={isOpen}
                 onClose={onClose}
             >
-                <ReportMenu onClose={onClose} selectedRoom={selectedRoom}/>
+                <ReportMenu onClose={onClose} passedRoom={selectedRoom} defaultRoom={selectedRoomName}/>
             </Modal>
         </div>
     )

@@ -71,6 +71,7 @@ export default function SelectLocations() {
             <Box width="100%" >
               <Text fontSize={'2xl'} fontWeight="bold" mb={2} mt="20px"  >Your Location</Text>
               <Select
+                styles={theme}
                 isClearable
                 isDisabled={isLoading}
                 value={startPoint}
@@ -83,6 +84,7 @@ export default function SelectLocations() {
 
               <Text fontSize={'2xl'} fontWeight="bold" mb={2} mt="30px" >Final Location</Text>
               <Select
+                styles={theme}
                 isClearable
                 isDisabled={isLoading}
                 value={endPoint}

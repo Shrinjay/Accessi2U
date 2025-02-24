@@ -66,7 +66,7 @@ export default function PathMap() {
         onSwipedRight: () => setFloorIndex(Math.max(floorIndex - 1, 0)),
         onSwipedUp: onOpen,
         onSwipedDown: onClose,
-        swipeDuration: 300,
+        swipeDuration: 200,
         preventScrollOnSwipe: false,
         trackMouse: true
     })
