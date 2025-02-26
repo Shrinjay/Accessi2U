@@ -11,9 +11,9 @@ import { theme } from '../../../styles/theme';
 export const Home = () => {
    return (
       <HomeContainer>
-         {/* <StartScreen /> */}
+         <StartScreen />
          {/* <LandingPage /> */}
-         <SelectLocations />
+         {/* <SelectLocations /> */}
          {/* <PathMap/> */}
          {/* <Styled.Gif
                src="https://media.giphy.com/media/Dh5q0sShxgp13DwrvG/giphy.gif"

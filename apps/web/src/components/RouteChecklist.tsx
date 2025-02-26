@@ -55,10 +55,10 @@ export default function RouteChecklist({roomList, checkedIndex, setCheckedIndex}
                 </Box>)}
                 <Button 
                         alignSelf="center" 
-                        mb="2" width="100%"
+                        mb="2" size="lg"
                         colorScheme="yellow"
                         bg="yellow.500"
-                        fontSize="14px"
+                        fontSize="20px"
                         _hover={{ bg: "#D99A00" }}
                         _active={{ bg: "#C78C00" }}
                         fontWeight="bold"

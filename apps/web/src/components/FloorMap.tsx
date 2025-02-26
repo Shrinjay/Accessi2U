@@ -8,6 +8,7 @@ import rooms_centroids from "../../../ingest/data/rooms_centroids_partial.json";
 import 'leaflet/dist/leaflet.css';
 import ReportMenu from './ReportMenu';
 import { Button, Heading, useDisclosure, Text, Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter} from "@chakra-ui/react";
+import { theme } from "../styles";
 
 function ChangeView({center}) {
     const map = useMap();
@@ -135,6 +136,22 @@ export default function FloorMap({ curFloor, roomList, center, checkedIndex}) {
 
     return (
         <div className="map">
+            <Button style={{
+                position: 'absolute',
+                top: 20,
+                left: '29%',
+                zIndex: 1000
+            }} onClick={onOpen}
+            colorScheme="yellow"
+            bg="yellow.500"
+            fontSize="14px"
+            _hover={{ bg: "#D99A00" }}
+            _active={{ bg: "#C78C00" }}
+            fontWeight="bold"
+            borderRadius="6px"
+            px="6px">
+                Report Issue
+            </Button>
             <MapContainer
                 inertia={false}
                 center={center}
@@ -147,6 +164,9 @@ export default function FloorMap({ curFloor, roomList, center, checkedIndex}) {
                 <ChangeView center={center}/>
                 <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/light_nolabels/{z}/{x}/{y}.png" 
                     maxZoom={21} tms={true}/>
+                    <Button>
+                        Report
+                    </Button>
                 <LayerGroup>
                     <GeoJSON data={buildings} style={setColor}/>
                     {rooms.features.map((feature, index)=> {

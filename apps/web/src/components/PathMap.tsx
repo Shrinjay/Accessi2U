@@ -4,7 +4,7 @@ import { useSwipeable} from "react-swipeable";
 import RouteChecklist from "./RouteChecklist"
 import FloorMap from "./FloorMap"
 import 'leaflet/dist/leaflet.css';
-import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Heading, useDisclosure} from "@chakra-ui/react";
+import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Heading, useDisclosure, HStack, StackDivider} from "@chakra-ui/react";
 
 
 const floorList = ["RCH_01", "RCH_02", "RCH_03", "CPH_01", "E2_01", "E2_02"]
@@ -72,7 +72,6 @@ export default function PathMap() {
     })
 
     return (
-        <>
             <div {...swipeHandlers}>
                 <FloorMap
                     curFloor={curFloor}
@@ -80,9 +79,18 @@ export default function PathMap() {
                     center={center} 
                     checkedIndex={checkedIndex}
                     key={curFloor}/>
-                <Button onClick={onOpen} width="100%">
+                <Button onClick={onOpen} size="lg" colorScheme="yellow"
+                    bg="yellow.500"
+                    fontSize="20px"
+                    _hover={{ bg: "#D99A00" }}
+                    _active={{ bg: "#C78C00" }}
+                    fontWeight="bold"
+                    borderRadius="6px"
+                    px="12px"
+                    alignSelf="center">
                     Open Checklist
                 </Button>
+
                 <Drawer isOpen={isOpen} onClose={onClose} placement="bottom" isFullHeight={true}>
                     <DrawerOverlay/>
                         <DrawerContent>
@@ -100,6 +108,6 @@ export default function PathMap() {
                         </DrawerContent>
                     </Drawer>
             </div>
-        </>
+
     )
 }

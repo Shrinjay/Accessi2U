@@ -72,13 +72,16 @@ export default function ReportMenu({passedRoom, onClose, defaultRoom}) {
                             options={options}
                             onChange={setSelectedRoom}
                         />
-
-                        <Text fontSize="sm" fontWeight="normal" mt="1">
-                            Room Type: {fullRoomData.properties.rm_standard}</Text>
-                        <Text fontSize='sm' fontWeight="normal">
-                            Department: {fullRoomData.properties.Departments_name}</Text>
-                        <Text fontSize='sm' fontWeight="normal">
-                            Accessible: {accessibilityMap[fullRoomData.properties.brg_accessible]}</Text>
+                        {(fullRoomData != null) ? <>
+                          <Text fontSize="sm" fontWeight="normal" mt="1">
+                              Room Type: {fullRoomData.properties.rm_standard}</Text>
+                          <Text fontSize='sm' fontWeight="normal">
+                              Department: {fullRoomData.properties.Departments_name}</Text>
+                          <Text fontSize='sm' fontWeight="normal">
+                              Accessible: {accessibilityMap[fullRoomData.properties.brg_accessible]}</Text>
+                        </> : <>
+                        </>}
+                        
 
                         <Text fontSize="md" fontWeight="bold"  mt="5px">Error Type</Text>
                         <Select
@@ -109,7 +112,7 @@ export default function ReportMenu({passedRoom, onClose, defaultRoom}) {
                         mb="2" width="100%"
                         colorScheme="yellow"
                         bg="yellow.500"
-                        fontSize="14px"
+                        fontSize="16px"
                         _hover={{ bg: "#D99A00" }}
                         _active={{ bg: "#C78C00" }}
                         fontWeight="bold"
