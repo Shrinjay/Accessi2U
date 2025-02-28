@@ -9,7 +9,7 @@ const input = Yup.object({
   toRoomId: Yup.number().required(),
 });
 
-export const generateRoute = trpc.procedure.input(input).query(async ({ ctx, input }) => {
+export const generateRoute = trpc.procedure.input(input).mutation(async ({ ctx, input }) => {
   const { fromRoomId, toRoomId } = input;
 
   const fromRoom = await prisma.room.findUniqueOrThrow({
