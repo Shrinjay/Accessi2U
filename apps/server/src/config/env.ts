@@ -21,6 +21,7 @@ const {
   TYPESENSE_HOST,
   TYPESENSE_API_KEY,
   MAX_VECTOR_DISTANCE,
+  LOCAL_FILE_SYSTEM_BASE_PATH,
 } = process.env;
 
 if (rawAppEnv && !envs.includes(rawAppEnv as ENVS)) {
@@ -40,4 +41,5 @@ export {
   TYPESENSE_API_KEY,
   TYPESENSE_HOST,
   MAX_VECTOR_DISTANCE,
+  LOCAL_FILE_SYSTEM_BASE_PATH,
 };

@@ -2,8 +2,10 @@ import React, { useCallback } from 'react';
 import Select from 'react-select';
 import rooms from '../../../ingest/data/rooms_partial.json';
 import { Button, Checkbox, VStack, Text, Box, Flex, Heading, Image, Spacer, HStack } from '@chakra-ui/react';
-import locationIcon from "/src/components/icon.svg";
+import locationIcon from '/src/components/icon.svg';
 import { theme } from '../../../styles/theme';
+import PathMap from './PathMap';
+import GeojsonMap from './MapNoPath';
 
 export default function SelectLocations() {
   const [options, setOptions] = React.useState([]);
@@ -49,27 +51,23 @@ export default function SelectLocations() {
     setIsLoading(true);
   };
 
-
   return (
     <Flex height="100vh" width="100vw" bg="gray.100">
       {/* Left Panel */}
-      <Box
-        width="30%"
-        p="6"
-        bg="white"
-        boxShadow="lg"
-        display="flex"
-        flexDirection="column"
-      >
+      <Box width="30%" p="6" bg="white" boxShadow="lg" display="flex" flexDirection="column">
         <VStack spacing={4} height="100%" width="100%" align="stretch">
           <HStack spacing={2} align="center" justify="center">
-            <Heading size="xl" fontSize={'3xl'} textAlign="center" mt="30px"  >Where are you located?</Heading>
+            <Heading size="xl" fontSize={'3xl'} textAlign="center" mt="30px">
+              Where are you located?
+            </Heading>
             <Image src={locationIcon} alt="Location Icon" boxSize="40px" mt="20px" />
           </HStack>
 
           <VStack spacing={5} width="100%" flex={1} align="stretch">
-            <Box width="100%" >
-              <Text fontSize={'2xl'} fontWeight="bold" mb={2} mt="20px"  >Your Location</Text>
+            <Box width="100%">
+              <Text fontSize={'2xl'} fontWeight="bold" mb={2} mt="20px">
+                Your Location
+              </Text>
               <Select
                 isClearable
                 isDisabled={isLoading}
@@ -77,11 +75,11 @@ export default function SelectLocations() {
                 options={options}
                 onChange={setStart}
                 placeholder="E7 4003"
-
-
               />
 
-              <Text fontSize={'2xl'} fontWeight="bold" mb={2} mt="30px" >Final Location</Text>
+              <Text fontSize={'2xl'} fontWeight="bold" mb={2} mt="30px">
+                Final Location
+              </Text>
               <Select
                 isClearable
                 isDisabled={isLoading}
@@ -92,19 +90,28 @@ export default function SelectLocations() {
               />
             </Box>
             <VStack spacing={2} align="flex-start" width="100%">
-              <Text fontSize={['2xl']} fontWeight="bold" mb={2} color="brand.500" mt="10px" > Select your Preferences</Text>
+              <Text fontSize={['2xl']} fontWeight="bold" mb={2} color="brand.500" mt="10px">
+                {' '}
+                Select your Preferences
+              </Text>
 
               <HStack>
                 <Checkbox isChecked={indoors} onChange={(e) => setIndoors(e.target.checked)} />
-                <Text fontSize={['md']} mt="5px" fontFamily="body">Indoor only</Text>
+                <Text fontSize={['md']} mt="5px" fontFamily="body">
+                  Indoor only
+                </Text>
               </HStack>
               <HStack>
                 <Checkbox isChecked={accessible} onChange={(e) => setAccessible(e.target.checked)} />
-                <Text fontSize={['md']} mt="5px" fontFamily="body">Elevator only</Text>
+                <Text fontSize={['md']} mt="5px" fontFamily="body">
+                  Elevator only
+                </Text>
               </HStack>
               <HStack>
                 <Checkbox />
-                <Text fontSize={['md']} mt="5px" fontFamily="body">Hands-free</Text>
+                <Text fontSize={['md']} mt="5px" fontFamily="body">
+                  Hands-free
+                </Text>
               </HStack>
             </VStack>
 
@@ -113,8 +120,8 @@ export default function SelectLocations() {
               colorScheme="yellow"
               bg="yellow.500"
               fontSize="14px"
-              _hover={{ bg: "#D99A00" }}
-              _active={{ bg: "#C78C00" }}
+              _hover={{ bg: '#D99A00' }}
+              _active={{ bg: '#C78C00' }}
               fontWeight="bold"
               borderRadius="6px"
               px="12px"
@@ -137,15 +144,13 @@ export default function SelectLocations() {
               >
                 Confirm Route
               </Button>
-
             </VStack>
           </VStack>
-
-
         </VStack>
       </Box>
 
       {/* Right Panel (Map Area) */}
+      <GeojsonMap />
       {/* Add your map component here */}
     </Flex>
   );

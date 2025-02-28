@@ -9,3 +9,6 @@
 
 **/dist/
 tsconfig.tsbuildinfo
+
+.DS_Store
+**/%SystemDrive%/
