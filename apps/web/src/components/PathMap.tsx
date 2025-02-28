@@ -87,21 +87,9 @@ export default function PathMap() {
                     center={center} 
                     checkedIndex={checkedIndex}
                     key={curFloor}/>
-                <Box style={{
-                        position: 'absolute',
-                        left: 50,
-                        top: 10,
-                        zIndex: 1000
-                    }}
-                    p="2"
-                    bg="white"
-                    display="flex"
-                    flexDirection="column"
-                    borderRadius={4}
-                    borderColor={"darkgrey"}
-                    borderWidth={2}>
+
                     <MapLegend />
-                </Box>
+
                 <Button onClick={onOpen} 
                     size="lg" colorScheme="yellow"
                     bg="yellow.500"

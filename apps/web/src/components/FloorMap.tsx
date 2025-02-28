@@ -56,31 +56,38 @@ export default function FloorMap({ curFloor, roomList, center, checkedIndex}) {
                 return {
                     // rooms on route
                     weight: 1,
-                    fillColor: "#00b32c",
+                    fillColor: "#ffff00",
                     color: 'white'
                 };
             } else {
                 return {
                     // rooms on route
                     weight: 1,
-                    fillColor: "#ecff00",
+                    fillColor: "#ffff00",
                     color: 'white'
                 };
             }
         } else {
             // at least 1 step marked as completed
-            if (roomList.indexOf(properties["RM_NM"]) <= checkedIndex) {
+            if (roomList.indexOf(properties["RM_NM"]) < checkedIndex) {
                 // room has been visited
                 return {
                     weight: 1,
                     fillColor: "#0044d5",
                     color: 'white'
                 };
+            } else if (roomList.indexOf(properties["RM_NM"]) == checkedIndex) {
+                // currently in room
+                return {
+                    weight: 1,
+                    fillColor: "#00b32c",
+                    color: 'white'
+                };
             } else if ((properties["USE_TYPE"] == "Stairs") || (properties["USE_TYPE"] == "Elevators")) {
                 // staircase or elevator on route
                 return {
                     weight: 1,
-                    fillColor: "#00b32c",
+                    fillColor: "#ffff00",
                     color: 'white'
                 };
             } else {
