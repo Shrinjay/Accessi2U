@@ -35,9 +35,8 @@ class BuildRenderingEntities(luigi.Task):
         return BuildIDMap(self.file_path, entity_type=self.entity_type)
 
     def _build_rendering_entity(self, feature: UnitFeature):
-        geometry = feature.geometry
-        geometry_json = json.dumps(geometry)
-        geometry_file = self.file_system.write(FileSystemEnum.LOCAL, f'./out/tmp/{uuid.uuid4()}.json', geometry_json)
+        geometry = feature.json()
+        geometry_file = self.file_system.write(FileSystemEnum.LOCAL, f'./out/tmp/{uuid.uuid4()}.json', geometry)
 
         rendering_entity = RenderingEntity(file_id=geometry_file.id)
         return rendering_entity
