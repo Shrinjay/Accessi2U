@@ -1,9 +1,13 @@
 import React from "react";
-import { Checkbox, Card, CardHeader, CardBody, Button, 
-    StackDivider, Heading, Stack, Box, HStack, Text } from "@chakra-ui/react"
+import { Checkbox, Drawer, DrawerHeader, DrawerBody, 
+    StackDivider, Heading, Stack, Box, HStack, Text, 
+    DrawerOverlay,
+    DrawerCloseButton,
+    DrawerContent, useDisclosure} from "@chakra-ui/react"
 
-export default function RouteChecklist({roomList, checkedIndex, setCheckedIndex, setStepListOpen}) {
+export default function RouteChecklist({roomList, checkedIndex, setCheckedIndex}) {
     const [fullRoomData, setFullRoomData] = React.useState(roomList);
+
 
     React.useEffect(() => {
         const setData = async () => {
@@ -30,40 +34,27 @@ export default function RouteChecklist({roomList, checkedIndex, setCheckedIndex,
     }
 
     return (
-        <div>
-            <Card>
-                <CardHeader>
-                    <Heading size='md'>Step-by-Step Route</Heading>
-                </CardHeader>
-                <Button onClick={() => setStepListOpen(false)}>
-                    Close
-                </Button>
+        <>
+            <Stack divider={<StackDivider/>} spacing='3'>
+                {fullRoomData.map((room) => 
+                <Box key={room}>
+                    <HStack>
+                        <Heading size = 'sm' textTransform='uppercase'>
+                            {room.roomName}
+                        </Heading>
 
-                <CardBody>
-                    <Stack divider={<StackDivider/>} spacing='3'>
-                    {fullRoomData.map((room) => 
-                        <Box key={room}>
-                        <HStack>
-                            <Heading size = 'sm' textTransform='uppercase'>
-                                {room.roomName}
-                            </Heading>
+                        <Checkbox 
+                                    value={room.index} size='md'
+                                    isChecked={room.index <= checkedIndex}
+                                    onChange={handleCheck}>
+                        </Checkbox>
+                    </HStack>
 
-                            <Checkbox 
-                                value={room.index} size='md'
-                                isChecked={room.index <= checkedIndex}
-                                onChange={handleCheck}>
-                            </Checkbox>
-                            </HStack>
-
-                            <Text>
-                                {room.instructions}
-                            </Text>
-                        </Box>
-                        )}
-                    </Stack>
-                </CardBody>
-            </Card>
-
-        </div>
+                    <Text>
+                        {room.instructions}
+                    </Text>
+                </Box>)}
+            </Stack>
+        </>
     )
 }
