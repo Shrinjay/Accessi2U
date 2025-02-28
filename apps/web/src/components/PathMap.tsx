@@ -1,11 +1,11 @@
-import React from "react";
+import { useEffect, useState } from "react";
 // import floor_centroids from "../../../ingest/data/floors_centroids_partial.json"
 import { useSwipeable} from "react-swipeable";
 import RouteChecklist from "./RouteChecklist"
 import FloorMap from "./FloorMap"
+import MapLegend from "./MapLegend";
 import 'leaflet/dist/leaflet.css';
 import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Heading, useDisclosure, Box} from "@chakra-ui/react";
-
 
 const floorList = ["RCH_01", "RCH_02", "RCH_03", "CPH_01", "E2_01", "E2_02"]
 const roomList = ["RCH 101", "RCH 122", "RCH 123", "RCH 119", "RCH 103", "RCH 105", "RCH 120", "RCH 212", "RCH 301"]
@@ -50,13 +50,13 @@ const floorCentroidMap = {DWE_01:[-80.5395194675902,43.47007771086484],
     E7_07:[-80.53950832265619,43.47296141278375]}
 
 export default function PathMap() {
-    const [floorIndex, setFloorIndex] = React.useState(0);
-    const [curFloor, setCurFloor] = React.useState(floorList[0]);
-    const [center, setCenter] = React.useState([43.47028851150243,-80.54072575754529])
-    const [checkedIndex, setCheckedIndex] = React.useState(-1);
+    const [floorIndex, setFloorIndex] = useState(0);
+    const [curFloor, setCurFloor] = useState(floorList[0]);
+    const [center, setCenter] = useState([43.47028851150243,-80.54072575754529])
+    const [checkedIndex, setCheckedIndex] = useState(-1);
     const {isOpen, onOpen, onClose} = useDisclosure()
 
-    React.useEffect(() => {
+    useEffect(() => {
         setCurFloor(floorList[floorIndex])
         setCenter([floorCentroidMap[floorList[floorIndex]][1], floorCentroidMap[floorList[floorIndex]][0]])
     }, [floorIndex])
@@ -87,6 +87,21 @@ export default function PathMap() {
                     center={center} 
                     checkedIndex={checkedIndex}
                     key={curFloor}/>
+                <Box style={{
+                        position: 'absolute',
+                        left: 50,
+                        top: 10,
+                        zIndex: 1000
+                    }}
+                    p="2"
+                    bg="white"
+                    display="flex"
+                    flexDirection="column"
+                    borderRadius={4}
+                    borderColor={"darkgrey"}
+                    borderWidth={2}>
+                    <MapLegend />
+                </Box>
                 <Button onClick={onOpen} 
                     size="lg" colorScheme="yellow"
                     bg="yellow.500"

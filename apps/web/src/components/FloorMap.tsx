@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { TileLayer, GeoJSON, MapContainer, LayersControl, useMap, LayerGroup, Popup, FeatureGroup} from "react-leaflet";
 import L, { divIcon} from "leaflet";
 import buildings from "../../../ingest/data/Eng_Buildings.json";
@@ -14,7 +14,7 @@ function ChangeView({center}) {
     const map = useMap();
     map.panTo(center);
 
-    React.useEffect(() => {
+    useEffect(() => {
         setTimeout(() => { 
             map.invalidateSize(); 
         }, 250); 
@@ -23,12 +23,12 @@ function ChangeView({center}) {
 }
 
 export default function FloorMap({ curFloor, roomList, center, checkedIndex}) {
-    const [selectedRoom, setSelectedRoom] = React.useState(null)
-    const [selectedRoomName, setSelectedRoomName] = React.useState(null)
+    const [selectedRoom, setSelectedRoom] = useState(null)
+    const [selectedRoomName, setSelectedRoomName] = useState(null)
     const accessibilityMap = {"Y": "True", "N": "False"}
     const {isOpen, onOpen, onClose} = useDisclosure()
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (selectedRoom != null){
             setSelectedRoomName({value: selectedRoom.properties.RM_NM, label: selectedRoom.properties.RM_NM})
         }

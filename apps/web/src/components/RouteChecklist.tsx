@@ -1,13 +1,13 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { Checkbox, StackDivider, Heading, Stack, Box, HStack, Text, Button, 
 } from "@chakra-ui/react"
 import { theme } from "../styles";
 
 export default function RouteChecklist({roomList, checkedIndex, setCheckedIndex}) {
-    const [fullRoomData, setFullRoomData] = React.useState(roomList);
+    const [fullRoomData, setFullRoomData] = useState(roomList);
 
 
-    React.useEffect(() => {
+    useEffect(() => {
         const setData = async () => {
             const newRooms = []
             for (let i=0; i < roomList.length; i++){

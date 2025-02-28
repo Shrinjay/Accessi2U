@@ -1,21 +1,21 @@
 import { Button, Text, Box, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Input} from "@chakra-ui/react";
-import React from "react";
+import { useEffect, useState } from "react";
 import rooms from "../../../ingest/data/rooms_partial.json";
 import Select from 'react-select';
 import { theme } from "../styles";
 
 export default function ReportMenu({passedRoom, onClose, defaultRoom}) {
-      const [options, setOptions] = React.useState([]);
-      const [isLoading, setIsLoading] = React.useState(false);
-      const [selectedRoom, setSelectedRoom] = React.useState(null)
-      const [fullRoomData, setFullRoomData] = React.useState(passedRoom);
-      const [errorType, setErrorType] = React.useState(null);
-      const [valuesConfirmed, setValuesConfirmed] = React.useState(false);
-      const [comments, setComments] = React.useState("");
+      const [options, setOptions] = useState([]);
+      const [isLoading, setIsLoading] = useState(false);
+      const [selectedRoom, setSelectedRoom] = useState(null)
+      const [fullRoomData, setFullRoomData] = useState(passedRoom);
+      const [errorType, setErrorType] = useState(null);
+      const [valuesConfirmed, setValuesConfirmed] = useState(false);
+      const [comments, setComments] = useState("");
       const accessibilityMap = {"Y": "True", "N": "False"}
 
       // https://stackoverflow.com/questions/73412077/how-to-use-json-data-for-react-select
-      React.useEffect(() => {
+      useEffect(() => {
         const getOptions = async () => {
           try {
             setIsLoading(true);
@@ -39,7 +39,7 @@ export default function ReportMenu({passedRoom, onClose, defaultRoom}) {
         getOptions();
       }, []);
 
-      React.useEffect(() => {
+      useEffect(() => {
         if ((selectedRoom != null) && (errorType != null)) {
             setValuesConfirmed(true);
         } else {
