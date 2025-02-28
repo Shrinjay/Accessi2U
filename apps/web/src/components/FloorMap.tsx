@@ -46,7 +46,7 @@ export default function FloorMap({ curFloor, roomList, center, checkedIndex}) {
             // first and last rooms
             return {
                 weight: 1,
-                fillColor: "purple",
+                fillColor: "#d500ff",
                 color: 'white'
             };
         }
@@ -56,14 +56,14 @@ export default function FloorMap({ curFloor, roomList, center, checkedIndex}) {
                 return {
                     // rooms on route
                     weight: 1,
-                    fillColor: "#ff9900",
+                    fillColor: "#00b32c",
                     color: 'white'
                 };
             } else {
                 return {
                     // rooms on route
                     weight: 1,
-                    fillColor: "#ffff00",
+                    fillColor: "#ecff00",
                     color: 'white'
                 };
             }
@@ -73,14 +73,14 @@ export default function FloorMap({ curFloor, roomList, center, checkedIndex}) {
                 // room has been visited
                 return {
                     weight: 1,
-                    fillColor: "#ffffcc",
+                    fillColor: "#0044d5",
                     color: 'white'
                 };
             } else if ((properties["USE_TYPE"] == "Stairs") || (properties["USE_TYPE"] == "Elevators")) {
                 // staircase or elevator on route
                 return {
                     weight: 1,
-                    fillColor: "#ff9900",
+                    fillColor: "#00b32c",
                     color: 'white'
                 };
             } else {
@@ -136,26 +136,30 @@ export default function FloorMap({ curFloor, roomList, center, checkedIndex}) {
 
     return (
         <div className="map">
-            <Button style={{
+            <Button onClick={onOpen}
+                size="lg" colorScheme="purple"
+                bg="purple.500"
+                fontSize="20px"
+                _hover={{ bg: "#67487d" }}
+                _active={{ bg: "#67487d" }}
+                fontWeight="bold"
+                borderRadius="6px"
+                px="12px"
+                style={{
                 position: 'absolute',
-                top: 20,
-                left: '29%',
+                left: 0,
+                right: 0,
+                bottom: 75,
+                marginInline: 'auto',
                 zIndex: 1000
-            }} onClick={onOpen}
-            colorScheme="yellow"
-            bg="yellow.500"
-            fontSize="14px"
-            _hover={{ bg: "#D99A00" }}
-            _active={{ bg: "#C78C00" }}
-            fontWeight="bold"
-            borderRadius="6px"
-            px="6px">
+                }}>
+
                 Report Issue
             </Button>
             <MapContainer
                 inertia={false}
                 center={center}
-                zoom={19.5}
+                zoom={19}
                 boxZoom={false}
                 maxBoundsViscosity={1.0}
                 maxZoom={21}
@@ -164,9 +168,6 @@ export default function FloorMap({ curFloor, roomList, center, checkedIndex}) {
                 <ChangeView center={center}/>
                 <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/light_nolabels/{z}/{x}/{y}.png" 
                     maxZoom={21} tms={true}/>
-                    <Button>
-                        Report
-                    </Button>
                 <LayerGroup>
                     <GeoJSON data={buildings} style={setColor}/>
                     {rooms.features.map((feature, index)=> {

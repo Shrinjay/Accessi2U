@@ -3,7 +3,7 @@ import Select from 'react-select';
 import rooms from '../../../ingest/data/rooms_partial.json';
 import { Button, Checkbox, VStack, Text, Box, Flex, Heading, Image, Spacer, HStack } from '@chakra-ui/react';
 import locationIcon from "/src/components/icon.svg";
-import { theme } from '../../../styles/theme';
+import { theme } from '../styles';
 
 export default function SelectLocations() {
   const [options, setOptions] = React.useState([]);

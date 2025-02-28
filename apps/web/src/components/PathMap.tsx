@@ -4,7 +4,7 @@ import { useSwipeable} from "react-swipeable";
 import RouteChecklist from "./RouteChecklist"
 import FloorMap from "./FloorMap"
 import 'leaflet/dist/leaflet.css';
-import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Heading, useDisclosure, HStack, StackDivider} from "@chakra-ui/react";
+import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Heading, useDisclosure, Box} from "@chakra-ui/react";
 
 
 const floorList = ["RCH_01", "RCH_02", "RCH_03", "CPH_01", "E2_01", "E2_02"]
@@ -72,6 +72,14 @@ export default function PathMap() {
     })
 
     return (
+        <Box
+        width="100%"
+        height="100%"
+        display="flex"
+        position='absolute'
+        justifyContent={"center"}
+        background="white">
+            
             <div {...swipeHandlers}>
                 <FloorMap
                     curFloor={curFloor}
@@ -79,7 +87,8 @@ export default function PathMap() {
                     center={center} 
                     checkedIndex={checkedIndex}
                     key={curFloor}/>
-                <Button onClick={onOpen} size="lg" colorScheme="yellow"
+                <Button onClick={onOpen} 
+                    size="lg" colorScheme="yellow"
                     bg="yellow.500"
                     fontSize="20px"
                     _hover={{ bg: "#D99A00" }}
@@ -87,7 +96,15 @@ export default function PathMap() {
                     fontWeight="bold"
                     borderRadius="6px"
                     px="12px"
-                    alignSelf="center">
+                    style={{
+                        position: 'absolute',
+                        left: 0,
+                        right: 0,
+                        bottom: 5,
+                        marginInline: 'auto',
+                        zIndex: 1000
+                    }}
+                    >
                     Open Checklist
                 </Button>
 
@@ -108,6 +125,6 @@ export default function PathMap() {
                         </DrawerContent>
                     </Drawer>
             </div>
-
+        </Box>
     )
 }
