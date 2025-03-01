@@ -5,7 +5,9 @@ import RouteChecklist from "./RouteChecklist"
 import FloorMap from "./FloorMap"
 import MapLegend from "./MapLegend";
 import 'leaflet/dist/leaflet.css';
-import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, Heading, useDisclosure, Box} from "@chakra-ui/react";
+import { ArrowRightIcon, ArrowLeftIcon } from "@chakra-ui/icons";
+import { Button, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, 
+    DrawerHeader, DrawerOverlay, Heading, useDisclosure, Box, Text} from "@chakra-ui/react";
 
 const floorList = ["RCH_01", "RCH_02", "RCH_03", "CPH_01", "E2_01", "E2_02"]
 const roomList = ["RCH 101", "RCH 122", "RCH 123", "RCH 119", "RCH 103", "RCH 105", "RCH 120", "RCH 212", "RCH 301"]
@@ -78,17 +80,49 @@ export default function PathMap() {
         display="flex"
         position='absolute'
         justifyContent={"center"}
-        background="white">
-            
-            <div {...swipeHandlers}>
+        background="white"
+        {...swipeHandlers}>
+
                 <FloorMap
                     curFloor={curFloor}
                     roomList={roomList} 
                     center={center} 
                     checkedIndex={checkedIndex}
-                    key={curFloor}/>
+                    key={curFloor}
+                />
 
-                    <MapLegend />
+                <MapLegend />
+
+                <Text style={{
+                        position: 'absolute',
+                        top: 5,
+                        marginInline: 'auto',
+                        zIndex: 1000
+                    }}
+                    fontSize={'2xl'} fontWeight="bold">
+                    {curFloor}
+                </Text>
+
+                {(floorIndex == 0) ? <> </> : <>
+                    <ArrowLeftIcon boxSize={10} color={"darkgray"}
+                    onClick={() => setFloorIndex(floorIndex - 1)}
+                    style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: '40%',
+                        zIndex: 1000
+                    }}/> </>}
+
+                {(floorIndex < floorList.length - 1) ? <>
+                    <ArrowRightIcon boxSize={10} color={"darkgray"}
+                    onClick={() => setFloorIndex(floorIndex + 1)}
+                    style={{
+                        position: 'absolute',
+                        right: 0,
+                        top: '40%',
+                        zIndex: 1000
+                    }}/>
+                </> : <> </>}
 
                 <Button onClick={onOpen} 
                     size="lg" colorScheme="yellow"
@@ -127,7 +161,6 @@ export default function PathMap() {
                             </DrawerBody>
                         </DrawerContent>
                     </Drawer>
-            </div>
         </Box>
     )
 }

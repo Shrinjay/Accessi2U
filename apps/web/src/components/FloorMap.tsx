@@ -7,8 +7,7 @@ import rooms_centroids from "../../../ingest/data/rooms_centroids_partial.json";
 // import floor_centroids from "../../../ingest/data/floors_centroids_partial.json"
 import 'leaflet/dist/leaflet.css';
 import ReportMenu from './ReportMenu';
-import { Button, Heading, useDisclosure, Text, Box, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter} from "@chakra-ui/react";
-import { theme } from "../styles";
+import { Button, Heading, useDisclosure, Text, Box, Modal} from "@chakra-ui/react";
 
 function ChangeView({center}) {
     const map = useMap();
