@@ -171,10 +171,9 @@ enum RoomTypeEnum {
 }
 
 enum ReportTypeEnum {
-  // TODO add all the report types 
+  // TODO add all the report types
   ELEVATOR_OUT_OF_SERVICE
   BATHROOM_NOT_ACCESSIBLE
-
   MISLABELED
   OTHER
   @@map("reporttype_enum")
