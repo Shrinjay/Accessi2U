@@ -1,4 +1,4 @@
-import { Edge, Room, Node, NodeTypeEnum } from 'database';
+import { Edge, Room, Node, NodeTypeEnum, Prisma } from 'database';
 import { _room } from './index.js';
 import { _node } from '../node/index.js';
 import { _edge } from '../edge/index.js';
@@ -10,7 +10,8 @@ export const pathToRoom = async (room: Room, toRoom: Room) => {
   const initialEdges = await _node.edges(node);
   const paths = await Promise.all(initialEdges.map((edge) => dfsPathInHypergraph(edge, toNode)));
 
-  console.log('got paths', paths);
+  const path = paths.filter(Boolean).sort((a, b) => a.length - b.length)?.[0];
+  return path;
 };
 
 const dfsPathInHypergraph = async (
