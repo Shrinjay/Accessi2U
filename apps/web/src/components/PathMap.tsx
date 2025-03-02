@@ -1,23 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import {
-  TileLayer,
-  GeoJSON,
-  MapContainer,
-  LayersControl,
-  useMap,
-  LayerGroup,
-  Popup,
-  FeatureGroup,
-  Polyline,
-} from 'react-leaflet';
-import L, { divIcon } from 'leaflet';
-import buildings from '../../../ingest/data/Eng_Buildings.json';
-import rooms from '../../../ingest/data/rooms_partial.json';
-import rooms_centroids from '../../../ingest/data/rooms_centroids_partial.json';
+import { useEffect, useState } from 'react';
 // import floor_centroids from "../../../ingest/data/floors_centroids_partial.json"
 import { useSwipeable } from 'react-swipeable';
 import RouteChecklist from './RouteChecklist';
+import FloorMap from './FloorMap';
+import MapLegend from './MapLegend';
 import 'leaflet/dist/leaflet.css';
+import { ArrowRightIcon, ArrowLeftIcon } from '@chakra-ui/icons';
 import {
   Button,
   Drawer,
@@ -28,10 +16,9 @@ import {
   DrawerOverlay,
   Heading,
   useDisclosure,
+  Box,
+  Text,
 } from '@chakra-ui/react';
-import { useRooms } from '../hooks/useRooms';
-import { useBuildings } from '../hooks/useBuildings';
-import { useFloors } from '../hooks/useFloors';
 
 const floorList = ['RCH_01', 'RCH_02', 'RCH_03', 'CPH_01', 'E2_01', 'E2_02'];
 const roomList = ['RCH 101', 'RCH 122', 'RCH 123', 'RCH 119', 'RCH 103', 'RCH 105', 'RCH 120', 'RCH 212', 'RCH 301'];
@@ -94,190 +81,109 @@ export default function PathMap() {
     onSwipedRight: () => setFloorIndex(Math.max(floorIndex - 1, 0)),
     onSwipedUp: onOpen,
     onSwipedDown: onClose,
-    swipeDuration: 300,
+    swipeDuration: 200,
     preventScrollOnSwipe: false,
     trackMouse: true,
   });
 
   return (
-    <>
-      <div {...swipeHandlers}>
-        <FloorMap curFloor={curFloor} roomList={roomList} center={center} checkedIndex={checkedIndex} key={curFloor} />
-        <Button onClick={onOpen} width="100%">
-          Open Checklist
-        </Button>
-        <Drawer isOpen={isOpen} onClose={onClose} placement="bottom">
-          <DrawerOverlay />
-          <DrawerContent>
-            <DrawerCloseButton />
-            <DrawerHeader>
-              <Heading size="md">Step-by-Step Route</Heading>
-            </DrawerHeader>
-            <DrawerBody>
-              <RouteChecklist roomList={roomList} setCheckedIndex={setCheckedIndex} checkedIndex={checkedIndex} />
-            </DrawerBody>
-          </DrawerContent>
-        </Drawer>
-      </div>
-    </>
-  );
-}
+    <Box
+      width="100%"
+      height="100%"
+      display="flex"
+      position="absolute"
+      justifyContent={'center'}
+      background="white"
+      {...swipeHandlers}
+    >
+      <FloorMap curFloor={curFloor} roomList={roomList} center={center} checkedIndex={checkedIndex} key={curFloor} />
 
-function ChangeView({ center }) {
-  const map = useMap();
-  map.panTo(center);
+      <MapLegend />
 
-  useEffect(() => {
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 250);
-  }, [map]);
-  return null;
-}
-
-function FloorMap({ curFloor, roomList, center, checkedIndex }) {
-  const setColor = ({ properties }) => {
-    if (!roomList.includes(properties['RM_NM'])) {
-      // rooms not in the route
-      return {
-        weight: 1,
-        fillColor: 'black',
-        color: 'white',
-      };
-    } else if (roomList[0] == properties['RM_NM'] || roomList[roomList.length - 1] == properties['RM_NM']) {
-      // first and last rooms
-      return {
-        weight: 1,
-        fillColor: 'purple',
-        color: 'white',
-      };
-    }
-
-    if (checkedIndex < 0) {
-      if (properties['USE_TYPE'] == 'Stairs' || properties['USE_TYPE'] == 'Elevators') {
-        return {
-          // rooms on route
-          weight: 1,
-          fillColor: '#ff9900',
-          color: 'white',
-        };
-      } else {
-        return {
-          // rooms on route
-          weight: 1,
-          fillColor: '#ffff00',
-          color: 'white',
-        };
-      }
-    } else {
-      // at least 1 step marked as completed
-      if (roomList.indexOf(properties['RM_NM']) <= checkedIndex) {
-        // room has been visited
-        return {
-          weight: 1,
-          fillColor: '#ffffcc',
-          color: 'white',
-        };
-      } else if (properties['USE_TYPE'] == 'Stairs' || properties['USE_TYPE'] == 'Elevators') {
-        // staircase or elevator on route
-        return {
-          weight: 1,
-          fillColor: '#ff9900',
-          color: 'white',
-        };
-      } else {
-        // room is unvisited
-        return {
-          weight: 1,
-          fillColor: '#ffff00',
-          color: 'white',
-        };
-      }
-    }
-  };
-
-  const customMarkerIcon = (text) =>
-    divIcon({
-      className: 'icon',
-      html: text,
-      iconSize: [30, 30],
-      iconAnchor: [10, 5],
-    });
-
-  const setIcon = ({ properties }, latlng) => {
-    return L.marker(latlng, { icon: customMarkerIcon(properties.rm_id) });
-  };
-
-  const floorFilter = ({ properties }) => {
-    // https://gis.stackexchange.com/questions/189988/filtering-geojson-data-to-include-in-leaflet-map
-    if (properties['FL_NM'] === curFloor) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const classNumFilter = ({ properties }) => {
-    // https://gis.stackexchange.com/questions/189988/filtering-geojson-data-to-include-in-leaflet-map
-    if (properties['FL_NM'] === curFloor && properties['rm_standard'] === 'Classroom') {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const otherNumFilter = ({ properties }) => {
-    // https://gis.stackexchange.com/questions/189988/filtering-geojson-data-to-include-in-leaflet-map
-    if (properties['FL_NM'] === curFloor && properties['rm_standard'] !== 'Classroom') {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const onEachFeature = (feature, layer) => {
-    layer.bindPopup(feature.properties.rm_standard);
-  };
-
-  const { roomGeoJsons } = useRooms();
-  const { buildingGeoJsons } = useBuildings();
-  // const { floorGeojsons } = useFloors();
-
-  return (
-    <div className="map">
-      <MapContainer
-        dragging={false}
-        center={center}
-        zoom={19.5}
-        boxZoom={false}
-        maxBoundsViscosity={1.0}
-        maxZoom={21}
-        minZoom={18}
+      <Text
+        style={{
+          position: 'absolute',
+          top: 5,
+          marginInline: 'auto',
+          zIndex: 1000,
+        }}
+        fontSize={'2xl'}
+        fontWeight="bold"
       >
-        <ChangeView center={center} />
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/light_nolabels/{z}/{x}/{y}.png"
-          maxZoom={21}
-          tms={true}
-        />
-        <LayerGroup>
-          <GeoJSON data={buildingGeoJsons} style={setColor} />
-          <GeoJSON
-            data={roomGeoJsons}
-            style={setColor}
-            filter={floorFilter}
-            key={curFloor}
-            onEachFeature={onEachFeature}
-          ></GeoJSON>
-          <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={classNumFilter} key={curFloor} />
+        {curFloor}
+      </Text>
 
-          <LayersControl position={'topright'}>
-            <LayersControl.Overlay checked={false} name={'Other Room Numbers'}>
-              <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={otherNumFilter} key={curFloor} />
-            </LayersControl.Overlay>
-          </LayersControl>
-        </LayerGroup>
-      </MapContainer>
-    </div>
+      {floorIndex == 0 ? (
+        <> </>
+      ) : (
+        <>
+          <ArrowLeftIcon
+            boxSize={10}
+            color={'darkgray'}
+            onClick={() => setFloorIndex(floorIndex - 1)}
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: '40%',
+              zIndex: 1000,
+            }}
+          />{' '}
+        </>
+      )}
+
+      {floorIndex < floorList.length - 1 ? (
+        <>
+          <ArrowRightIcon
+            boxSize={10}
+            color={'darkgray'}
+            onClick={() => setFloorIndex(floorIndex + 1)}
+            style={{
+              position: 'absolute',
+              right: 0,
+              top: '40%',
+              zIndex: 1000,
+            }}
+          />
+        </>
+      ) : (
+        <> </>
+      )}
+
+      <Button
+        onClick={onOpen}
+        size="lg"
+        colorScheme="yellow"
+        bg="yellow.500"
+        fontSize="20px"
+        _hover={{ bg: '#D99A00' }}
+        _active={{ bg: '#C78C00' }}
+        fontWeight="bold"
+        borderRadius="6px"
+        px="12px"
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 5,
+          marginInline: 'auto',
+          zIndex: 1000,
+        }}
+      >
+        Open Checklist
+      </Button>
+
+      <Drawer isOpen={isOpen} onClose={onClose} placement="bottom" isFullHeight={true}>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>
+            <Heading size="md">Step-by-Step Route</Heading>
+          </DrawerHeader>
+          <DrawerBody>
+            <RouteChecklist roomList={roomList} setCheckedIndex={setCheckedIndex} checkedIndex={checkedIndex} />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+    </Box>
   );
 }

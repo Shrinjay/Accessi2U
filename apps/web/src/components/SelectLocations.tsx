@@ -1,23 +1,21 @@
-import React, { useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import Select from 'react-select';
 import rooms from '../../../ingest/data/rooms_partial.json';
 import { Button, Checkbox, VStack, Text, Box, Flex, Heading, Image, Spacer, HStack } from '@chakra-ui/react';
 import locationIcon from '/src/components/icon.svg';
-import { theme } from '../../../styles/theme';
-import PathMap from './PathMap';
-import GeojsonMap from './MapNoPath';
+import { theme } from '../styles';
 
 export default function SelectLocations() {
-  const [options, setOptions] = React.useState([]);
-  const [startPoint, setStart] = React.useState(null);
-  const [endPoint, setEnd] = React.useState(null);
-  const [completedInfo, setCompleted] = React.useState(false);
-  const [accessible, setAccessible] = React.useState(false);
-  const [indoors, setIndoors] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [options, setOptions] = useState([]);
+  const [startPoint, setStart] = useState(null);
+  const [endPoint, setEnd] = useState(null);
+  const [completedInfo, setCompleted] = useState(false);
+  const [accessible, setAccessible] = useState(false);
+  const [indoors, setIndoors] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // https://stackoverflow.com/questions/73412077/how-to-use-json-data-for-react-select
-  React.useEffect(() => {
+  useEffect(() => {
     const getOptions = async () => {
       try {
         setIsLoading(true);
@@ -39,7 +37,7 @@ export default function SelectLocations() {
     getOptions();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (startPoint != null && endPoint != null) {
       setCompleted(true);
     } else {
@@ -69,6 +67,7 @@ export default function SelectLocations() {
                 Your Location
               </Text>
               <Select
+                styles={theme}
                 isClearable
                 isDisabled={isLoading}
                 value={startPoint}
@@ -81,6 +80,7 @@ export default function SelectLocations() {
                 Final Location
               </Text>
               <Select
+                styles={theme}
                 isClearable
                 isDisabled={isLoading}
                 value={endPoint}
@@ -150,7 +150,7 @@ export default function SelectLocations() {
       </Box>
 
       {/* Right Panel (Map Area) */}
-      <GeojsonMap />
+      {/* <GeojsonMap /> */}
       {/* Add your map component here */}
     </Flex>
   );
