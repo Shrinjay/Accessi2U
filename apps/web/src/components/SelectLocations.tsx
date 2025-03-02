@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
-import rooms from '../../../ingest/data/rooms_partial.json';
 import { Button, Checkbox, VStack, Text, Box, Flex, Heading, Image, Spacer, HStack } from '@chakra-ui/react';
 import locationIcon from '/src/components/icon.svg';
 import { theme } from '../styles';
+import PathMap from './PathMap';
+import { trpc } from '../trpc';
 
 export default function SelectLocations() {
-  const [options, setOptions] = useState([]);
   const [startPoint, setStart] = useState(null);
   const [endPoint, setEnd] = useState(null);
   const [completedInfo, setCompleted] = useState(false);
@@ -14,28 +14,11 @@ export default function SelectLocations() {
   const [indoors, setIndoors] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // https://stackoverflow.com/questions/73412077/how-to-use-json-data-for-react-select
-  useEffect(() => {
-    const getOptions = async () => {
-      try {
-        setIsLoading(true);
-        setOptions(
-          rooms['features'].map(({ properties }) => ({
-            floor_Name: properties.FL_NM,
-            building: properties.alt_bl_id,
-            department: properties.Departments_name,
-            room_type: properties.USE_TYPE,
-            Text: properties.RM_NM,
-            value: properties.RM_NM,
-          })),
-        );
-        setIsLoading(false);
-      } catch (error) {
-        setOptions([{ Text: 'ERROR', value: 'ERROR' }]);
-      }
-    };
-    getOptions();
-  }, []);
+  const { data: rooms } = trpc.listRooms.useQuery();
+
+  const options = useMemo(() => {
+    return rooms?.map((room) => ({ value: room.id, label: room.name })) || [];
+  }, [rooms]);
 
   useEffect(() => {
     if (startPoint != null && endPoint != null) {
@@ -151,6 +134,7 @@ export default function SelectLocations() {
 
       {/* Right Panel (Map Area) */}
       {/* <GeojsonMap /> */}
+      <PathMap startRoomId={startPoint?.value} endRoomId={endPoint?.value} />
       {/* Add your map component here */}
     </Flex>
   );

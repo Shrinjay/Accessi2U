@@ -1,4 +1,4 @@
-import { Edge, Node } from 'database';
+import { Edge, Node, Prisma } from 'database';
 import { prisma } from '../../config/prisma.js';
 
 export const edges = async (node: Node): Promise<Edge[]> => {
@@ -7,7 +7,13 @@ export const edges = async (node: Node): Promise<Edge[]> => {
       node_id: node.id,
     },
     include: {
-      edge: true,
+      edge: {
+        include: {
+          building: true,
+          floor: true,
+          room: true,
+        },
+      },
     },
   });
 

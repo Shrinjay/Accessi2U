@@ -18,9 +18,11 @@ import {
   useDisclosure,
   Box,
   Text,
+  Flex,
 } from '@chakra-ui/react';
+import { usePath } from '../hooks/usePath';
 
-const floorList = ['RCH_01', 'RCH_02', 'RCH_03', 'CPH_01', 'E2_01', 'E2_02'];
+const floorList = ['DWE_02', 'RCH_01', 'RCH_02', 'RCH_03', 'CPH_01', 'E2_01', 'E2_02'];
 const roomList = ['RCH 101', 'RCH 122', 'RCH 123', 'RCH 119', 'RCH 103', 'RCH 105', 'RCH 120', 'RCH 212', 'RCH 301'];
 const floorCentroidMap = {
   DWE_01: [-80.5395194675902, 43.47007771086484],
@@ -64,12 +66,18 @@ const floorCentroidMap = {
   E7_07: [-80.53950832265619, 43.47296141278375],
 };
 
-export default function PathMap() {
+type Props = {
+  startRoomId: number;
+  endRoomId: number;
+};
+
+const PathMap = ({ startRoomId, endRoomId }: Props) => {
   const [floorIndex, setFloorIndex] = useState(0);
   const [curFloor, setCurFloor] = useState(floorList[0]);
   const [center, setCenter] = useState([43.47028851150243, -80.54072575754529]);
   const [checkedIndex, setCheckedIndex] = useState(-1);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { roomsAlongPath } = usePath(startRoomId, endRoomId);
 
   useEffect(() => {
     setCurFloor(floorList[floorIndex]);
@@ -87,16 +95,14 @@ export default function PathMap() {
   });
 
   return (
-    <Box
-      width="100%"
-      height="100%"
-      display="flex"
-      position="absolute"
-      justifyContent={'center'}
-      background="white"
-      {...swipeHandlers}
-    >
-      <FloorMap curFloor={curFloor} roomList={roomList} center={center} checkedIndex={checkedIndex} key={curFloor} />
+    <Flex display="flex" w="100%" justifyContent={'center'} background="white" {...swipeHandlers}>
+      <FloorMap
+        curFloor={curFloor}
+        center={center}
+        checkedIndex={checkedIndex}
+        key={curFloor}
+        roomsAlongPath={roomsAlongPath}
+      />
 
       <MapLegend />
 
@@ -184,6 +190,8 @@ export default function PathMap() {
           </DrawerBody>
         </DrawerContent>
       </Drawer>
-    </Box>
+    </Flex>
   );
-}
+};
+
+export default PathMap;
