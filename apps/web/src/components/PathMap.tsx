@@ -119,9 +119,7 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
         {curFloor}
       </Text>
 
-      {floorIndex == 0 ? (
-        <> </>
-      ) : (
+      {floorIndex == 0 ? (<> </>) : (
         <>
           <ArrowLeftIcon
             boxSize={10}
@@ -151,9 +149,7 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
             }}
           />
         </>
-      ) : (
-        <> </>
-      )}
+      ) : (<> </>)}
 
       <Button
         onClick={onOpen}
