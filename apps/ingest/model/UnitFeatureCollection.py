@@ -13,14 +13,6 @@ class UnitFeature(pydantic.BaseModel):
     type: str = "Feature"
     id: int
     geometry: dict
-    properties: dict
-
-
-class UnitFeatureCollectionProperties(pydantic.BaseModel):
-    """
-    Properties of a feature collection for a room/floor/building
-    """
-    exceededTransferLimit: bool
 
 
 class UnitFeatureCollection(pydantic.BaseModel):
@@ -28,5 +20,4 @@ class UnitFeatureCollection(pydantic.BaseModel):
     A feature collection containing features that are rooms/floors/buildings
     """
     type: str = "FeatureCollection"
-    properties: UnitFeatureCollectionProperties
     features: list[UnitFeature]
