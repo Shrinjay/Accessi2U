@@ -265,7 +265,7 @@ class NodeGen(luigi.Task):
                     (idx, feature_id) for idx, feature_id in enumerate(corridors_by_feature_id.keys())
                 )
 
-                engine = adj.AdjacencyEngine(shapely_rooms, shapely_corridors, shapely_rooms, densify_features=True, max_distance=0.00001)
+                engine = adj.AdjacencyEngine(shapely_rooms, shapely_corridors, shapely_rooms, densify_features=True, max_distance=0.0000015)
                 adjacency_by_idx = engine.get_adjacency_dict()
                 adjacency_tuples = [
                             (
