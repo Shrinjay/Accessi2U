@@ -6,6 +6,13 @@ from model.db.Edge import Edge
 from model.db.Adjacency import Adjacency
 
 class NodeService(BaseService):
+    def get_by_name(self, name: str) -> Node:
+        with self._get_session() as session:
+            statement = sqlmodel.select(Node).where(Node.name == name)
+            node = session.exec(statement).first()
+
+            return node
+
     def create(self, node: Node) -> Node:
         with self._get_session() as session:
             session.add(node)

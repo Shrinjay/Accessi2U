@@ -6,6 +6,8 @@ class PropertyType(Enum):
     RM_NAME = 'RM_NM'
     BUILDING_ID = "alt_bl_id"
     FLOOR_ID = "fl_id"
+    LAT = "lat"
+    LON = "lon"
 
 
 class RmStandard(Enum):

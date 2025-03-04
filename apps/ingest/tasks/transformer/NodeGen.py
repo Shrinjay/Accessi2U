@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import luigi
 import geo_adjacency.adjacency as adj
 import typing
@@ -94,6 +96,15 @@ TODO
 Later?
 - Add room -> floor and floor -> building association
 - Refactor room, floor builders to add the room-floor, floor-building associations
+
+Ok multi floor time
+Elevators:
+Get all elevators in the building
+For each elevator, find all elevators that are within 0.00001 of long/lat of it in the same building with a diff floor
+between each of these pairs of elevators, we create an inter-floor edge from the current elevator to that elevator using that elevator's floor id
+as the to_floor
+
+For stairs, similar procedure BUT we need to use stairs +/- one floor of another
 """
 
 class NodeGen(luigi.Task):
@@ -128,6 +139,49 @@ class NodeGen(luigi.Task):
             edge = self.edge_service.get_by_room(corridor)
             self.node_service.add_edge(node, edge)
 
+        return node
+
+    def _build_adjacent_elevator_map(self, features_by_id_by_floor: typing.Dict[int, typing.Dict[int, UnitFeature]]) -> typing.Dict[int, typing.List[int]]:
+        features_by_id = {}
+        for features in features_by_id_by_floor.values():
+            features_by_id.update(features)
+
+        elevators_by_id = {id: feature for id, feature in features_by_id.items() if is_elevator(feature)}
+        adjacent_elevators = defaultdict(list)
+
+        for elevator_feature_id, elevator_feature in elevators_by_id.items():
+            # get all other elevators in the same building on a different floor
+            adjacent_elevators = []
+            curr_elevator_floor = elevator_feature.properties[PropertyType.FLOOR_ID.value]
+            curr_elevator_lat = float(elevator_feature.properties[PropertyType.LAT.value])
+            curr_elevator_lon = float(elevator_feature.properties[PropertyType.LON.value])
+
+            for other_elevator_id, other_elevator in elevators_by_id.items():
+                if other_elevator_id == elevator_feature_id:
+                    continue
+
+                other_elevator_floor = other_elevator.properties[PropertyType.FLOOR_ID.value]
+                if curr_elevator_floor == other_elevator_floor:
+                    continue
+
+                other_elevator_lat = float(other_elevator.properties[PropertyType.LAT.value])
+                other_elevator_lon = float(other_elevator.properties[PropertyType.LON.value])
+
+                lat_diff = abs(curr_elevator_lat - other_elevator_lat)
+                lon_diff = abs(curr_elevator_lon - other_elevator_lon)
+
+                if lat_diff < 0.0001 and lon_diff < 0.0001:
+                    adjacent_elevators.append(other_elevator_id)
+
+            adjacent_elevators[elevator_feature_id] = adjacent_elevators
+
+        return adjacent_elevators
+
+    # takes in map featureID -> featureID[]
+    # returns map featureID -> node[]
+    def to_nodes_map(self, feature_id_map: dict[int, list[int]], node_by_id: dict[int, Node]) -> dict[int, list[Node]]:
+        return {feature_id: [node_by_id[adjacent_feature_id] for adjacent_feature_id in adjacent_feature_ids] for feature_id, adjacent_feature_ids in feature_id_map.items()}
+
 
     def run(self):
         feature_str_by_id = load_as_json(self.input()[1])
@@ -146,6 +200,7 @@ class NodeGen(luigi.Task):
 
             features_by_id_by_floor_by_building[building_id][floor_id][feature_id] = feature
 
+        node_by_feature_id = {}
         for building_id, features_by_id_by_floor in features_by_id_by_floor_by_building.items():
             for floor_id, features_by_id in features_by_id_by_floor.items():
                 corridors_by_feature_id = collections.OrderedDict(
@@ -186,5 +241,12 @@ class NodeGen(luigi.Task):
                     corridor_names = [corridor.properties[PropertyType.RM_NAME.value] for corridor in adjacent_corridors]
                     corridors = [self.room_service.get_room_by_name(corridor_name) for corridor_name in corridor_names]
 
-                    self._create_room_node(building_id, floor_id, room, corridors, get_node_type(features_by_id[room_feature_id]))
+                    node = self._create_room_node(building_id, floor_id, room, corridors, get_node_type(features_by_id[room_feature_id]))
+                    node_by_feature_id[room_feature_id] = node
 
+        # map of elevator feature ids to elevator feature ids
+        for building_id, features_by_id_by_floor in features_by_id_by_floor_by_building.items():
+            adjacent_elevators = self._build_adjacent_elevator_map(features_by_id_by_floor)
+            print(adjacent_elevators)
+            adjacent_elevator_node_map = self.to_nodes_map(adjacent_elevators, node_by_feature_id)
+            print(adjacent_elevator_node_map)
