@@ -39,12 +39,18 @@ model Edge {
   id          Int         @id @default(autoincrement())
   created_at  DateTime?   @db.Timestamp(6)
   updated_at  DateTime?   @db.Timestamp(6)
+
+  edge_type   EdgeTypeEnum?
+
   building_id Int?
   floor_id    Int?
+  to_floor_id Int?
   room_id     Int?
   adjacency   Adjacency[]
+
   building    Building?   @relation(fields: [building_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  floor       Floor?      @relation(fields: [floor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  floor       Floor?      @relation("EdgeFloor", fields: [floor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  to_floor    Floor?      @relation("EdgeToFloor", fields: [to_floor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   room        Room?       @relation(fields: [room_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([room_id, building_id, floor_id], map: "uix_edge_room_building_floor")
@@ -57,7 +63,7 @@ model File {
   created_at      DateTime?         @db.Timestamp(6)
   updated_at      DateTime?         @db.Timestamp(6)
   external_id     String            @db.VarChar
-  file_system     filesystemenum?
+  file_system     FileSystemEnum?
   renderingentity RenderingEntity[]
 
   @@map("file")
@@ -70,7 +76,8 @@ model Floor {
   updated_at          DateTime?        @db.Timestamp(6)
   name                String           @db.VarChar(255)
   rendering_entity_id Int?
-  edge                Edge[]
+  edge                Edge[] @relation("EdgeFloor")
+  edges_from_other_floors Edge[] @relation("EdgeToFloor")
   renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   node                Node[]
 
@@ -82,7 +89,7 @@ model Node {
   id          Int           @id @default(autoincrement())
   created_at  DateTime?     @db.Timestamp(6)
   updated_at  DateTime?     @db.Timestamp(6)
-  node_type   nodetypeenum?
+  node_type   NodeTypeEnum?
   room_id     Int?
   building_id Int?
   floor_id    Int?
@@ -131,17 +138,24 @@ model alembic_version {
   version_num String @id(map: "alembic_version_pkc") @db.VarChar(32)
 }
 
-enum filesystemenum {
+enum FileSystemEnum {
   LOCAL
 
-  @@map("filesystemenum")
+  @@map("filesystem_enum")
 }
 
-enum nodetypeenum {
+enum NodeTypeEnum {
   ROOM
   CONNECTION_POINT
   STAIR
   ELEVATOR
 
-  @@map("nodetypeenum")
+  @@map("nodetype_enum")
+}
+
+enum EdgeTypeEnum {
+  REGULAR
+  INTER_FLOOR
+
+  @@map("edgetype_enum")
 }

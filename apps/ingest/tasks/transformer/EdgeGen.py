@@ -15,7 +15,7 @@ from common.file_system.FileSystem import FileSystem
 from common.env.env import DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD
 
 from model.UnitFeatureCollection import UnitFeature
-from model.db.Edge import Edge
+from model.db.Edge import Edge, EdgeTypeEnum
 from model.db.Node import Node, NodeTypeEnum
 
 from services.FloorService import FloorService
@@ -110,6 +110,7 @@ class EdgeGen(luigi.Task):
             building_id=building.id,
             floor_id=floor.id,
             room_id=room.id,
+            edge_type=EdgeTypeEnum.REGULAR
         )
 
         return self.edge_service.upsert(edge)

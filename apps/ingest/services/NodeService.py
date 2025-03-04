@@ -13,12 +13,22 @@ class NodeService(BaseService):
 
             return node
 
-    def create(self, node: Node) -> Node:
+    def create(self, next_node: Node) -> Node:
         with self._get_session() as session:
+            existing = sqlmodel.select(Node).where(Node.floor_id == next_node.floor_id).where(Node.building_id == next_node.building_id).where(Node.room_id == next_node.room_id)
+            existing_node = session.exec(existing).first()
+
+            if existing_node:
+                node = existing_node
+                for key, value in next_node.dict(exclude_unset=True).items():
+                    setattr(existing_node, key, value)
+            else:
+                node = next_node
+
             session.add(node)
             session.commit()
-            session.refresh(node)
 
+            session.refresh(node)
             return node
 
     def add_edge(self, node: Node, edge: Edge):

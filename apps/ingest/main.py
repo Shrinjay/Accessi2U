@@ -14,8 +14,8 @@ from tasks.transformer.NodeGen import NodeGen
 if __name__ == '__main__':
     # Runs the build rendering entities task with the rooms_partial.json file
     luigi.build([
-        # NodeGen(file_path='./data/rooms_partial.json', entity_type='room'),
-        EdgeGen(file_path='./data/rooms_partial.json', entity_type='room'),
+        NodeGen(file_path='./data/rooms_partial.json', entity_type='room'),
+        # EdgeGen(file_path='./data/rooms_partial.json', entity_type='room'),
         # BuildRooms(file_path='./data/rooms_partial.json'),
         # BuildFloors(file_path='./data/floors_partial.json'),
         # BuildBuildings(file_path='./data/Eng_Buildings.json'),
