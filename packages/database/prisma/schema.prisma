@@ -18,7 +18,6 @@ model Adjacency {
 
   @@unique([node_id, edge_id], map: "uix_adjacency_node_edge")
   @@index([id], map: "ix_adjacency_id")
-
   @@map("adjacency")
 }
 
@@ -33,7 +32,6 @@ model Building {
   node                Node[]
 
   @@index([id], map: "ix_building_id")
-
   @@map("building")
 }
 
@@ -41,17 +39,22 @@ model Edge {
   id          Int         @id @default(autoincrement())
   created_at  DateTime?   @db.Timestamp(6)
   updated_at  DateTime?   @db.Timestamp(6)
+
+  edge_type   EdgeTypeEnum?
+
   building_id Int?
   floor_id    Int?
+  to_floor_id Int?
   room_id     Int?
   adjacency   Adjacency[]
+
   building    Building?   @relation(fields: [building_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  floor       Floor?      @relation(fields: [floor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  floor       Floor?      @relation("EdgeFloor", fields: [floor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  to_floor    Floor?      @relation("EdgeToFloor", fields: [to_floor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   room        Room?       @relation(fields: [room_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([room_id, building_id, floor_id], map: "uix_edge_room_building_floor")
   @@index([id], map: "ix_edge_id")
-
   @@map("edge")
 }
 
@@ -68,16 +71,17 @@ model File {
 
 model Floor {
   id                  Int              @id @default(autoincrement())
+  level               Int              
   created_at          DateTime?        @db.Timestamp(6)
   updated_at          DateTime?        @db.Timestamp(6)
   name                String           @db.VarChar(255)
   rendering_entity_id Int?
-  edge                Edge[]
+  edge                Edge[] @relation("EdgeFloor")
+  edges_from_other_floors Edge[] @relation("EdgeToFloor")
   renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   node                Node[]
 
   @@index([id], map: "ix_floor_id")
-
   @@map("floor")
 }
 
@@ -96,7 +100,6 @@ model Node {
 
   @@unique([room_id, building_id, floor_id], map: "uix_node_room_building_floor")
   @@index([id], map: "ix_node_id")
-
   @@map("node")
 }
 
@@ -114,7 +117,6 @@ model RenderingEntity {
   room                  Room[]
 
   @@index([id], map: "ix_renderingentity_id")
-
   @@map("renderingentity")
 }
 
@@ -129,8 +131,11 @@ model Room {
   renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([id], map: "ix_room_id")
-
   @@map("room")
+}
+
+model alembic_version {
+  version_num String @id(map: "alembic_version_pkc") @db.VarChar(32)
 }
 
 enum FileSystemEnum {
@@ -142,6 +147,15 @@ enum FileSystemEnum {
 enum NodeTypeEnum {
   ROOM
   CONNECTION_POINT
+  STAIR
+  ELEVATOR
 
   @@map("nodetype_enum")
+}
+
+enum EdgeTypeEnum {
+  REGULAR
+  INTER_FLOOR
+
+  @@map("edgetype_enum")
 }
