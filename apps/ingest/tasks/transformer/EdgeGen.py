@@ -113,7 +113,7 @@ class EdgeGen(luigi.Task):
             edge_type=EdgeTypeEnum.REGULAR
         )
 
-        return self.edge_service.upsert(edge)
+        return self.edge_service.create(edge)
 
     def _create_connection_point_node(self, building_id: str, floor_id: str, c1: Edge, c2: Edge):
         building = self.building_service.get_building_by_name(building_id)
@@ -176,6 +176,7 @@ class EdgeGen(luigi.Task):
                                 [feature_id_by_idx[to_idx] for to_idx in to_idxs]
                             ) for from_idx, to_idxs in adjacency_by_idx.items()
                 ]
+
                 adjacency = dict(adjacency_tuples)
 
                 for feature_id, adjacent_feature_ids in adjacency.items():

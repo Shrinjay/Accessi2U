@@ -223,7 +223,7 @@ class NodeGen(luigi.Task):
             to_floor_id=to_node.floor_id
         )
 
-        edge = self.edge_service.upsert(edge)
+        edge = self.edge_service.create(edge)
         self.node_service.add_edge(from_node, edge)
         self.node_service.add_edge(to_node, edge)
 
@@ -265,7 +265,7 @@ class NodeGen(luigi.Task):
                     (idx, feature_id) for idx, feature_id in enumerate(corridors_by_feature_id.keys())
                 )
 
-                engine = adj.AdjacencyEngine(shapely_rooms, shapely_corridors, shapely_rooms, densify_features=True, max_distance=0.000001)
+                engine = adj.AdjacencyEngine(shapely_rooms, shapely_corridors, shapely_rooms, densify_features=True, max_distance=0.00001)
                 adjacency_by_idx = engine.get_adjacency_dict()
                 adjacency_tuples = [
                             (
@@ -288,16 +288,16 @@ class NodeGen(luigi.Task):
                     node = self._create_room_node(building_id, floor_id, room, corridors, get_node_type(features_by_id[room_feature_id]))
                     node_by_feature_id[room_feature_id] = node
 
-                # for room_feature_id, room_id in node_by_feature_id.items():
-                #     if room_feature_id in node_by_feature_id:
-                #         continue
-                #
-                #     room = rooms_by_feature_id[room_feature_id]
-                #     room_name = room.properties[PropertyType.RM_NAME.value]
-                #     room = self.room_service.get_room_by_name(room_name)
-                #
-                #     node = self._create_room_node(building_id, floor_id, room, [], get_node_type(features_by_id[room_feature_id]))
-                #     node_by_feature_id[room_feature_id] = node
+                for room_feature_id, room_id in node_by_feature_id.items():
+                    if room_feature_id in node_by_feature_id:
+                        continue
+
+                    room = rooms_by_feature_id[room_feature_id]
+                    room_name = room.properties[PropertyType.RM_NAME.value]
+                    room = self.room_service.get_room_by_name(room_name)
+
+                    node = self._create_room_node(building_id, floor_id, room, [], get_node_type(features_by_id[room_feature_id]))
+                    node_by_feature_id[room_feature_id] = node
 
         # map of elevator feature ids to elevator feature ids
         for building_id, features_by_id_by_floor in features_by_id_by_floor_by_building.items():

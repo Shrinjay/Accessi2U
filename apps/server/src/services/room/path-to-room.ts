@@ -1,4 +1,4 @@
-import { Edge, Room, Node, NodeTypeEnum, Prisma } from 'database';
+import { Edge, Room, Node, NodeTypeEnum, Prisma, EdgeTypeEnum } from 'database';
 import { _room } from './index.js';
 import { _node } from '../node/index.js';
 import { _edge } from '../edge/index.js';
@@ -45,28 +45,29 @@ const dfsPathInHypergraph = async (
     return nextPath;
   }
 
-  // const elevatorOrStairNodes = nodes.filter(
-  //   (node) => node.node_type === NodeTypeEnum.ELEVATOR || node.node_type === NodeTypeEnum.STAIR,
-  // );
-  // const isDifferentFloor = edge.floor_id !== toNode.floor_id;
-  // console.log(isDifferentFloor, elevatorOrStairNodes);
-  // if (isDifferentFloor && elevatorOrStairNodes.length > 0) {
-  //   const outgoingInterfloorEdges = await Promise.all(elevatorOrStairNodes.map((node) => _node.edges(node)))
-  //     .then((edges) => edges.flat())
-  //     .then((edges) => edges.filter((edge) => !visitedEdgeIds.has(edge.id)));
+  const elevatorOrStairNodes = nodes.filter(
+    (node) => node.node_type === NodeTypeEnum.ELEVATOR || node.node_type === NodeTypeEnum.STAIR,
+  );
+  const isDifferentFloor = edge.floor_id !== toNode.floor_id;
+  console.log(isDifferentFloor, elevatorOrStairNodes);
+  if (isDifferentFloor && elevatorOrStairNodes.length > 0) {
+    const outgoingInterfloorEdges = await Promise.all(elevatorOrStairNodes.map((node) => _node.edges(node)))
+      .then((edges) => edges.flat())
+      .then((edges) => edges.filter((edge) => !visitedEdgeIds.has(edge.id)));
 
-  //   const nextPaths = await Promise.all(
-  //     outgoingInterfloorEdges.map((edge) => dfsPathInHypergraph(edge, toNode, nextPath, nextVisitedEdgeIds)),
-  //   );
-  //   console.log(nextPaths);
+    const nextPaths = await Promise.all(
+      outgoingInterfloorEdges.map((edge) => dfsPathInHypergraph(edge, toNode, nextPath, nextVisitedEdgeIds)),
+    );
+    console.log(nextPaths);
 
-  //   return nextPaths.find(Boolean) || null;
-  // }
+    return nextPaths.find(Boolean) || null;
+  }
 
   const connectionNodes = nodes.filter((node) => node.node_type === NodeTypeEnum.CONNECTION_POINT);
   const outgoingEdges = await Promise.all(connectionNodes.map((connNode) => _node.edges(connNode)))
     .then((edges) => edges.flat())
-    .then((edges) => edges.filter((edge) => !visitedEdgeIds.has(edge.id)));
+    .then((edges) => edges.filter((edge) => !visitedEdgeIds.has(edge.id)))
+    .then((edges) => edges.filter((edge) => edge.edge_type === EdgeTypeEnum.REGULAR));
 
   if (outgoingEdges.length === 0) {
     return null;
