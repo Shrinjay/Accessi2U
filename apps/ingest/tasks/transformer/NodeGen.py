@@ -265,7 +265,7 @@ class NodeGen(luigi.Task):
                     (idx, feature_id) for idx, feature_id in enumerate(corridors_by_feature_id.keys())
                 )
 
-                engine = adj.AdjacencyEngine(shapely_rooms, shapely_corridors, shapely_rooms, densify_features=True, max_distance=0.00001)
+                engine = adj.AdjacencyEngine(shapely_rooms, shapely_corridors, shapely_rooms, densify_features=True, max_distance=0.000001)
                 adjacency_by_idx = engine.get_adjacency_dict()
                 adjacency_tuples = [
                             (
@@ -288,16 +288,16 @@ class NodeGen(luigi.Task):
                     node = self._create_room_node(building_id, floor_id, room, corridors, get_node_type(features_by_id[room_feature_id]))
                     node_by_feature_id[room_feature_id] = node
 
-                for room_feature_id, room_id in node_by_feature_id.items():
-                    if room_feature_id in node_by_feature_id:
-                        continue
-
-                    room = rooms_by_feature_id[room_feature_id]
-                    room_name = room.properties[PropertyType.RM_NAME.value]
-                    room = self.room_service.get_room_by_name(room_name)
-
-                    node = self._create_room_node(building_id, floor_id, room, [], get_node_type(features_by_id[room_feature_id]))
-                    node_by_feature_id[room_feature_id] = node
+                # for room_feature_id, room_id in node_by_feature_id.items():
+                #     if room_feature_id in node_by_feature_id:
+                #         continue
+                #
+                #     room = rooms_by_feature_id[room_feature_id]
+                #     room_name = room.properties[PropertyType.RM_NAME.value]
+                #     room = self.room_service.get_room_by_name(room_name)
+                #
+                #     node = self._create_room_node(building_id, floor_id, room, [], get_node_type(features_by_id[room_feature_id]))
+                #     node_by_feature_id[room_feature_id] = node
 
         # map of elevator feature ids to elevator feature ids
         for building_id, features_by_id_by_floor in features_by_id_by_floor_by_building.items():
@@ -308,6 +308,10 @@ class NodeGen(luigi.Task):
             adjacent_stair_node_map = self.to_nodes_map(adjacent_stairs, node_by_feature_id)
 
             for feature_id, adjacent_elevator_nodes in adjacent_elevator_node_map.items():
+                # TODO: Why are we not finding some nodes??
+                if feature_id not in node_by_feature_id:
+                    continue
+
                 for adjacent_elevator_node in adjacent_elevator_nodes:
                     self._create_inter_floor_edge(node_by_feature_id[feature_id], adjacent_elevator_node)
 
