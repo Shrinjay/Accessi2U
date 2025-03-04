@@ -22,7 +22,7 @@ import {
 } from '@chakra-ui/react';
 import { usePath } from '../hooks/usePath';
 
-const floorList = ['DWE_02', 'RCH_01', 'RCH_02', 'RCH_03', 'CPH_01', 'E2_01', 'E2_02'];
+const floorList = ['DWE_01', 'DWE_02', 'RCH_01', 'RCH_02', 'RCH_03', 'CPH_01', 'E2_01', 'E2_02'];
 const roomList = ['RCH 101', 'RCH 122', 'RCH 123', 'RCH 119', 'RCH 103', 'RCH 105', 'RCH 120', 'RCH 212', 'RCH 301'];
 const floorCentroidMap = {
   DWE_01: [-80.5395194675902, 43.47007771086484],

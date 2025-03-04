@@ -13,6 +13,8 @@ class NodeTypeEnum(enum.Enum):
     """
     ROOM = "room"
     CONNECTION_POINT = "connection_point"
+    STAIR = "stair"
+    ELEVATOR = "elevator"
 
 class Node(sqlmodel.SQLModel, table=True):
     id: typing.Optional[int] = sqlmodel.Field(primary_key=True, index=True, default=None)

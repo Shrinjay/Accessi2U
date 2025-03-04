@@ -34,9 +34,11 @@ class BuildFloors(luigi.Task):
     
     def _build_floor(self, feature_id: int, feature: UnitFeature, rendering_entity: RenderingEntity) -> Floor:
         name = feature.properties['FL_NM']
+        level = int(feature.properties['FL_ID'][:2])
 
         return Floor(
             name=name,
+            level=level,
             rendering_entity_id=rendering_entity.id,
         )
 

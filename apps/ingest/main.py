@@ -18,7 +18,4 @@ if __name__ == '__main__':
         # BuildRooms(file_path='./data/rooms_partial.json'),
         # BuildFloors(file_path='./data/floors_partial.json'),
         # BuildBuildings(file_path='./data/Eng_Buildings.json'),
-        # BuildRenderingEntities(file_path='./data/rooms_partial.json', entity_type='room'),
-        # BuildRenderingEntities(file_path='./data/floors_partial.json', entity_type='floor'),
-        # BuildRenderingEntities(file_path='./data/stairs_partial.json', entity_type='stairs'),
     ], local_scheduler=True)
