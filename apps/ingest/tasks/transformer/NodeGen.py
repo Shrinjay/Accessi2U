@@ -28,6 +28,23 @@ from services.NodeService import NodeService
 def is_corridor(feature: UnitFeature) -> bool:
     return feature.properties[PropertyType.RM_STANDARD.value] == RmStandard.CORRIDOR.value
 
+def is_elevator(feature: UnitFeature) -> bool:
+    return feature.properties[PropertyType.RM_STANDARD.value] == RmStandard.ELEVATOR.value
+
+def is_stair(feature: UnitFeature) -> bool:
+    return feature.properties[PropertyType.RM_STANDARD.value] == RmStandard.STAIR.value
+
+def is_regular_room(feature: UnitFeature) -> bool:
+    return not is_corridor(feature) and not is_elevator(feature) and not is_stair(feature)
+
+def get_node_type(feature: UnitFeature) -> NodeTypeEnum:
+    if is_stair(feature):
+        return NodeTypeEnum.STAIR
+    elif is_elevator(feature):
+        return NodeTypeEnum.ELEVATOR
+    elif is_regular_room(feature):
+        return NodeTypeEnum.ROOM
+
 """
 How graph
 We need to be able to determine paths between any two rooms in a building (initially)
@@ -95,12 +112,12 @@ class NodeGen(luigi.Task):
     def requires(self):
         return [EdgeGen(self.file_path, self.entity_type), BuildIDMap(self.file_path, self.entity_type)]
 
-    def _create_room_node(self, building_id: str, floor_id: str, room: Room, corridors: typing.List[Room]):
+    def _create_room_node(self, building_id: str, floor_id: str, room: Room, corridors: typing.List[Room], node_type: NodeTypeEnum):
         building = self.building_service.get_building_by_name(building_id)
         floor = self.floor_service.get_floor_by_name(f"{building_id}_{floor_id}")
 
         node = Node(
-            node_type=NodeTypeEnum.ROOM,
+            node_type=node_type,
             building_id=building.id,
             floor_id=floor.id,
             room_id=room.id
@@ -135,7 +152,7 @@ class NodeGen(luigi.Task):
                     [(feature_id, feature) for (feature_id, feature) in features_by_id.items() if is_corridor(feature)]
                 )
                 rooms_by_feature_id = collections.OrderedDict(
-                    [(feature_id, feature) for (feature_id, feature) in features_by_id.items() if not is_corridor(feature)]
+                    [(feature_id, feature) for (feature_id, feature) in features_by_id.items() if is_regular_room(feature) or is_elevator(feature) or is_stair(feature)]
                 )
 
                 shapely_corridors = [shapely.geometry.shape(corridor.geometry) for corridor in corridors_by_feature_id.values()]
@@ -158,7 +175,6 @@ class NodeGen(luigi.Task):
                             ) for from_idx, to_idxs in adjacency_by_idx.items()
                 ]
                 adjacency = dict(adjacency_tuples)
-                print(adjacency)
 
                 for room_feature_id, corridor_feature_ids in adjacency.items():
                     room = rooms_by_feature_id[room_feature_id]
@@ -170,5 +186,5 @@ class NodeGen(luigi.Task):
                     corridor_names = [corridor.properties[PropertyType.RM_NAME.value] for corridor in adjacent_corridors]
                     corridors = [self.room_service.get_room_by_name(corridor_name) for corridor_name in corridor_names]
 
-                    self._create_room_node(building_id, floor_id, room, corridors)
+                    self._create_room_node(building_id, floor_id, room, corridors, get_node_type(features_by_id[room_feature_id]))
 

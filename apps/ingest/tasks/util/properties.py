@@ -10,3 +10,5 @@ class PropertyType(Enum):
 
 class RmStandard(Enum):
     CORRIDOR = "Corridor/Circulation Area"
+    ELEVATOR = "Elevators"
+    STAIR = "Stairs"
