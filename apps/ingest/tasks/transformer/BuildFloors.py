@@ -41,9 +41,11 @@ class BuildFloors(luigi.Task):
         name = feature.properties['FL_NM']
         bl_abbr = feature.properties['BL_ABBR']
         building_id = buildings_by_name.get(bl_abbr)
+        level = int(feature.properties['FL_ID'][:2])
 
         return Floor(
             name=name,
+            level=level,
             rendering_entity_id=rendering_entity.id,
             building_id=building_id
         )

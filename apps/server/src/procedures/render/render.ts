@@ -2,10 +2,15 @@ import * as Yup from 'yup';
 import { procedure } from '../procedure.js';
 import { prisma } from '../../config/prisma.js';
 import { _renderingEntity } from '../../services/rendering-entity/index.js';
+import { RenderingEntity } from 'database';
 
 const input = Yup.object({
   renderingEntitiyIds: Yup.array().of(Yup.number()).required(),
 });
+
+export type RenderedEntity = RenderingEntity & {
+  geoJson: GeoJSON.Feature;
+};
 
 export const render = procedure.input(input).query(async ({ ctx, input }) => {
   const { renderingEntitiyIds } = input;
@@ -17,7 +22,12 @@ export const render = procedure.input(input).query(async ({ ctx, input }) => {
 
   const renderedEntities = await Promise.all(
     renderingEntities.map(async (renderingEntity) => {
-      return await _renderingEntity.render(renderingEntity);
+      const geoJson = await _renderingEntity.render(renderingEntity);
+
+      return {
+        ...renderingEntity,
+        geoJson,
+      };
     }),
   );
 

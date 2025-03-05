@@ -1,45 +1,26 @@
-import React, { useCallback } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
-import rooms from '../../../ingest/data/rooms_partial.json';
 import { Button, Checkbox, VStack, Text, Box, Flex, Heading, Image, Spacer, HStack } from '@chakra-ui/react';
 import locationIcon from '/src/components/icon.svg';
-import { theme } from '../../../styles/theme';
+import { theme } from '../styles';
 import PathMap from './PathMap';
-import GeojsonMap from './MapNoPath';
+import { trpc } from '../trpc';
 
 export default function SelectLocations() {
-  const [options, setOptions] = React.useState([]);
-  const [startPoint, setStart] = React.useState(null);
-  const [endPoint, setEnd] = React.useState(null);
-  const [completedInfo, setCompleted] = React.useState(false);
-  const [accessible, setAccessible] = React.useState(false);
-  const [indoors, setIndoors] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [startPoint, setStart] = useState(null);
+  const [endPoint, setEnd] = useState(null);
+  const [completedInfo, setCompleted] = useState(false);
+  const [accessible, setAccessible] = useState(false);
+  const [indoors, setIndoors] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // https://stackoverflow.com/questions/73412077/how-to-use-json-data-for-react-select
-  React.useEffect(() => {
-    const getOptions = async () => {
-      try {
-        setIsLoading(true);
-        setOptions(
-          rooms['features'].map(({ properties }) => ({
-            floor_Name: properties.FL_NM,
-            building: properties.alt_bl_id,
-            department: properties.Departments_name,
-            room_type: properties.USE_TYPE,
-            Text: properties.RM_NM,
-            value: properties.RM_NM,
-          })),
-        );
-        setIsLoading(false);
-      } catch (error) {
-        setOptions([{ Text: 'ERROR', value: 'ERROR' }]);
-      }
-    };
-    getOptions();
-  }, []);
+  const { data: rooms } = trpc.listRooms.useQuery();
 
-  React.useEffect(() => {
+  const options = useMemo(() => {
+    return rooms?.map((room) => ({ value: room.id, label: room.name })) || [];
+  }, [rooms]);
+
+  useEffect(() => {
     if (startPoint != null && endPoint != null) {
       setCompleted(true);
     } else {
@@ -69,6 +50,7 @@ export default function SelectLocations() {
                 Your Location
               </Text>
               <Select
+                styles={theme}
                 isClearable
                 isDisabled={isLoading}
                 value={startPoint}
@@ -81,6 +63,7 @@ export default function SelectLocations() {
                 Final Location
               </Text>
               <Select
+                styles={theme}
                 isClearable
                 isDisabled={isLoading}
                 value={endPoint}
@@ -150,7 +133,8 @@ export default function SelectLocations() {
       </Box>
 
       {/* Right Panel (Map Area) */}
-      <GeojsonMap />
+      {/* <GeojsonMap /> */}
+      <PathMap startRoomId={startPoint?.value} endRoomId={endPoint?.value} />
       {/* Add your map component here */}
     </Flex>
   );
