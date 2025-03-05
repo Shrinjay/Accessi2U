@@ -8,6 +8,7 @@ import {
   LayerGroup,
   Popup,
   FeatureGroup,
+  Marker,
 } from 'react-leaflet';
 import L, { divIcon } from 'leaflet';
 import rooms_centroids from '../../../ingest/data/rooms_centroids_partial.json';
@@ -56,6 +57,10 @@ const FloorMap = ({ curFloor, center, checkedIndex, roomsAlongPath }: Props) => 
   const roomIDsAlongPath = useMemo(() => {
     return roomsAlongPath?.map((room) => room.id) || [];
   }, [roomsAlongPath]);
+
+  const currRoom = useMemo(() => {
+    return roomsAlongPath?.[checkedIndex + 1];
+  }, [roomsAlongPath, checkedIndex]);
 
   const getRoomStyle = (room: RoomViewModel, roomIDsAlongPath: number[]) => {
     const isAlongRoute = roomIDsAlongPath.includes(room.id);
@@ -202,7 +207,7 @@ const FloorMap = ({ curFloor, center, checkedIndex, roomsAlongPath }: Props) => 
       return false;
     }
   };
-  console.log('r', roomsAlongPath);
+
   return (
     <Flex>
       <Button
@@ -243,6 +248,7 @@ const FloorMap = ({ curFloor, center, checkedIndex, roomsAlongPath }: Props) => 
           tms={true}
         />
         <LayerGroup>
+          {currRoom && <Marker position={[currRoom?.geoJson?.properties?.lat, currRoom?.geoJson?.properties?.lon]} />}
           {buildings?.map((building, index) => {
             return (
               <GeoJSON

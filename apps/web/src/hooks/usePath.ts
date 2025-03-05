@@ -8,7 +8,11 @@ export const usePath = (fromRoomId: number, toRoomId: number) => {
     toRoomId,
   });
 
-  const { rooms: roomsAlongPath } = useRooms(path?.map((edge) => edge.room_id)?.filter(Boolean) || []);
+  const { rooms: roomsAlongPath } = useRooms([
+    fromRoomId,
+    ...(path?.map((edge) => edge.room_id)?.filter(Boolean) || []),
+    toRoomId,
+  ]);
 
   return {
     path,
