@@ -20,6 +20,7 @@ from tasks.util.json import load_as_json
 from tasks.transformer.BuildFloors import BuildFloors
 from constants import ROOM_DATA_PATH
 
+
 class BuildRooms(luigi.Task):
     """
     Takes in a map of ID -> Features for a room/building/floor

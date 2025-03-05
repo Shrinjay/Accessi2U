@@ -30,6 +30,7 @@ model Building {
   renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   edge                Edge[]
   node                Node[]
+  floors             Floor[]
 
   @@index([id], map: "ix_building_id")
   @@map("building")
@@ -76,10 +77,13 @@ model Floor {
   updated_at          DateTime?        @db.Timestamp(6)
   name                String           @db.VarChar(255)
   rendering_entity_id Int?
+  building_id        Int?
   edge                Edge[] @relation("EdgeFloor")
   edges_from_other_floors Edge[] @relation("EdgeToFloor")
+  building            Building?       @relation(fields: [building_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   node                Node[]
+  rooms              Room[]
 
   @@index([id], map: "ix_floor_id")
   @@map("floor")
@@ -126,10 +130,12 @@ model Room {
   updated_at          DateTime?        @db.Timestamp(6)
   name                String           @db.VarChar(255)
   rendering_entity_id Int?
+  floor_id            Int?
   edge                Edge[]
   node                Node[]
   renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  roomType            RoomTypeEnum
+  floor              Floor?            @relation(fields: [floor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  roomType            RoomTypeEnum?
   reports             Report[]
 
   @@index([id], map: "ix_room_id")
