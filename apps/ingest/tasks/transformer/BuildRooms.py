@@ -5,7 +5,7 @@ import typing
 import sqlmodel
 
 from common.file_system.FileSystem import FileSystem
-from common.env.env import DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD
+from common.env.env import DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD, DATABASE_PORT
 from common.db import engine
 
 from model.UnitFeatureCollection import UnitFeature
@@ -41,11 +41,20 @@ class BuildRooms(luigi.Task):
         name = feature.properties['RM_NM']
         fl_nm = feature.properties["FL_NM"]
         floor_id = floors_by_name.get(fl_nm)
+        rm_standard = feature.properties["rm_standard"]
+        match rm_standard:
+            case 'Toilets/Showers':
+                room_type = BATHROOM
+            case 'Elevators':
+                room_type = ELEVATOR
+            case 'Classroom':
+                room_type = CLASSROOM
 
         return Room(
             name=name,
             rendering_entity_id=rendering_entity.id,
             floor_id=floor_id,
+            room_type=room_type
         )
 
 
@@ -87,6 +96,7 @@ class BuildRooms(luigi.Task):
         return luigi.contrib.postgres.PostgresTarget(
             host=DATABASE_HOST,
             database=DATABASE_NAME,
+            port=DATABASE_PORT,
             user=DATABASE_USER,
             password=DATABASE_PASSWORD,
             table=self.TABLE_NAME,

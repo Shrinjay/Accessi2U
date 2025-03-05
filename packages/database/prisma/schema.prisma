@@ -127,7 +127,7 @@ model Room {
   edge                Edge[]
   node                Node[]
   renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  roomType            RoomTypeEnum
+  room_type           RoomTypeEnum
   reports             Report[]
 
   @@index([id], map: "ix_room_id")
@@ -166,6 +166,7 @@ enum RoomTypeEnum {
     // TODO add all the room types 
     BATHROOM
     ELEVATOR
+    CLASSROOM
 
   @@map("roomtype_enum")
 }

@@ -5,7 +5,7 @@ import typing
 import sqlmodel
 
 from common.file_system.FileSystem import FileSystem
-from common.env.env import DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD
+from common.env.env import DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD, DATABASE_PORT
 from common.db import engine
 
 from model.UnitFeatureCollection import UnitFeature
@@ -83,6 +83,7 @@ class BuildFloors(luigi.Task):
         return luigi.contrib.postgres.PostgresTarget(
             host=DATABASE_HOST,
             database=DATABASE_NAME,
+            port=DATABASE_PORT,
             user=DATABASE_USER,
             password=DATABASE_PASSWORD,
             table=self.TABLE_NAME,
