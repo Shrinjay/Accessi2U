@@ -16,16 +16,18 @@ from tasks.transformer.BuildIDMap import BuildIDMap
 from tasks.transformer.BuildRenderingEntities import BuildRenderingEntities
 from tasks.util.json import load_as_json
 
+from constants import BUILDING_DATA_PATH
+
 
 class BuildBuildings(luigi.Task):
     """
     Takes in a map of ID -> Features for a room/building/floor
     and builds rendering entity models out of it
     """
-    file_path = luigi.PathParameter()
+    file_path = BUILDING_DATA_PATH
     file_system = FileSystem()
 
-    TABLE_NAME = 'building'
+    TABLE_NAME = BUILDING_DATA_PATH
 
     def requires(self):
         return [
@@ -53,7 +55,10 @@ class BuildBuildings(luigi.Task):
         with session:
             for building in building_by_id.values():
                 session.add(building)
-                session.commit()
+            session.commit()
+
+        with self.output().connect() as connection:
+            self.output().touch(connection)
 
     def output(self):
         return luigi.contrib.postgres.PostgresTarget(
