@@ -36,7 +36,7 @@ class BuildRenderingEntities(luigi.Task):
 
     def _build_rendering_entity(self, feature: UnitFeature):
         geometry = feature.json()
-        geometry_file = self.file_system.write(FileSystemEnum.LOCAL, f'./out/tmp/{uuid.uuid4()}.json', geometry)
+        geometry_file = self.file_system.write(FileSystemEnum.MINIO, f'out/{uuid.uuid4()}.json', geometry)
 
         rendering_entity = RenderingEntity(file_id=geometry_file.id)
         return rendering_entity

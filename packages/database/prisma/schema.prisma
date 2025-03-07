@@ -162,6 +162,7 @@ model alembic_version {
 
 enum FileSystemEnum {
   LOCAL
+  MINIO
 
   @@map("filesystem_enum")
 }

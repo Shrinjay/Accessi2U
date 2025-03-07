@@ -11,6 +11,6 @@ from tasks.transformer.NodeGen import NodeGen
 
 if __name__ == '__main__':
     luigi.build([
-        NodeGen(file_path='./data/rooms_partial.json', entity_type='room'),
-        # BuildRooms(),
+        # NodeGen(file_path='./data/rooms_partial.json', entity_type='room'),
+        BuildRooms(),
     ], local_scheduler=True)
