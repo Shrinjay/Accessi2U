@@ -168,7 +168,7 @@ class EdgeGen(luigi.Task):
 
                 shapely_non_corridors = [shapely.geometry.shape(non_corridor.geometry) for non_corridor in non_corridors]
 
-                engine = adj.AdjacencyEngine(shapely_corridors, shapely_corridors, shapely_non_corridors, densify_features=True)
+                engine = adj.AdjacencyEngine(shapely_corridors, shapely_corridors, [*shapely_non_corridors, *shapely_corridors])
                 adjacency_by_idx = engine.get_adjacency_dict()
                 adjacency_tuples = [
                             (
