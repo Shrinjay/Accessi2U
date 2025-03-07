@@ -37,4 +37,4 @@ WORKDIR /app
  
 COPY --from=installer /app .
 RUN ls
-CMD node apps/server/build/server.js
+CMD node apps/server/build/src/server.js
