@@ -19,7 +19,7 @@ export const getReportTypes = procedure.input(input).query(async ({ ctx, input }
         ReportTypeEnum.OTHER
     ]
 
-    switch (room.roomType) {
+    switch (room.room_type) {
         case RoomTypeEnum.ELEVATOR:
             return [...DEFAULT_REPORT_TYPES, ReportTypeEnum.ELEVATOR_OUT_OF_SERVICE]
         case RoomTypeEnum.BATHROOM:

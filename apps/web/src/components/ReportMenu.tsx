@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import rooms from "../../../ingest/data/rooms_partial.json";
 import Select from 'react-select';
 import { theme } from "../styles";
+import { useSubmitReport } from "../hooks/useSubmitReport";
+import { trpc } from "../trpc";
 
 export default function ReportMenu({passedRoom, onClose, defaultRoom}) {
+      const { submitReport, isSubmitting, error } = useSubmitReport();
       const [options, setOptions] = useState([]);
       const [isLoading, setIsLoading] = useState(false);
       const [selectedRoom, setSelectedRoom] = useState(null)
@@ -48,6 +51,22 @@ export default function ReportMenu({passedRoom, onClose, defaultRoom}) {
       }, [selectedRoom, errorType]);
 
       const handleChange = (event) => setComments(event.target.value)
+
+      const handleSubmit = async () => {
+        if (!valuesConfirmed) return;
+    
+        try {
+          await submitReport({
+            roomId: selectedRoom?.value,  // Assuming `selectedRoom.value` is the room ID
+            reportType: errorType?.value, // Assuming `errorType.value` matches `ReportTypeEnum`
+            comment: comments,
+          });
+    
+          onClose(); // Close modal on successful submission
+        } catch (err) {
+          console.error("Error submitting report:", err);
+        }
+      };
 
     return(
         <>
@@ -106,7 +125,7 @@ export default function ReportMenu({passedRoom, onClose, defaultRoom}) {
 
                         {/* TODO: Add error message indicating what is necessary to fill in */}
                         <Button 
-                        onClick={onClose} 
+                        onClick={handleSubmit} 
                         disabled={!valuesConfirmed} 
                         alignSelf="center" 
                         mb="2" width="100%"

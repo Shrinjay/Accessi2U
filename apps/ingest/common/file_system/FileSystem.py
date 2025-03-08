@@ -2,7 +2,7 @@ import sqlmodel
 
 from common.env.env import DATABASE_URL
 from common.file_system.LocalFileSystem import LocalFileSystem
-from common.file_system.MinIOFileSystem import MinIOFileSystem
+# from common.file_system.MinIOFileSystem import MinIOFileSystem
 from common.file_system import FileSystemEnum
 from common.db import engine
 
@@ -17,7 +17,7 @@ class FileSystem:
     def __init__(self):
         self.file_systems = {
             FileSystemEnum.LOCAL: LocalFileSystem(),
-            FileSystemEnum.MINIO: MinIOFileSystem()
+            # FileSystemEnum.MINIO: MinIOFileSystem()
         }
 
     def create_dir(self, file_system: FileSystemEnum, path):
