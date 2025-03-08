@@ -2,9 +2,13 @@ import { Room } from 'database';
 import { trpc } from '../trpc';
 import { useMemo, useState } from 'react';
 
-export type RoomViewModel = Room & {
-  geoJson: GeoJSON.Feature;
-};
+export type RoomViewModel = Partial<
+  Omit<Room, 'created_at' | 'updated_at'> & {
+    created_at: string;
+    updated_at: string;
+    geoJson: GeoJSON.Feature;
+  }
+>;
 
 export const useRooms = (roomIds?: number[]) => {
   const { isLoading, data: rooms } = trpc.listRooms.useQuery({ roomIds }, { enabled: true });

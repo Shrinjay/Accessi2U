@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-// import floor_centroids from "../../../ingest/data/floors_centroids_partial.json"
 import { useSwipeable } from 'react-swipeable';
 import RouteChecklist from './RouteChecklist';
 import FloorMap from './FloorMap';
@@ -98,10 +97,10 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
     <Flex display="flex" w="100%" justifyContent={'center'} background="white" {...swipeHandlers}>
       <FloorMap
         curFloor={curFloor}
-        center={center}
+        center={center as any}
         checkedIndex={checkedIndex}
         key={curFloor}
-        roomsAlongPath={roomsAlongPath}
+        roomsAlongPath={roomsAlongPath as any}
       />
 
       <MapLegend />

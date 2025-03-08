@@ -11,7 +11,6 @@ import {
   Marker,
 } from 'react-leaflet';
 import L, { divIcon } from 'leaflet';
-import rooms_centroids from '../../../ingest/data/rooms_centroids_partial.json';
 import 'leaflet/dist/leaflet.css';
 import ReportMenu from './ReportMenu';
 import { Button, Heading, useDisclosure, Text, Box, Modal, Flex } from '@chakra-ui/react';
@@ -233,7 +232,7 @@ const FloorMap = ({ curFloor, center, checkedIndex, roomsAlongPath }: Props) => 
         Report Issue
       </Button>
       <MapContainer
-        inertia={false}
+        // @ts-ignore
         center={center}
         zoom={19}
         boxZoom={false}
@@ -242,17 +241,14 @@ const FloorMap = ({ curFloor, center, checkedIndex, roomsAlongPath }: Props) => 
         minZoom={18}
       >
         <ChangeView center={center} />
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/light_nolabels/{z}/{x}/{y}.png"
-          maxZoom={21}
-          tms={true}
-        />
+        <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/light_nolabels/{z}/{x}/{y}.png" />
         <LayerGroup>
           {currRoom && <Marker position={[currRoom?.geoJson?.properties?.lat, currRoom?.geoJson?.properties?.lon]} />}
           {buildings?.map((building, index) => {
             return (
               <GeoJSON
                 data={building.geoJson}
+                // @ts-ignore
                 style={{
                   weight: 1,
                   fillColor: 'grey',
@@ -302,21 +298,21 @@ const FloorMap = ({ curFloor, center, checkedIndex, roomsAlongPath }: Props) => 
                 <GeoJSON
                   key={getListHash([room.geoJson, getRoomStyle(room, roomIDsAlongPath)])}
                   data={room.geoJson}
+                  // @ts-expect-error
                   style={getRoomStyle(room, roomIDsAlongPath)}
                   filter={floorFilter}
-                  key={curFloor}
                 />
               </FeatureGroup>
             );
           })}
 
-          <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={classNumFilter} key={curFloor} />
+          {/* <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={classNumFilter} key={curFloor} /> */}
 
-          <LayersControl position={'topright'}>
+          {/* <LayersControl position={'topright'}>
             <LayersControl.Overlay checked={false} name={'Other Room Numbers'}>
               <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={otherNumFilter} key={curFloor} />
             </LayersControl.Overlay>
-          </LayersControl>
+          </LayersControl> */}
         </LayerGroup>
       </MapContainer>
       <Modal blockScrollOnMount={true} isOpen={isOpen} onClose={onClose}>
