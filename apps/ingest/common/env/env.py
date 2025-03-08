@@ -8,4 +8,5 @@ parsed_url = urlparse(DATABASE_URL)
 DATABASE_USER = parsed_url.username
 DATABASE_PASSWORD = parsed_url.password
 DATABASE_HOST = parsed_url.hostname
+DATABASE_PORT = parsed_url.port
 DATABASE_NAME = parsed_url.path[1:]
