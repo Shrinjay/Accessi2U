@@ -164,7 +164,7 @@ enum FileSystemEnum {
   LOCAL
   MINIO
 
-  @@map("filesystem_enum")
+  @@map("filesystemenum")
 }
 
 enum NodeTypeEnum {
@@ -173,7 +173,7 @@ enum NodeTypeEnum {
   STAIR
   ELEVATOR
 
-  @@map("nodetype_enum")
+  @@map("nodetypeenum")
 }
 
 enum RoomTypeEnum {
@@ -181,7 +181,7 @@ enum RoomTypeEnum {
     BATHROOM
     ELEVATOR
 
-  @@map("roomtype_enum")
+  @@map("roomtypeenum")
 }
 
 enum ReportTypeEnum {
@@ -190,12 +190,12 @@ enum ReportTypeEnum {
   BATHROOM_NOT_ACCESSIBLE
   MISLABELED
   OTHER
-  @@map("reporttype_enum")
+  @@map("reporttypeenum")
 }
 
 enum EdgeTypeEnum {
   REGULAR
   INTER_FLOOR
 
-  @@map("edgetype_enum")
+  @@map("edgetypeenum")
 }

@@ -5,7 +5,7 @@ import typing
 import sqlmodel
 
 from common.file_system.FileSystem import FileSystem
-from common.env.env import DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD
+from common.env.env import DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD, DATABASE_PORT
 from common.db import engine
 
 from model.UnitFeatureCollection import UnitFeature
@@ -29,7 +29,7 @@ class BuildRooms(luigi.Task):
     file_path = ROOM_DATA_PATH
     file_system = FileSystem()
 
-    TABLE_NAME = ROOM_DATA_PATH
+    TABLE_NAME = 'build_rooms_complete'
 
     def requires(self):
         return [
@@ -90,6 +90,7 @@ class BuildRooms(luigi.Task):
             database=DATABASE_NAME,
             user=DATABASE_USER,
             password=DATABASE_PASSWORD,
+            port=DATABASE_PORT,
             table=self.TABLE_NAME,
             update_id=self.task_id
         )
