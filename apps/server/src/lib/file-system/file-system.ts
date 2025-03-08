@@ -1,31 +1,33 @@
+import { FileSystemEnum } from 'database';
 import { LocalFileSystem } from './local-file-system.js';
+import { MinIOFileSystem } from './minio-file-system.js';
 
 export interface IFileSystem {
-  createDir(dirPath: string): void;
-  exists(filePath: string): boolean;
-  read(filePath: string): Buffer;
-  write(filePath: string, content: string): void;
-}
-
-export enum FileSystems {
-  LOCAL = 'LOCAL',
+  createDir(dirPath: string): Promise<void>;
+  exists(filePath: string): Promise<boolean>;
+  read(filePath: string): Promise<Buffer>;
+  write(filePath: string, content: string): Promise<void>;
 }
 
 class FileSystem {
-  private fileSystems: { [key in FileSystems]: IFileSystem } = {
-    [FileSystems.LOCAL]: new LocalFileSystem(),
+  private fileSystems: { [key in FileSystemEnum]: IFileSystem } = {
+    [FileSystemEnum.LOCAL]: new LocalFileSystem(),
+    [FileSystemEnum.MINIO]: new MinIOFileSystem(),
   };
 
-  createDir(fileSystem: FileSystems, path: string): void {
+  async createDir(fileSystem: FileSystemEnum, path: string): Promise<void> {
     this.fileSystems[fileSystem].createDir(path);
   }
-  exists(fileSystem: FileSystems, filePath: string): boolean {
+
+  async exists(fileSystem: FileSystemEnum, filePath: string): Promise<boolean> {
     return this.fileSystems[fileSystem].exists(filePath);
   }
-  read(fileSystem: FileSystems, filePath: string): Buffer {
+
+  async read(fileSystem: FileSystemEnum, filePath: string): Promise<Buffer> {
     return this.fileSystems[fileSystem].read(filePath);
   }
-  write(fileSystem: FileSystems, filePath: string, content: string): void {
+
+  async write(fileSystem: FileSystemEnum, filePath: string, content: string): Promise<void> {
     this.fileSystems[fileSystem].write(filePath, content);
   }
 }

@@ -15,7 +15,7 @@ from common.file_system.FileSystem import FileSystem
 from common.env.env import DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD, DATABASE_PORT
 
 from model.UnitFeatureCollection import UnitFeature
-from model.db.Edge import Edge
+from model.db.Edge import Edge, EdgeTypeEnum
 from model.db.Node import Node, NodeTypeEnum
 
 from services.FloorService import FloorService
@@ -110,9 +110,10 @@ class EdgeGen(luigi.Task):
             building_id=building.id,
             floor_id=floor.id,
             room_id=room.id,
+            edge_type=EdgeTypeEnum.REGULAR
         )
 
-        return self.edge_service.upsert(edge)
+        return self.edge_service.create(edge)
 
     def _create_connection_point_node(self, building_id: str, floor_id: str, c1: Edge, c2: Edge):
         building = self.building_service.get_building_by_name(building_id)
@@ -167,7 +168,7 @@ class EdgeGen(luigi.Task):
 
                 shapely_non_corridors = [shapely.geometry.shape(non_corridor.geometry) for non_corridor in non_corridors]
 
-                engine = adj.AdjacencyEngine(shapely_corridors, shapely_corridors, shapely_non_corridors, densify_features=True)
+                engine = adj.AdjacencyEngine(shapely_corridors, shapely_corridors, [*shapely_non_corridors, *shapely_corridors])
                 adjacency_by_idx = engine.get_adjacency_dict()
                 adjacency_tuples = [
                             (
@@ -175,6 +176,7 @@ class EdgeGen(luigi.Task):
                                 [feature_id_by_idx[to_idx] for to_idx in to_idxs]
                             ) for from_idx, to_idxs in adjacency_by_idx.items()
                 ]
+
                 adjacency = dict(adjacency_tuples)
 
                 for feature_id, adjacent_feature_ids in adjacency.items():
