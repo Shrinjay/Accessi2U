@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:18.8.2-alpine AS base
+FROM --platform=linux/amd64 node:18.18.2-alpine3.18 AS base
 
 FROM base AS builder
 RUN apk update
