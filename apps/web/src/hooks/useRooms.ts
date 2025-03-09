@@ -10,10 +10,14 @@ export type RoomViewModel = Partial<
   }
 >;
 
-export const useRooms = (roomIds?: number[]) => {
-  const { isLoading, data: rooms } = trpc.listRooms.useQuery(!!roomIds?.length ? { roomIds } : undefined, {
-    enabled: !roomIds?.length || roomIds.every(Boolean),
-  });
+type UseRoomInput = {
+  buildingId?: number;
+  floorId?: number;
+  roomIds?: number[];
+};
+
+export const useRooms = ({ buildingId, floorId, roomIds }: UseRoomInput, enabled = true) => {
+  const { isLoading, data: rooms } = trpc.listRooms.useQuery({ buildingId, floorId, roomIds }, { enabled });
   const { isLoading: isRendering, data: roomGeoJsons } = trpc.render.useQuery({
     renderingEntitiyIds: rooms?.map((room) => room.rendering_entity_id) || [],
   });

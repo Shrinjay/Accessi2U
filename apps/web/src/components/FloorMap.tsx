@@ -14,10 +14,11 @@ import L, { divIcon } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import ReportMenu from './ReportMenu';
 import { Button, Heading, useDisclosure, Text, Box, Modal, Flex } from '@chakra-ui/react';
-import { useFloors } from '../hooks/useFloors';
+import { FloorViewModel, useFloors } from '../hooks/useFloors';
 import { RoomViewModel, useRooms } from '../hooks/useRooms';
 import { useBuildings } from '../hooks/useBuildings';
 import { getListHash } from '../../../server/src/lib/util';
+import { Floor } from 'database';
 
 function ChangeView({ center }) {
   const map = useMap();
@@ -32,19 +33,20 @@ function ChangeView({ center }) {
 }
 
 type Props = {
-  curFloor: string;
+  selectedFloor: FloorViewModel;
   center: [number, number];
   checkedIndex: number;
   roomsAlongPath?: RoomViewModel[];
 };
 
-const FloorMap = ({ curFloor, center, checkedIndex, roomsAlongPath }: Props) => {
+const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props) => {
   const [selectedRoom, setSelectedRoom] = useState<RoomViewModel>(null);
   const [selectedRoomName, setSelectedRoomName] = useState(null);
   const accessibilityMap = { Y: 'True', N: 'False' };
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { rooms } = useRooms();
+  const curFloor = selectedFloor?.name;
+  const { rooms } = useRooms({ floorId: selectedFloor?.id });
   const { buildings } = useBuildings();
 
   useEffect(() => {

@@ -20,6 +20,8 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import { usePath } from '../hooks/usePath';
+import { useBuildings } from '../hooks/useBuildings';
+import { useFloors } from '../hooks/useFloors';
 
 const floorList = ['DWE_01', 'DWE_02', 'RCH_01', 'RCH_02', 'RCH_03', 'CPH_01', 'E2_01', 'E2_02'];
 const roomList = ['RCH 101', 'RCH 122', 'RCH 123', 'RCH 119', 'RCH 103', 'RCH 105', 'RCH 120', 'RCH 212', 'RCH 301'];
@@ -71,21 +73,49 @@ type Props = {
 };
 
 const PathMap = ({ startRoomId, endRoomId }: Props) => {
-  const [floorIndex, setFloorIndex] = useState(0);
-  const [curFloor, setCurFloor] = useState(floorList[0]);
-  const [center, setCenter] = useState([43.47028851150243, -80.54072575754529]);
+  const [selectedFloorId, setSelectedFloorId] = useState(undefined);
+  const [selectedBuildingId, setSelectedBuildingId] = useState(undefined);
+
+  const { buildings } = useBuildings();
+  const { floors } = useFloors(selectedBuildingId, !!selectedBuildingId);
+
+  const selectedBuilding = buildings?.find((building) => building.id === selectedBuildingId);
+  const selectedFloor = floors?.find((floor) => floor.id === selectedFloorId);
+
+  const floorIndex = floors?.findIndex((floor) => floor.id === selectedFloorId);
+
+  const [center, setCenter] = useState([43.47007771086484, -80.5395194675902]);
   const [checkedIndex, setCheckedIndex] = useState(-1);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { roomsAlongPath } = usePath(startRoomId, endRoomId);
 
   useEffect(() => {
-    setCurFloor(floorList[floorIndex]);
-    setCenter([floorCentroidMap[floorList[floorIndex]][1], floorCentroidMap[floorList[floorIndex]][0]]);
-  }, [floorIndex]);
+    if (!selectedBuilding && buildings?.length) {
+      setSelectedBuildingId(buildings[0].id);
+    }
+  }, [selectedBuildingId, buildings]);
+
+  useEffect(() => {
+    if (floors?.length && !selectedFloor) {
+      setSelectedFloorId(floors[0].id);
+    }
+  }, [selectedFloorId, floors]);
+
+  // useEffect(() => {
+  //   setCenter([floorCentroidMap[floorList[floorIndex]][1], floorCentroidMap[floorList[floorIndex]][0]]);
+  // }, [floorIndex]);
+
+  const nextFloor = () => {
+    setSelectedFloorId(floors[Math.min(floorIndex + 1, floorList.length - 1)].id);
+  };
+
+  const prevFloor = () => {
+    setSelectedFloorId(floors[Math.max(floorIndex - 1, 0)].id);
+  };
 
   const swipeHandlers = useSwipeable({
-    onSwipedLeft: () => setFloorIndex(Math.min(floorIndex + 1, floorList.length - 1)),
-    onSwipedRight: () => setFloorIndex(Math.max(floorIndex - 1, 0)),
+    onSwipedLeft: () => nextFloor(),
+    onSwipedRight: () => prevFloor(),
     onSwipedUp: onOpen,
     onSwipedDown: onClose,
     swipeDuration: 200,
@@ -96,10 +126,10 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
   return (
     <Flex display="flex" w="100%" justifyContent={'center'} background="white" {...swipeHandlers}>
       <FloorMap
-        curFloor={curFloor}
+        selectedFloor={selectedFloor}
         center={center as any}
         checkedIndex={checkedIndex}
-        key={curFloor}
+        key={selectedFloor?.id}
         roomsAlongPath={roomsAlongPath as any}
       />
 
@@ -115,7 +145,7 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
         fontSize={'2xl'}
         fontWeight="bold"
       >
-        {curFloor}
+        {selectedFloor?.name}
       </Text>
 
       {floorIndex == 0 ? (
@@ -125,7 +155,7 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
           <ArrowLeftIcon
             boxSize={10}
             color={'darkgray'}
-            onClick={() => setFloorIndex(floorIndex - 1)}
+            onClick={() => prevFloor()}
             style={{
               position: 'absolute',
               left: 0,
@@ -141,7 +171,7 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
           <ArrowRightIcon
             boxSize={10}
             color={'darkgray'}
-            onClick={() => setFloorIndex(floorIndex + 1)}
+            onClick={() => nextFloor()}
             style={{
               position: 'absolute',
               right: 0,

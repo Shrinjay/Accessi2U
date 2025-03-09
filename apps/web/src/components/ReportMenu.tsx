@@ -22,7 +22,7 @@ export default function ReportMenu({ passedRoom, onClose, defaultRoom }) {
   const [comments, setComments] = useState('');
   const accessibilityMap = { Y: 'True', N: 'False' };
 
-  const { rooms, isLoading: isLoadingRooms } = useRooms();
+  const { rooms, isLoading: isLoadingRooms } = useRooms({});
 
   const isLoading = isLoadingRooms;
   const options = rooms?.map((room) => ({ label: room.name, value: room.id })) || [];
