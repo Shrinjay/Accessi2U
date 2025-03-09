@@ -23,11 +23,8 @@ export default function ReportMenu({passedRoom, onClose, defaultRoom}) {
           try {
             setIsLoading(true);
             setOptions(
-              rooms['features'].map(({ properties }) => ({
-                // floor_Name: properties.FL_NM,
-                // building: properties.alt_bl_id,
-                // department: properties.Departments_name,
-                // room_type: properties.USE_TYPE,
+              rooms['features'].map(({ id, properties }) => ({
+                id: id,
                 label: properties.RM_NM,
                 value: properties.RM_NM,
               })),
@@ -57,8 +54,8 @@ export default function ReportMenu({passedRoom, onClose, defaultRoom}) {
     
         try {
           await submitReport({
-            roomId: selectedRoom?.value,  // Assuming `selectedRoom.value` is the room ID
-            reportType: errorType?.value, // Assuming `errorType.value` matches `ReportTypeEnum`
+            roomId: selectedRoom.id, 
+            reportType: errorType.value,
             comment: comments,
           });
     
