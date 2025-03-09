@@ -26,6 +26,11 @@ model Building {
   created_at          DateTime?        @db.Timestamp(6)
   updated_at          DateTime?        @db.Timestamp(6)
   name                String           @db.VarChar(255)
+
+  centroid_lat        Float
+  centroid_lon         Float
+  area               Float
+
   rendering_entity_id Int?
   renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   edge                Edge[]
@@ -76,6 +81,7 @@ model Floor {
   created_at          DateTime?        @db.Timestamp(6)
   updated_at          DateTime?        @db.Timestamp(6)
   name                String           @db.VarChar(255)
+  area               Float
   rendering_entity_id Int?
   building_id        Int?
   edge                Edge[] @relation("EdgeFloor")
@@ -131,11 +137,16 @@ model Room {
   name                String           @db.VarChar(255)
   rendering_entity_id Int?
   floor_id            Int?
+
+  centroid_lat        Float
+  centroid_lon         Float
+  area               Float
+
   edge                Edge[]
   node                Node[]
   renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   floor              Floor?            @relation(fields: [floor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  roomType            RoomTypeEnum?
+  roomType            String?
   reports             Report[]
 
   @@index([id], map: "ix_room_id")
@@ -174,14 +185,6 @@ enum NodeTypeEnum {
   ELEVATOR
 
   @@map("nodetypeenum")
-}
-
-enum RoomTypeEnum {
-    // TODO add all the room types 
-    BATHROOM
-    ELEVATOR
-
-  @@map("roomtypeenum")
 }
 
 enum ReportTypeEnum {

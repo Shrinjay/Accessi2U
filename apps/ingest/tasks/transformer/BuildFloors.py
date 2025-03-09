@@ -1,4 +1,5 @@
 import luigi
+import shapely
 import luigi.contrib.postgres
 import json
 import typing
@@ -44,11 +45,15 @@ class BuildFloors(luigi.Task):
         
         level = int(feature.properties['FL_ID'][:2])
 
+        shapely_building = shapely.geometry.shape(feature.geometry)
+        area = shapely.area(shapely_building)
+
         return Floor(
             name=name,
             level=level,
             rendering_entity_id=rendering_entity.id,
-            building_id=building_id
+            building_id=building_id,
+            area=area
         )
 
     def run(self):

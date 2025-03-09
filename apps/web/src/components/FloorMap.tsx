@@ -9,8 +9,10 @@ import {
   Popup,
   FeatureGroup,
   Marker,
+  Tooltip,
 } from 'react-leaflet';
 import L, { divIcon } from 'leaflet';
+import currentLocationIcon from './icons/circle-solid.svg';
 import 'leaflet/dist/leaflet.css';
 import ReportMenu from './ReportMenu';
 import { Button, Heading, useDisclosure, Text, Box, Modal, Flex } from '@chakra-ui/react';
@@ -19,6 +21,7 @@ import { RoomViewModel, useRooms } from '../hooks/useRooms';
 import { useBuildings } from '../hooks/useBuildings';
 import { getListHash } from '../../../server/src/lib/util';
 import { Floor } from 'database';
+import { Point } from 'geojson';
 
 function ChangeView({ center }) {
   const map = useMap();
@@ -39,6 +42,14 @@ type Props = {
   roomsAlongPath?: RoomViewModel[];
 };
 
+const ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR = ['Corridor/Circulation Area', 'Stairs', 'Elevators'];
+
+const roomToCentroidGeoJson = (room: RoomViewModel): GeoJSON.Feature => ({
+  type: 'Feature',
+  properties: { rm_id: room.id, RM_NM: room.name },
+  geometry: { type: 'Point', coordinates: [room.centroid_lat, room.centroid_lon] },
+});
+
 const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props) => {
   const [selectedRoom, setSelectedRoom] = useState<RoomViewModel>(null);
   const [selectedRoomName, setSelectedRoomName] = useState(null);
@@ -48,6 +59,13 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
   const curFloor = selectedFloor?.name;
   const { rooms } = useRooms({ floorId: selectedFloor?.id });
   const { buildings } = useBuildings();
+
+  const roomCentroids = rooms
+    ?.filter((room) => {
+      const shouldBeShown = !ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR.includes(room.roomType);
+      return room.area > 5e-9 && shouldBeShown;
+    })
+    ?.map(roomToCentroidGeoJson);
 
   useEffect(() => {
     if (selectedRoom != null) {
@@ -89,15 +107,6 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
       return {
         weight: 1,
         fillColor: '#00b32c',
-        color: 'white',
-      };
-    }
-
-    if (isCurrRoom && !isLastRoom) {
-      // currently in room
-      return {
-        weight: 1,
-        fillColor: '#0044d5',
         color: 'white',
       };
     }
@@ -170,16 +179,24 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
     // }
   };
 
-  const customMarkerIcon = (text) =>
-    divIcon({
+  const getRoomNameLabel = ({ properties }, latlng) => {
+    return new L.divIcon({
       className: 'icon',
-      html: text,
+      style: {
+        fontSize: '10px',
+      },
+      html: `
+      <p style="font-size:10px;">${properties.RM_NM.split(' ')[1]}</p>
+      `,
       iconSize: [30, 30],
-      iconAnchor: [10, 5],
     });
+  };
 
-  const setIcon = ({ properties }, latlng) => {
-    return L.marker(latlng, { icon: customMarkerIcon(properties.rm_id) });
+  const getCurrentLocationIcon = () => {
+    return new L.Icon({
+      iconUrl: currentLocationIcon,
+      iconSize: [12, 12],
+    });
   };
 
   const floorFilter = ({ properties }) => {
@@ -191,14 +208,14 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
     }
   };
 
-  const classNumFilter = ({ properties }) => {
-    // https://gis.stackexchange.com/questions/189988/filtering-geojson-data-to-include-in-leaflet-map
-    if (properties['FL_NM'] === curFloor && properties['rm_standard'] === 'Classroom') {
-      return true;
-    } else {
-      return false;
-    }
-  };
+  // const classNumFilter = ({ properties }) => {
+  //   // https://gis.stackexchange.com/questions/189988/filtering-geojson-data-to-include-in-leaflet-map
+  //   if (properties['FL_NM'] === curFloor && properties['rm_standard'] === 'Classroom') {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // };
 
   const otherNumFilter = ({ properties }) => {
     // https://gis.stackexchange.com/questions/189988/filtering-geojson-data-to-include-in-leaflet-map
@@ -245,7 +262,13 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
         <ChangeView center={center} />
         <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/light_nolabels/{z}/{x}/{y}.png" />
         <LayerGroup>
-          {currRoom && <Marker position={[currRoom?.geoJson?.properties?.lat, currRoom?.geoJson?.properties?.lon]} />}
+          {currRoom && (
+            <Marker
+              position={[currRoom?.geoJson?.properties?.lat, currRoom?.geoJson?.properties?.lon]}
+              // @ts-ignore
+              icon={getCurrentLocationIcon()}
+            />
+          )}
           {buildings?.map((building, index) => {
             return (
               <GeoJSON
@@ -308,13 +331,15 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
             );
           })}
 
-          {/* <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={classNumFilter} key={curFloor} /> */}
-
-          {/* <LayersControl position={'topright'}>
-            <LayersControl.Overlay checked={false} name={'Other Room Numbers'}>
-              <GeoJSON data={rooms_centroids} pointToLayer={setIcon} filter={otherNumFilter} key={curFloor} />
-            </LayersControl.Overlay>
-          </LayersControl> */}
+          {roomCentroids?.map?.((room, index) => {
+            return (
+              <Marker
+                position={(room.geometry as Point).coordinates}
+                // @ts-ignore
+                icon={getRoomNameLabel(room, (room.geometry as Point).coordinates)}
+              />
+            );
+          })}
         </LayerGroup>
       </MapContainer>
       <Modal blockScrollOnMount={true} isOpen={isOpen} onClose={onClose}>

@@ -1,11 +1,16 @@
 import * as Yup from 'yup';
-import { RoomTypeEnum, ReportTypeEnum } from 'database';
+import { ReportTypeEnum } from 'database';
 import { prisma } from '../../config/prisma.js';
 import { procedure } from '../procedure.js';
 
 const input = Yup.object({
   roomId: Yup.number().required(),
 });
+
+export enum RoomTypeEnum {
+  ELEVATOR = 'Elevators',
+  BATHROOM = 'Toilets/Showers',
+}
 
 export const getReportTypes = procedure.input(input).query(async ({ ctx, input }) => {
   const { roomId } = input;

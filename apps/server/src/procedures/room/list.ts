@@ -18,6 +18,9 @@ export const listRooms = procedure.input(input).query(async ({ ctx, input }) => 
       ...(buildingId && { building_id: buildingId }),
       ...(floorId && { floor_id: floorId }),
     },
+    include: {
+      floor: true,
+    },
   });
 
   if (roomIds) {

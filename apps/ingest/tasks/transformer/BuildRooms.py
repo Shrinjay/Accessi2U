@@ -2,6 +2,7 @@ import luigi
 import luigi.contrib.postgres
 import json
 import typing
+import shapely
 import sqlmodel
 
 from common.file_system.FileSystem import FileSystem
@@ -19,6 +20,7 @@ from tasks.util.json import load_as_json
 
 from tasks.transformer.BuildFloors import BuildFloors
 from constants import ROOM_DATA_PATH
+from tasks.util.properties import PropertyType
 
 
 class BuildRooms(luigi.Task):
@@ -42,11 +44,21 @@ class BuildRooms(luigi.Task):
         name = feature.properties['RM_NM']
         fl_nm = feature.properties["FL_NM"]
         floor_id = floors_by_name.get(fl_nm)
+        room_type = feature.properties[PropertyType.RM_STANDARD.value]
+        print("room_type", room_type)
+
+        shapely_room = shapely.geometry.shape(feature.geometry)
+        centroid = shapely.centroid(shapely_room)
+        area = shapely.area(shapely_room)
 
         return Room(
             name=name,
             rendering_entity_id=rendering_entity.id,
             floor_id=floor_id,
+            roomType=room_type,
+            centroid_lat=centroid.y,
+            centroid_lon=centroid.x,
+            area=area
         )
 
 
