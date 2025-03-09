@@ -11,7 +11,9 @@ export type RoomViewModel = Partial<
 >;
 
 export const useRooms = (roomIds?: number[]) => {
-  const { isLoading, data: rooms } = trpc.listRooms.useQuery({ roomIds }, { enabled: true });
+  const { isLoading, data: rooms } = trpc.listRooms.useQuery(!!roomIds?.length ? { roomIds } : undefined, {
+    enabled: !roomIds?.length || roomIds.every(Boolean),
+  });
   const { isLoading: isRendering, data: roomGeoJsons } = trpc.render.useQuery({
     renderingEntitiyIds: rooms?.map((room) => room.rendering_entity_id) || [],
   });
