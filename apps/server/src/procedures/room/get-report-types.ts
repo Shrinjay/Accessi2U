@@ -1,30 +1,27 @@
 import * as Yup from 'yup';
-import { RoomTypeEnum, ReportTypeEnum,} from 'database';
+import { RoomTypeEnum, ReportTypeEnum } from 'database';
 import { prisma } from '../../config/prisma.js';
 import { procedure } from '../procedure.js';
 
 const input = Yup.object({
-    roomId: Yup.number().required()
+  roomId: Yup.number().required(),
 });
 
 export const getReportTypes = procedure.input(input).query(async ({ ctx, input }) => {
-    const { roomId } = input;
+  const { roomId } = input;
 
-    const room = await prisma.room.findUniqueOrThrow({
-        where: { id: roomId },
-      });
+  const room = await prisma.room.findUniqueOrThrow({
+    where: { id: roomId },
+  });
 
-    const DEFAULT_REPORT_TYPES = [
-        ReportTypeEnum.MISLABELED,
-        ReportTypeEnum.OTHER
-    ]
+  const DEFAULT_REPORT_TYPES = [ReportTypeEnum.MISLABELED, ReportTypeEnum.OTHER];
 
-    switch (room.roomType) {
-        case RoomTypeEnum.ELEVATOR:
-            return [...DEFAULT_REPORT_TYPES, ReportTypeEnum.ELEVATOR_OUT_OF_SERVICE]
-        case RoomTypeEnum.BATHROOM:
-                return [...DEFAULT_REPORT_TYPES, ReportTypeEnum.BATHROOM_NOT_ACCESSIBLE]
-        default:
-            return DEFAULT_REPORT_TYPES
-    }
+  switch (room.roomType) {
+    case RoomTypeEnum.ELEVATOR:
+      return [...DEFAULT_REPORT_TYPES, ReportTypeEnum.ELEVATOR_OUT_OF_SERVICE];
+    case RoomTypeEnum.BATHROOM:
+      return [...DEFAULT_REPORT_TYPES, ReportTypeEnum.BATHROOM_NOT_ACCESSIBLE];
+    default:
+      return DEFAULT_REPORT_TYPES;
+  }
 });
