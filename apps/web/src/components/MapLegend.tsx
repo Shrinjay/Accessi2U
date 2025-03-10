@@ -1,11 +1,11 @@
-import {Button, HStack, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverTrigger, Square, Text } from "@chakra-ui/react";
+import {Button, HStack, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, PopoverContent, PopoverTrigger, Square, Text, VStack } from "@chakra-ui/react";
 
 export default function MapLegend() {
     return(
         <>
-            <Popover placement='bottom-start'>
+            <Popover placement='bottom-start' >
                 <PopoverTrigger >
-                    <Button style={{
+                    <Button  style={{
                         position: 'absolute',
                         right: 10,
                         top: 10,
@@ -21,15 +21,16 @@ export default function MapLegend() {
                         borderRadius={4}
                         borderColor={"darkgrey"}
                         borderWidth={2}
-                        >
+                    >
                         Legend
                     </Button>
                 </PopoverTrigger>
+
                 <PopoverContent color="black" bg="white" borderColor="darkgrey" borderWidth={2} borderRadius={4} width={180}>
                     <PopoverCloseButton borderColor="darkgrey" borderWidth={2}/>
                     <PopoverArrow bg='white' borderColor="darkgrey"/>
                     <PopoverBody>
-                        <HStack>
+                        <HStack >
                             <Square size="3" bg="#B38BC0"/>
                             <Text fontSize={'md'}  >Start/End Room</Text>
                         </HStack>

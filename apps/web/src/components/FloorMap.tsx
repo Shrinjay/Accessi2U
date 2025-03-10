@@ -22,6 +22,7 @@ import { useBuildings } from '../hooks/useBuildings';
 import { getListHash } from '../../../server/src/lib/util';
 import { Floor } from 'database';
 import { Point } from 'geojson';
+import MapLegend from './MapLegend';
 
 function ChangeView({ center }) {
   const map = useMap();
@@ -228,28 +229,8 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
 
   return (
     <Flex>
-      <Button
-        onClick={onOpen}
-        size="lg"
-        colorScheme="purple"
-        bg="purple.500"
-        fontSize="20px"
-        _hover={{ bg: '#67487d' }}
-        _active={{ bg: '#67487d' }}
-        fontWeight="bold"
-        borderRadius="6px"
-        px="12px"
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 75,
-          marginInline: 'auto',
-          zIndex: 1000,
-        }}
-      >
-        Report Issue
-      </Button>
+      <MapLegend />
+
       <MapContainer
         // @ts-ignore
         center={center}
@@ -259,13 +240,13 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
         maxZoom={21}
         minZoom={18}
       >
-        <TileLayer
+        {/* <TileLayer
           //  @ts-ignore
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+          // attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url='https://tile.osm.ch/switzerland/{z}/{x}/{y}.png'
           maxZoom={21}
           tms={true}
-        />
+        /> */}
         <ChangeView center={center} />
         <LayerGroup>
           {currRoom && (
@@ -348,6 +329,30 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
           })}
         </LayerGroup>
       </MapContainer>
+
+      <Button
+        onClick={onOpen}
+        size="lg"
+        colorScheme="purple"
+        bg="purple.500"
+        fontSize="20px"
+        _hover={{ bg: '#67487d' }}
+        _active={{ bg: '#67487d' }}
+        fontWeight="bold"
+        borderRadius="6px"
+        px="12px"
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 75,
+          marginInline: 'auto',
+          zIndex: 1000,
+        }}
+      >
+        Report Issue
+      </Button>
+
       <Modal blockScrollOnMount={true} isOpen={isOpen} onClose={onClose}>
         <ReportMenu onClose={onClose} selectedRoom={selectedRoom} />
       </Modal>

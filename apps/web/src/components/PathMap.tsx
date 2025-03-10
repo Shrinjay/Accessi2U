@@ -156,8 +156,6 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
         roomsAlongPath={roomsAlongPath as any}
       />
 
-      <MapLegend />
-
       <Text
         style={{
           position: 'absolute',
@@ -179,11 +177,11 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
             onClick={() => prevFloor()}
             style={{
               position: 'absolute',
-              left: 0,
+              left: 2,
               top: '40%',
               zIndex: 1000,
             }}
-          />{' '}
+          />
         </>
       )}
 
@@ -195,7 +193,7 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
             onClick={() => nextFloor()}
             style={{
               position: 'absolute',
-              right: 0,
+              right: 2,
               top: '40%',
               zIndex: 1000,
             }}
