@@ -1,4 +1,4 @@
-import { Edge, Room, Node, NodeTypeEnum, Prisma, EdgeTypeEnum } from 'database';
+import { Edge, Room, Node, NodeTypeEnum, EdgeTypeEnum } from 'database';
 import { _room } from './index.js';
 import { _node } from '../node/index.js';
 import { _edge } from '../edge/index.js';
@@ -19,6 +19,7 @@ const dfsPathInHypergraph = async (
   toNode: Node,
   path: Edge[] = [],
   visitedEdgeIds: Set<number> = new Set(),
+  visitedNodeIds: Set<number> = new Set(),
 ): Promise<Edge[]> => {
   // add edge to visited edge ids
   // check if node is at a different floor than current node
@@ -35,6 +36,7 @@ const dfsPathInHypergraph = async (
   // get all of their edges that are not in visited edge ids
   // dfs those edges
 
+  const nextVisitedNodeIds = new Set(visitedNodeIds);
   const nextVisitedEdgeIds = visitedEdgeIds.add(edge.id);
   const nextPath = [...path, edge];
 
@@ -50,30 +52,55 @@ const dfsPathInHypergraph = async (
   );
   const isDifferentFloor = edge.floor_id !== toNode.floor_id;
   if (isDifferentFloor && elevatorOrStairNodes.length > 0) {
-    const outgoingInterfloorEdges = await Promise.all(elevatorOrStairNodes.map((node) => _node.edges(node)))
-      .then((edges) => edges.flat())
-      .then((edges) => edges.filter((edge) => !visitedEdgeIds.has(edge.id)));
+    const outgoingInterfloorEdgesNested = [];
 
-    const nextPaths = await Promise.all(
-      outgoingInterfloorEdges.map((edge) => dfsPathInHypergraph(edge, toNode, nextPath, nextVisitedEdgeIds)),
+    for (const node of elevatorOrStairNodes) {
+      if (visitedNodeIds.has(node.id)) {
+        continue;
+      }
+      nextVisitedNodeIds.add(node.id);
+      const outgoingInterfloorEdges = await _node.edges(node);
+      outgoingInterfloorEdgesNested.push(outgoingInterfloorEdges);
+    }
+
+    const outgoingInterfloorEdges = outgoingInterfloorEdgesNested.flat().filter((edge) => !visitedEdgeIds.has(edge.id));
+
+    return await Promise.any(
+      outgoingInterfloorEdges.map((edge) =>
+        dfsPathInHypergraph(edge, toNode, nextPath, nextVisitedEdgeIds, nextVisitedNodeIds),
+      ),
     );
-
-    return nextPaths.find(Boolean) || null;
   }
 
-  const connectionNodes = nodes.filter((node) => node.node_type === NodeTypeEnum.CONNECTION_POINT);
-  const outgoingEdges = await Promise.all(connectionNodes.map((connNode) => _node.edges(connNode)))
-    .then((edges) => edges.flat())
-    .then((edges) => edges.filter((edge) => !visitedEdgeIds.has(edge.id)))
-    .then((edges) => edges.filter((edge) => edge.edge_type === EdgeTypeEnum.REGULAR));
+  const connectionNodes = nodes
+    .filter((node) => {
+      if (visitedNodeIds.has(node.id)) {
+        return false;
+      }
+      nextVisitedNodeIds.add(node.id);
+      return true;
+    })
+    .filter((node) => node.node_type === NodeTypeEnum.CONNECTION_POINT);
+
+  const outgoingEdgesNested = [];
+
+  for (const node of connectionNodes) {
+    const outgoingEdges = await _node.edges(node);
+    outgoingEdgesNested.push(outgoingEdges);
+  }
+
+  const outgoingEdges = outgoingEdgesNested
+    .flat()
+    .filter((edge) => edge.edge_type === EdgeTypeEnum.REGULAR)
+    .filter((edge) => !visitedEdgeIds.has(edge.id));
 
   if (outgoingEdges.length === 0) {
-    return null;
+    throw new Error('No path found');
   }
 
-  const nextPaths = await Promise.all(
-    outgoingEdges.map((edge) => dfsPathInHypergraph(edge, toNode, nextPath, nextVisitedEdgeIds)),
+  const foundPath = await Promise.any(
+    outgoingEdges.map((edge) => dfsPathInHypergraph(edge, toNode, nextPath, nextVisitedEdgeIds, nextVisitedNodeIds)),
   );
 
-  return nextPaths.find(Boolean) || null;
+  return foundPath;
 };

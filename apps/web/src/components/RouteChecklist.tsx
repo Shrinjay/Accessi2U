@@ -17,22 +17,68 @@ import {
   ModalBody,
 } from '@chakra-ui/react';
 import { theme } from '../styles';
+import { RoomViewModel, RoomTypeEnum } from '../hooks/useRooms';
 
-export default function RouteChecklist({ roomList, checkedIndex, setCheckedIndex }) {
-  const [fullRoomData, setFullRoomData] = useState(roomList);
+type Step = {
+  index: number;
+  roomName: string;
+  instructions: string;
+};
+
+type Props = {
+  roomsAlongPath: RoomViewModel[];
+  checkedIndex: number;
+  setCheckedIndex: (index: number) => void;
+};
+
+export default function RouteChecklist({ roomsAlongPath, checkedIndex, setCheckedIndex }: Props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  useEffect(() => {
-    const setData = async () => {
-      const newRooms = [];
-      for (let i = 0; i < roomList.length; i++) {
-        const newDict = { index: i, roomName: roomList[i], instructions: 'Go to this location next' };
-        newRooms.push(newDict);
-      }
-      setFullRoomData(newRooms);
+  const toStep = (room: RoomViewModel, index: number): Step => {
+    const partialStep = {
+      index: index,
+      roomName: room.name,
     };
-    setData();
-  }, []);
+
+    if (index === 0) {
+      return {
+        ...partialStep,
+        instructions: `Start at room ${room.name}`,
+      };
+    }
+
+    if (index === roomsAlongPath.length - 1) {
+      return {
+        ...partialStep,
+        instructions: `Arrive at room ${room.name}`,
+      };
+    }
+
+    switch (room.roomType) {
+      case RoomTypeEnum.CORRIDOR:
+        return {
+          ...partialStep,
+          instructions: `Walk down corridor ${room.name} until you reach the next corridor`,
+        };
+      case RoomTypeEnum.ELEVATOR:
+        return {
+          ...partialStep,
+          instructions: `Take the elevator ${room.name} the next floor`,
+        };
+      case RoomTypeEnum.STAIR:
+        return {
+          ...partialStep,
+          instructions: `Take the stairs to the next floor`,
+        };
+      default:
+        return {
+          ...partialStep,
+          instructions: `Go to room ${room.name} next`,
+        };
+    }
+  };
+
+  const steps: Step[] = roomsAlongPath?.map((room, index) => toStep(room, index)) || [];
 
   const handleCheck = (event) => {
     if (event.target.checked) {
@@ -45,8 +91,8 @@ export default function RouteChecklist({ roomList, checkedIndex, setCheckedIndex
   return (
     <>
       <Stack divider={<StackDivider />} spacing="3">
-        {fullRoomData.map((room) => (
-          <Box key={room} style={theme}>
+        {steps.map((room) => (
+          <Box key={room.index} style={theme}>
             <HStack>
               <Heading size="sm" textTransform="uppercase">
                 {room.roomName}

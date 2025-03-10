@@ -16,6 +16,12 @@ type UseRoomInput = {
   roomIds?: number[];
 };
 
+export enum RoomTypeEnum {
+  CORRIDOR = 'Corridor/Circulation Area',
+  ELEVATOR = 'Elevators',
+  STAIR = 'Stairs',
+}
+
 export const useRooms = ({ buildingId, floorId, roomIds }: UseRoomInput, enabled = true) => {
   const { isLoading, data: rooms } = trpc.listRooms.useQuery({ buildingId, floorId, roomIds }, { enabled });
   const { isLoading: isRendering, data: roomGeoJsons } = trpc.render.useQuery({
