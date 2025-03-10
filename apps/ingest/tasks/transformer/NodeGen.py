@@ -220,6 +220,7 @@ class NodeGen(luigi.Task):
             building_id=from_node.building_id,
             floor_id=from_node.floor_id,
             edge_type=EdgeTypeEnum.INTER_FLOOR,
+            room_id=from_node.room_id,
             to_floor_id=to_node.floor_id
         )
 
@@ -244,6 +245,7 @@ class NodeGen(luigi.Task):
 
             features_by_id_by_floor_by_building[building_id][floor_id][feature_id] = feature
 
+        print('features', features_by_id_by_floor_by_building.keys())
         node_by_feature_id = {}
         num_without_node = 0
         for building_id, features_by_id_by_floor in features_by_id_by_floor_by_building.items():
@@ -266,7 +268,7 @@ class NodeGen(luigi.Task):
                     (idx, feature_id) for idx, feature_id in enumerate(corridors_by_feature_id.keys())
                 )
 
-                engine = adj.AdjacencyEngine(shapely_rooms, shapely_corridors, [*shapely_corridors, *shapely_rooms])
+                engine = adj.AdjacencyEngine(shapely_rooms, shapely_corridors, max_distance=0.00002)
                 adjacency_by_idx = engine.get_adjacency_dict()
                 adjacency_tuples = [
                             (

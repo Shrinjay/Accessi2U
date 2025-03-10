@@ -49,7 +49,6 @@ const dfsPathInHypergraph = async (
     (node) => node.node_type === NodeTypeEnum.ELEVATOR || node.node_type === NodeTypeEnum.STAIR,
   );
   const isDifferentFloor = edge.floor_id !== toNode.floor_id;
-  console.log(isDifferentFloor, elevatorOrStairNodes);
   if (isDifferentFloor && elevatorOrStairNodes.length > 0) {
     const outgoingInterfloorEdges = await Promise.all(elevatorOrStairNodes.map((node) => _node.edges(node)))
       .then((edges) => edges.flat())
@@ -58,7 +57,6 @@ const dfsPathInHypergraph = async (
     const nextPaths = await Promise.all(
       outgoingInterfloorEdges.map((edge) => dfsPathInHypergraph(edge, toNode, nextPath, nextVisitedEdgeIds)),
     );
-    console.log(nextPaths);
 
     return nextPaths.find(Boolean) || null;
   }

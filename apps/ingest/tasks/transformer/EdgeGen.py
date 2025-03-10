@@ -160,17 +160,13 @@ class EdgeGen(luigi.Task):
 
                 self.edge_service.create_many(list(edges_by_feature_id.values()))
 
-                non_corridors = [feature for feature in features_by_id.values() if not is_corridor(feature)]
-
                 shapely_corridors = [shapely.geometry.shape(corridor.geometry) for corridor in corridors_by_feature_id.values()]
                 # use this to retrieve the feature ids from the indexes that geo_adjacency gives to us
                 feature_id_by_idx = dict(
                     (idx, feature_id) for idx, feature_id in enumerate(corridors_by_feature_id.keys())
                 )
 
-                shapely_non_corridors = [shapely.geometry.shape(non_corridor.geometry) for non_corridor in non_corridors]
-
-                engine = adj.AdjacencyEngine(shapely_corridors, shapely_corridors, [*shapely_non_corridors, *shapely_corridors])
+                engine = adj.AdjacencyEngine(shapely_corridors, shapely_corridors, max_distance=0.00001)
                 adjacency_by_idx = engine.get_adjacency_dict()
                 adjacency_tuples = [
                             (
