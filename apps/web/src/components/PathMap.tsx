@@ -147,7 +147,7 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
   });
 
   return (
-    <Flex display="flex" justifyContent={'center'} background="white" {...swipeHandlers}>
+    <Flex display="flex" justifyContent={'center'} background="white" {...swipeHandlers} style={{position: "absolute"}}>
       <FloorMap
         selectedFloor={selectedFloor}
         center={center as any}
@@ -175,7 +175,7 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
         <>
           <ArrowLeftIcon
             boxSize={10}
-            color={'darkgray'}
+            color={'67487d'}
             onClick={() => prevFloor()}
             style={{
               position: 'absolute',
@@ -191,7 +191,7 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
         <>
           <ArrowRightIcon
             boxSize={10}
-            color={'darkgray'}
+            color={'67487d'}
             onClick={() => nextFloor()}
             style={{
               position: 'absolute',

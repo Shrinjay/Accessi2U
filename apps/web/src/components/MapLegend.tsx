@@ -7,7 +7,7 @@ export default function MapLegend() {
                 <PopoverTrigger >
                     <Button style={{
                         position: 'absolute',
-                        left: 50,
+                        right: 10,
                         top: 10,
                         zIndex: 1000
                         }}
