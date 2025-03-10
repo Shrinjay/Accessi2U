@@ -12,9 +12,12 @@ import {
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
 import { theme } from '../styles';
+import { useSubmitReport } from '../hooks/useSubmitReport';
+import { trpc } from '../trpc';
 import { useRooms } from '../hooks/useRooms';
 
 export default function ReportMenu({ passedRoom, onClose, defaultRoom }) {
+  const { submitReport, isSubmitting, error } = useSubmitReport();
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [fullRoomData, setFullRoomData] = useState(passedRoom);
   const [errorType, setErrorType] = useState(null);
@@ -42,6 +45,21 @@ export default function ReportMenu({ passedRoom, onClose, defaultRoom }) {
 
   const handleChange = (event) => setComments(event.target.value);
 
+  const handleSubmit = async () => {
+    if (!valuesConfirmed) return;
+
+    try {
+      await submitReport({
+        roomId: selectedRoom.id,
+        reportType: errorType.value,
+        comment: comments,
+      });
+
+      onClose(); // Close modal on successful submission
+    } catch (err) {
+      console.error('Error submitting report:', err);
+    }
+  };
   return (
     <>
       <ModalOverlay />
@@ -115,7 +133,7 @@ export default function ReportMenu({ passedRoom, onClose, defaultRoom }) {
 
             {/* TODO: Add error message indicating what is necessary to fill in */}
             <Button
-              onClick={onClose}
+              onClick={handleSubmit}
               disabled={!valuesConfirmed}
               alignSelf="center"
               mb="2"

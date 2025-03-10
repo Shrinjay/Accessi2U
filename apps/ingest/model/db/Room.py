@@ -23,3 +23,4 @@ class Room(sqlmodel.SQLModel, table=True):
         default=None,
         foreign_key="floor.id"
     )
+    room_type: str = sqlmodel.Field(default="unknown", max_length=255)

@@ -35,7 +35,6 @@ model Building {
   renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   edge                Edge[]
   node                Node[]
-  floors             Floor[]
 
   @@index([id], map: "ix_building_id")
   @@map("building")
@@ -83,13 +82,10 @@ model Floor {
   name                String           @db.VarChar(255)
   area               Float
   rendering_entity_id Int?
-  building_id        Int?
   edge                Edge[] @relation("EdgeFloor")
   edges_from_other_floors Edge[] @relation("EdgeToFloor")
-  building            Building?       @relation(fields: [building_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   node                Node[]
-  rooms              Room[]
 
   @@index([id], map: "ix_floor_id")
   @@map("floor")
@@ -136,6 +132,7 @@ model Room {
   updated_at          DateTime?        @db.Timestamp(6)
   name                String           @db.VarChar(255)
   rendering_entity_id Int?
+<<<<<<< HEAD
   floor_id            Int?
 
   centroid_lat        Float
@@ -147,6 +144,12 @@ model Room {
   renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   floor              Floor?            @relation(fields: [floor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   roomType            String?
+=======
+  edge                Edge[]
+  node                Node[]
+  renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  room_type           RoomTypeEnum
+>>>>>>> c3fd672de5fb668bc8c0119545b9a0e425f2878a
   reports             Report[]
 
   @@index([id], map: "ix_room_id")
@@ -184,7 +187,20 @@ enum NodeTypeEnum {
   STAIR
   ELEVATOR
 
+<<<<<<< HEAD
   @@map("nodetypeenum")
+=======
+  @@map("nodetype_enum")
+}
+
+enum RoomTypeEnum {
+    // TODO add all the room types 
+    BATHROOM
+    ELEVATOR
+    CLASSROOM
+
+  @@map("roomtype_enum")
+>>>>>>> c3fd672de5fb668bc8c0119545b9a0e425f2878a
 }
 
 enum ReportTypeEnum {

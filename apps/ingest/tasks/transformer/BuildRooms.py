@@ -22,7 +22,6 @@ from tasks.transformer.BuildFloors import BuildFloors
 from constants import ROOM_DATA_PATH
 from tasks.util.properties import PropertyType
 
-
 class BuildRooms(luigi.Task):
     """
     Takes in a map of ID -> Features for a room/building/floor
@@ -45,7 +44,6 @@ class BuildRooms(luigi.Task):
         fl_nm = feature.properties["FL_NM"]
         floor_id = floors_by_name.get(fl_nm)
         room_type = feature.properties[PropertyType.RM_STANDARD.value]
-        print("room_type", room_type)
 
         shapely_room = shapely.geometry.shape(feature.geometry)
         centroid = shapely.centroid(shapely_room)
@@ -100,6 +98,7 @@ class BuildRooms(luigi.Task):
         return luigi.contrib.postgres.PostgresTarget(
             host=DATABASE_HOST,
             database=DATABASE_NAME,
+            port=DATABASE_PORT,
             user=DATABASE_USER,
             password=DATABASE_PASSWORD,
             port=DATABASE_PORT,
