@@ -7,12 +7,12 @@ import shapely
 import collections
 
 from tasks.util.json import load_as_json
-from tasks.util.list import flatten_list
 from tasks.util.properties import PropertyType, RmStandard
 from tasks.transformer.BuildIDMap import BuildIDMap
+from tasks.transformer.BuildRooms import BuildRooms
 
 from common.file_system.FileSystem import FileSystem
-from common.env.env import DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD
+from common.env.env import DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD, DATABASE_PORT
 
 from model.UnitFeatureCollection import UnitFeature
 from model.db.Edge import Edge, EdgeTypeEnum
@@ -99,7 +99,7 @@ class EdgeGen(luigi.Task):
     TABLE_NAME = 'adjacency'
 
     def requires(self):
-        return BuildIDMap(self.file_path, self.entity_type)
+        return [BuildIDMap(self.file_path, self.entity_type), BuildRooms()]
 
     def _create_edge_from_corridor_feature(self, building_id: str, floor_id: str, corridor: UnitFeature) -> Edge:
         building = self.building_service.get_building_by_name(building_id)
@@ -113,7 +113,7 @@ class EdgeGen(luigi.Task):
             edge_type=EdgeTypeEnum.REGULAR
         )
 
-        return self.edge_service.create(edge)
+        return edge
 
     def _create_connection_point_node(self, building_id: str, floor_id: str, c1: Edge, c2: Edge):
         building = self.building_service.get_building_by_name(building_id)
@@ -131,7 +131,7 @@ class EdgeGen(luigi.Task):
 
 
     def run(self):
-        feature_str_by_id = load_as_json(self.input())
+        feature_str_by_id = load_as_json(self.input()[0])
         features_by_id: typing.Dict[int, UnitFeature] = {id: UnitFeature.parse_obj(json.loads(feature)) for id, feature in feature_str_by_id.items()}
 
         features_by_id_by_floor_by_building = {}
@@ -158,6 +158,8 @@ class EdgeGen(luigi.Task):
                 for feature_id, corridor in corridors_by_feature_id.items():
                     edges_by_feature_id[feature_id] = self._create_edge_from_corridor_feature(building_id, floor_id, corridor)
 
+                self.edge_service.create_many(list(edges_by_feature_id.values()))
+
                 non_corridors = [feature for feature in features_by_id.values() if not is_corridor(feature)]
 
                 shapely_corridors = [shapely.geometry.shape(corridor.geometry) for corridor in corridors_by_feature_id.values()]
@@ -168,7 +170,7 @@ class EdgeGen(luigi.Task):
 
                 shapely_non_corridors = [shapely.geometry.shape(non_corridor.geometry) for non_corridor in non_corridors]
 
-                engine = adj.AdjacencyEngine(shapely_corridors, shapely_corridors, shapely_non_corridors, densify_features=True)
+                engine = adj.AdjacencyEngine(shapely_corridors, shapely_corridors, [*shapely_non_corridors, *shapely_corridors])
                 adjacency_by_idx = engine.get_adjacency_dict()
                 adjacency_tuples = [
                             (
@@ -193,6 +195,7 @@ class EdgeGen(luigi.Task):
         return luigi.contrib.postgres.PostgresTarget(
             host=DATABASE_HOST,
             database=DATABASE_NAME,
+            port=DATABASE_PORT,
             user=DATABASE_USER,
             password=DATABASE_PASSWORD,
             table=self.TABLE_NAME,

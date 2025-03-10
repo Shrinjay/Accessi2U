@@ -17,7 +17,9 @@ export const useTrpc = () => {
       }),
   );
 
-  const [trpcClient] = useState(() => trpc.createClient({ links: [httpLink({ url: 'http://localhost:8000/trpc' })] }));
+  const [trpcClient] = useState(() =>
+    trpc.createClient({ links: [httpLink({ url: `${import.meta.env.VITE_API_URL}/trpc` })] }),
+  );
 
   return {
     trpcQueryClient,

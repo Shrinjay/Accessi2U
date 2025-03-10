@@ -2,10 +2,12 @@ import luigi
 import luigi.contrib.postgres
 import json
 import typing
+
+import shapely
 import sqlmodel
 
 from common.file_system.FileSystem import FileSystem
-from common.env.env import DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD
+from common.env.env import DATABASE_HOST, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD, DATABASE_PORT
 from common.db import engine
 
 from model.UnitFeatureCollection import UnitFeature
@@ -16,16 +18,18 @@ from tasks.transformer.BuildIDMap import BuildIDMap
 from tasks.transformer.BuildRenderingEntities import BuildRenderingEntities
 from tasks.util.json import load_as_json
 
+from constants import BUILDING_DATA_PATH
+
 
 class BuildBuildings(luigi.Task):
     """
     Takes in a map of ID -> Features for a room/building/floor
     and builds rendering entity models out of it
     """
-    file_path = luigi.PathParameter()
+    file_path = BUILDING_DATA_PATH
     file_system = FileSystem()
 
-    TABLE_NAME = 'building'
+    TABLE_NAME = 'build_buildings_complete'
 
     def requires(self):
         return [
@@ -36,13 +40,21 @@ class BuildBuildings(luigi.Task):
     def _build_building(self, feature_id: int, feature: UnitFeature, rendering_entity: RenderingEntity) -> Building:
         name = feature.properties['NAME']
 
+        shapely_building = shapely.geometry.shape(feature.geometry)
+        centroid = shapely.centroid(shapely_building)
+        area = shapely.area(shapely_building)
+
         return Building(
             name=name,
             rendering_entity_id=rendering_entity.id,
+            centroid_lat=centroid.y,
+            centroid_lon=centroid.x,
+            area=area
         )
 
     def run(self):
         feature_str_by_id, rendering_entities_str_by_id = [load_as_json(input) for input in self.input()]
+        print({id: json.loads(feature) for id, feature in feature_str_by_id.items()})
         features_by_id: typing.Dict[int, UnitFeature] = {id: UnitFeature.parse_obj(json.loads(feature)) for id, feature in feature_str_by_id.items()}
         rendering_entities_by_id: typing.Dict[int, RenderingEntity] = {id: RenderingEntity.parse_obj(json.loads(rendering_entity)) for id, rendering_entity in rendering_entities_str_by_id.items()}
 
@@ -53,12 +65,16 @@ class BuildBuildings(luigi.Task):
         with session:
             for building in building_by_id.values():
                 session.add(building)
-                session.commit()
+            session.commit()
+
+        with self.output().connect() as connection:
+            self.output().touch(connection)
 
     def output(self):
         return luigi.contrib.postgres.PostgresTarget(
             host=DATABASE_HOST,
             database=DATABASE_NAME,
+            port=DATABASE_PORT,
             user=DATABASE_USER,
             password=DATABASE_PASSWORD,
             table=self.TABLE_NAME,

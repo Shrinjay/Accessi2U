@@ -13,6 +13,7 @@ class UnitFeature(pydantic.BaseModel):
     type: str = "Feature"
     id: int
     geometry: dict
+    properties: dict
 
 
 class UnitFeatureCollection(pydantic.BaseModel):

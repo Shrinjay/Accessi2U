@@ -36,22 +36,24 @@ class BuildRenderingEntities(luigi.Task):
 
     def _build_rendering_entity(self, feature: UnitFeature):
         geometry = feature.json()
-        geometry_file = self.file_system.write(FileSystemEnum.LOCAL, f'./out/tmp/{uuid.uuid4()}.json', geometry)
-
+        geometry_file = self.file_system.write(FileSystemEnum.MINIO, f'out/{uuid.uuid4()}.json', geometry)
+        print(f"built rendering entity {feature.id}")
         rendering_entity = RenderingEntity(file_id=geometry_file.id)
         return rendering_entity
 
     def run(self):
         feature_dict_by_id: typing.Dict[int, str] = load_as_json(self.input())
         features_by_id: typing.Dict[int, UnitFeature] = {id: UnitFeature.parse_obj(json.loads(feature)) for id, feature in feature_dict_by_id.items()}
-        rendering_entities_by_id = {id: self._build_rendering_entity(feature) for id, feature in features_by_id.items()}
+        rendering_entities_by_id = {id: self._build_rendering_entity(feature) for id, feature in list(features_by_id.items())}
 
         session = sqlmodel.Session(engine)
 
         with session:
             for id, rendering_entity in rendering_entities_by_id.items():
                 session.add(rendering_entity)
+            print("Added rendering entities to session")
             session.commit()
+            print("Committed rendering entities")
 
             for id, rendering_entity in rendering_entities_by_id.items():
                 session.refresh(rendering_entity)

@@ -15,4 +15,9 @@ class Floor(sqlmodel.SQLModel, table=True):
 
     name: str = sqlmodel.Field(max_length=255)
     level: int = sqlmodel.Field()
+    area: float = sqlmodel.Field()
     rendering_entity_id: typing.Optional[int] = sqlmodel.Field(default=None, foreign_key="renderingentity.id")
+    building_id: typing.Optional[int] = sqlmodel.Field(
+        default=None,
+        foreign_key="building.id"
+    )

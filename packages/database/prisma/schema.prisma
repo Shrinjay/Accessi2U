@@ -26,10 +26,16 @@ model Building {
   created_at          DateTime?        @db.Timestamp(6)
   updated_at          DateTime?        @db.Timestamp(6)
   name                String           @db.VarChar(255)
+
+  centroid_lat        Float
+  centroid_lon         Float
+  area               Float
+
   rendering_entity_id Int?
   renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   edge                Edge[]
   node                Node[]
+  floors             Floor[]
 
   @@index([id], map: "ix_building_id")
   @@map("building")
@@ -75,11 +81,15 @@ model Floor {
   created_at          DateTime?        @db.Timestamp(6)
   updated_at          DateTime?        @db.Timestamp(6)
   name                String           @db.VarChar(255)
+  area               Float
   rendering_entity_id Int?
+  building_id        Int?
   edge                Edge[] @relation("EdgeFloor")
   edges_from_other_floors Edge[] @relation("EdgeToFloor")
+  building            Building?       @relation(fields: [building_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   node                Node[]
+  rooms              Room[]
 
   @@index([id], map: "ix_floor_id")
   @@map("floor")
@@ -126,12 +136,35 @@ model Room {
   updated_at          DateTime?        @db.Timestamp(6)
   name                String           @db.VarChar(255)
   rendering_entity_id Int?
+  floor_id            Int?
+
+  centroid_lat        Float
+  centroid_lon         Float
+  area               Float
+
   edge                Edge[]
   node                Node[]
   renderingentity     RenderingEntity? @relation(fields: [rendering_entity_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  floor              Floor?            @relation(fields: [floor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  roomType            String?
+  reports             Report[]
 
   @@index([id], map: "ix_room_id")
   @@map("room")
+}
+
+model Report {
+  id          Int       @id @default(autoincrement())
+  created_at  DateTime? @db.Timestamp(6) @default(now())
+  updated_at  DateTime? @db.Timestamp(6) @updatedAt
+
+  room        Room?     @relation(fields: [room_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  room_id     Int
+
+  reportType ReportTypeEnum
+  comment String?
+
+  @@map("report")
 }
 
 model alembic_version {
@@ -140,8 +173,9 @@ model alembic_version {
 
 enum FileSystemEnum {
   LOCAL
+  MINIO
 
-  @@map("filesystem_enum")
+  @@map("filesystemenum")
 }
 
 enum NodeTypeEnum {
@@ -150,12 +184,23 @@ enum NodeTypeEnum {
   STAIR
   ELEVATOR
 
-  @@map("nodetype_enum")
+  @@map("nodetypeenum")
+}
+
+enum ReportTypeEnum {
+  // TODO add all the report types
+  ELEVATOR_OUT_OF_SERVICE
+  BATHROOM_NOT_ACCESSIBLE
+  UNDER_MAINTENANCE
+
+  MISLABELED
+  OTHER
+  @@map("reporttypeenum")
 }
 
 enum EdgeTypeEnum {
   REGULAR
   INTER_FLOOR
 
-  @@map("edgetype_enum")
+  @@map("edgetypeenum")
 }
