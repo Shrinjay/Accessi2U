@@ -1,10 +1,9 @@
 import sqlmodel
 
-from common.env.env import DATABASE_URL
 from common.file_system.LocalFileSystem import LocalFileSystem
-from common.file_system.MinIOFileSystem import MinIOFileSystem
 from common.file_system import FileSystemEnum
 from common.db import engine
+from common.file_system.MinIOFileSystem import MinIOFileSystem
 
 from model.db.File import File
 

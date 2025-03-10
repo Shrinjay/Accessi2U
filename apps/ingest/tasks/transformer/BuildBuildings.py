@@ -73,9 +73,9 @@ class BuildBuildings(luigi.Task):
         return luigi.contrib.postgres.PostgresTarget(
             host=DATABASE_HOST,
             database=DATABASE_NAME,
+            port=DATABASE_PORT,
             user=DATABASE_USER,
             password=DATABASE_PASSWORD,
-            port=DATABASE_PORT,
             table=self.TABLE_NAME,
             update_id=self.task_id
         )

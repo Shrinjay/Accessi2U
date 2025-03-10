@@ -15,3 +15,4 @@ DATABASE_PASSWORD = parsed_url.password
 DATABASE_HOST = parsed_url.hostname
 DATABASE_NAME = parsed_url.path[1:]
 DATABASE_PORT = parsed_url.port
+

@@ -155,8 +155,8 @@ model Room {
 
 model Report {
   id          Int       @id @default(autoincrement())
-  created_at  DateTime? @db.Timestamp(6)
-  updated_at  DateTime? @db.Timestamp(6)
+  created_at  DateTime? @db.Timestamp(6) @default(now())
+  updated_at  DateTime? @db.Timestamp(6) @updatedAt
 
   room        Room?     @relation(fields: [room_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   room_id     Int
@@ -191,6 +191,8 @@ enum ReportTypeEnum {
   // TODO add all the report types
   ELEVATOR_OUT_OF_SERVICE
   BATHROOM_NOT_ACCESSIBLE
+  UNDER_MAINTENANCE
+
   MISLABELED
   OTHER
   @@map("reporttypeenum")

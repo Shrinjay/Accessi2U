@@ -19,7 +19,7 @@ export const getReportTypes = procedure.input(input).query(async ({ ctx, input }
     where: { id: roomId },
   });
 
-  const DEFAULT_REPORT_TYPES = [ReportTypeEnum.MISLABELED, ReportTypeEnum.OTHER];
+  const DEFAULT_REPORT_TYPES = [ReportTypeEnum.MISLABELED, ReportTypeEnum.UNDER_MAINTENANCE, ReportTypeEnum.OTHER];
 
   switch (room.roomType) {
     case RoomTypeEnum.ELEVATOR:
