@@ -259,8 +259,14 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
         maxZoom={21}
         minZoom={18}
       >
+        <TileLayer
+          //  @ts-ignore
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+          maxZoom={21}
+          tms={true}
+        />
         <ChangeView center={center} />
-        <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/light_nolabels/{z}/{x}/{y}.png" />
         <LayerGroup>
           {currRoom && (
             <Marker
