@@ -13,23 +13,28 @@ export type RenderedEntity = RenderingEntity & {
 };
 
 export const render = procedure.input(input).query(async ({ ctx, input }) => {
-  const { renderingEntitiyIds } = input;
+  try {
+    const { renderingEntitiyIds } = input;
 
-  const renderingEntities = await prisma.renderingEntity.findMany({
-    where: { id: { in: renderingEntitiyIds } },
-    include: { file: true },
-  });
+    const renderingEntities = await prisma.renderingEntity.findMany({
+      where: { id: { in: renderingEntitiyIds } },
+      include: { file: true },
+    });
 
-  const renderedEntities = await Promise.all(
-    renderingEntities.map(async (renderingEntity) => {
-      const geoJson = await _renderingEntity.render(renderingEntity);
+    const renderedEntities = await Promise.all(
+      renderingEntities.map(async (renderingEntity) => {
+        const geoJson = await _renderingEntity.render(renderingEntity);
 
-      return {
-        ...renderingEntity,
-        geoJson,
-      };
-    }),
-  );
+        return {
+          ...renderingEntity,
+          geoJson,
+        };
+      }),
+    );
 
-  return renderedEntities;
+    return renderedEntities;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
 });

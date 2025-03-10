@@ -9,19 +9,20 @@ export class LocalFileSystem implements IFileSystem {
   constructor() {
     this.basePath = LOCAL_FILE_SYSTEM_BASE_PATH;
   }
-  createDir(dirPath: string): void {
+
+  async createDir(dirPath: string): Promise<void> {
     fs.mkdirSync(this._getPath(dirPath), { recursive: true });
   }
 
-  exists(filePath: string): boolean {
+  async exists(filePath: string): Promise<boolean> {
     return fs.existsSync(this._getPath(filePath));
   }
 
-  read(filePath: string): Buffer {
+  async read(filePath: string): Promise<Buffer> {
     return fs.readFileSync(this._getPath(filePath));
   }
 
-  write(filePath: string, content: string): void {
+  async write(filePath: string, content: string): Promise<void> {
     fs.writeFileSync(this._getPath(filePath), content, { flag: 'w+' });
   }
 

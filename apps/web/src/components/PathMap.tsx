@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-// import floor_centroids from "../../../ingest/data/floors_centroids_partial.json"
+import { useEffect, useMemo, useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import RouteChecklist from './RouteChecklist';
 import FloorMap from './FloorMap';
@@ -21,6 +20,9 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import { usePath } from '../hooks/usePath';
+import { useBuildings } from '../hooks/useBuildings';
+import { useFloors } from '../hooks/useFloors';
+import { useRooms } from '../hooks/useRooms';
 
 const floorList = ['DWE_01', 'DWE_02', 'RCH_01', 'RCH_02', 'RCH_03', 'CPH_01', 'E2_01', 'E2_02'];
 const roomList = ['RCH 101', 'RCH 122', 'RCH 123', 'RCH 119', 'RCH 103', 'RCH 105', 'RCH 120', 'RCH 212', 'RCH 301'];
@@ -66,27 +68,77 @@ const floorCentroidMap = {
   E7_07: [-80.53950832265619, 43.47296141278375],
 };
 
+// DWE
+const DEFAULT_CENTER = [43.47007771086484, -80.5395194675902];
+
 type Props = {
   startRoomId: number;
   endRoomId: number;
 };
 
 const PathMap = ({ startRoomId, endRoomId }: Props) => {
-  const [floorIndex, setFloorIndex] = useState(0);
-  const [curFloor, setCurFloor] = useState(floorList[0]);
-  const [center, setCenter] = useState([43.47028851150243, -80.54072575754529]);
+  const [selectedFloorId, setSelectedFloorId] = useState(undefined);
+  const [selectedBuildingId, setSelectedBuildingId] = useState(undefined);
+
+  const { buildings } = useBuildings();
+  const { floors } = useFloors(selectedBuildingId, !!selectedBuildingId);
+
+  const selectedBuilding = buildings?.find((building) => building.id === selectedBuildingId);
+  const selectedFloor = floors?.find((floor) => floor.id === selectedFloorId);
+
+  const floorIndex = floors?.findIndex((floor) => floor.id === selectedFloorId);
+
   const [checkedIndex, setCheckedIndex] = useState(-1);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { roomsAlongPath } = usePath(startRoomId, endRoomId);
+  const { rooms: startRooms } = useRooms({ roomIds: [startRoomId] }, !!startRoomId);
+  const { rooms: endRooms } = useRooms({ roomIds: [endRoomId] }, !!endRoomId);
+
+  const startRoom = startRooms?.[0];
+  const endRoom = endRooms?.[0];
+
+  const center = useMemo(() => {
+    if (!!selectedBuilding) return [selectedBuilding.centroid_lat, selectedBuilding.centroid_lon];
+    return DEFAULT_CENTER;
+  }, [selectedBuilding]);
 
   useEffect(() => {
-    setCurFloor(floorList[floorIndex]);
-    setCenter([floorCentroidMap[floorList[floorIndex]][1], floorCentroidMap[floorList[floorIndex]][0]]);
-  }, [floorIndex]);
+    if (!selectedBuilding && buildings?.length) {
+      setSelectedBuildingId(buildings[0].id);
+    }
+  }, [selectedBuildingId, buildings]);
+
+  useEffect(() => {
+    if (startRoom) {
+      setSelectedBuildingId(buildings.find((building) => building.id === startRoom.floor.building_id)?.id);
+      setSelectedFloorId(startRoom.floor.id);
+    }
+  }, [startRoom]);
+
+  console.log('selectedFloor', selectedFloor);
+  console.log('selectedBuilding', selectedBuilding);
+
+  useEffect(() => {
+    if (floors?.length && !selectedFloor) {
+      setSelectedFloorId(floors[0].id);
+    }
+  }, [selectedFloorId, floors]);
+
+  // useEffect(() => {
+  //   setCenter([floorCentroidMap[floorList[floorIndex]][1], floorCentroidMap[floorList[floorIndex]][0]]);
+  // }, [floorIndex]);
+
+  const nextFloor = () => {
+    setSelectedFloorId(floors[Math.min(floorIndex + 1, floorList.length - 1)].id);
+  };
+
+  const prevFloor = () => {
+    setSelectedFloorId(floors[Math.max(floorIndex - 1, 0)].id);
+  };
 
   const swipeHandlers = useSwipeable({
-    onSwipedLeft: () => setFloorIndex(Math.min(floorIndex + 1, floorList.length - 1)),
-    onSwipedRight: () => setFloorIndex(Math.max(floorIndex - 1, 0)),
+    onSwipedLeft: () => nextFloor(),
+    onSwipedRight: () => prevFloor(),
     onSwipedUp: onOpen,
     onSwipedDown: onClose,
     swipeDuration: 200,
@@ -95,13 +147,13 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
   });
 
   return (
-    <Flex display="flex" w="100%" justifyContent={'center'} background="white" {...swipeHandlers}>
+    <Flex display="flex" justifyContent={'center'} background="white" {...swipeHandlers}>
       <FloorMap
-        curFloor={curFloor}
-        center={center}
+        selectedFloor={selectedFloor}
+        center={center as any}
         checkedIndex={checkedIndex}
-        key={curFloor}
-        roomsAlongPath={roomsAlongPath}
+        key={selectedFloor?.id}
+        roomsAlongPath={roomsAlongPath as any}
       />
 
       <MapLegend />
@@ -116,17 +168,15 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
         fontSize={'2xl'}
         fontWeight="bold"
       >
-        {curFloor}
+        {selectedFloor?.name}
       </Text>
 
-      {floorIndex == 0 ? (
-        <> </>
-      ) : (
+      {floorIndex == 0 ? (<> </>) : (
         <>
           <ArrowLeftIcon
             boxSize={10}
             color={'darkgray'}
-            onClick={() => setFloorIndex(floorIndex - 1)}
+            onClick={() => prevFloor()}
             style={{
               position: 'absolute',
               left: 0,
@@ -142,7 +192,7 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
           <ArrowRightIcon
             boxSize={10}
             color={'darkgray'}
-            onClick={() => setFloorIndex(floorIndex + 1)}
+            onClick={() => nextFloor()}
             style={{
               position: 'absolute',
               right: 0,
@@ -151,9 +201,7 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
             }}
           />
         </>
-      ) : (
-        <> </>
-      )}
+      ) : (<> </>)}
 
       <Button
         onClick={onOpen}

@@ -38,7 +38,9 @@ migrate-local-docker-db: check-alembic
 
 setup:  setup-local-dirs run-local-docker-db install-python-dependencies setup-local-dirs
 
-run-ingest:
+setup-staging: setup-local-dirs install-python-dependencies
+
+run-ingest: setup-local-dirs
 	@python3 main.py
 
 # Stoppers
@@ -51,6 +53,7 @@ remove-tmp:
 
 
 clean: stop-local-docker-db remove-tmp
+clean-staging: remove-tmp
 
 # Util
 install-psycopg2-mac:

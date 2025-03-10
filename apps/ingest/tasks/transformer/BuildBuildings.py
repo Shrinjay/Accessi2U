@@ -2,6 +2,8 @@ import luigi
 import luigi.contrib.postgres
 import json
 import typing
+
+import shapely
 import sqlmodel
 
 from common.file_system.FileSystem import FileSystem
@@ -27,7 +29,7 @@ class BuildBuildings(luigi.Task):
     file_path = BUILDING_DATA_PATH
     file_system = FileSystem()
 
-    TABLE_NAME = BUILDING_DATA_PATH
+    TABLE_NAME = 'build_buildings_complete'
 
     def requires(self):
         return [
@@ -38,9 +40,16 @@ class BuildBuildings(luigi.Task):
     def _build_building(self, feature_id: int, feature: UnitFeature, rendering_entity: RenderingEntity) -> Building:
         name = feature.properties['NAME']
 
+        shapely_building = shapely.geometry.shape(feature.geometry)
+        centroid = shapely.centroid(shapely_building)
+        area = shapely.area(shapely_building)
+
         return Building(
             name=name,
             rendering_entity_id=rendering_entity.id,
+            centroid_lat=centroid.y,
+            centroid_lon=centroid.x,
+            area=area
         )
 
     def run(self):

@@ -2,12 +2,16 @@ import { Floor } from 'database';
 import { trpc } from '../trpc';
 import { useMemo } from 'react';
 
-export type FloorViewModel = Floor & {
-  geoJson?: GeoJSON.Feature;
-};
+export type FloorViewModel = Partial<
+  Omit<Floor, 'created_at' | 'updated_at'> & {
+    created_at: string;
+    updated_at: string;
+    geoJson?: GeoJSON.Feature;
+  }
+>;
 
-export const useFloors = () => {
-  const { isLoading, data: floors } = trpc.listFloors.useQuery(undefined, { enabled: true });
+export const useFloors = (buildingId?: number, enabled = true) => {
+  const { isLoading, data: floors } = trpc.listFloors.useQuery({ buildingId }, { enabled });
 
   const { isLoading: isRendering, data: floorGeoJsons } = trpc.render.useQuery({
     renderingEntitiyIds: floors?.map((floor) => floor.rendering_entity_id) || [],
