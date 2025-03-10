@@ -192,7 +192,6 @@ class EdgeGen(luigi.Task):
         self.output().touch()
 
     def output(self):
-        print('host=', DATABASE_HOST,' database=', DATABASE_NAME,' user=', DATABASE_USER,' password=', DATABASE_PASSWORD, 'port =', DATABASE_PORT)
         return luigi.contrib.postgres.PostgresTarget(
             host=DATABASE_HOST,
             database=DATABASE_NAME,
