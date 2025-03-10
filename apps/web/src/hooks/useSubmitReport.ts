@@ -1,7 +1,11 @@
-import { trpc } from "../trpc";
+import { trpc } from '../trpc';
 
-export const useSubmitReport = () => {
+export const useSubmitReport = (roomId: number) => {
   const mutation = trpc.submitReport.useMutation();
+  const { data: reportTypes, isLoading: isLoadingReportTypes } = trpc.getReportTypes.useQuery(
+    { roomId },
+    { enabled: !!roomId },
+  );
 
   const submitReport = async ({ roomId, reportType, comment }) => {
     try {
@@ -12,15 +16,18 @@ export const useSubmitReport = () => {
       });
       return response;
     } catch (error) {
-      throw new Error(error.message || "Failed to submit report");
+      throw new Error(error.message || 'Failed to submit report');
     }
   };
 
   return {
+    reportTypes,
+    isLoadingReportTypes,
+
     submitReport,
-    isSubmitting: mutation.status === "pending",
-    isSuccess: mutation.status === "success",
-    isError: mutation.status === "error",
-    error: mutation.error
+    isSubmitting: mutation.status === 'pending',
+    isSuccess: mutation.status === 'success',
+    isError: mutation.status === 'error',
+    error: mutation.error,
   };
 };

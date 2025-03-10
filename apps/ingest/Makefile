@@ -31,7 +31,7 @@ run-local-docker-db:
  		-e POSTGRES_PASSWORD=postgres \
  		-e POSTGRES_USER=postgres \
  		-e POSTGRES_DB=ingest \
- 		-d -p 8080:5432 postgres:$(POSTGRES_IMAGE_VERSION)
+ 		-d -p 5432:5432 postgres:$(POSTGRES_IMAGE_VERSION)
 
 migrate-local-docker-db: check-alembic
 	@alembic upgrade head

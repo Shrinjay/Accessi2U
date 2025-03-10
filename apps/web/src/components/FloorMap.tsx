@@ -343,7 +343,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
         </LayerGroup>
       </MapContainer>
       <Modal blockScrollOnMount={true} isOpen={isOpen} onClose={onClose}>
-        <ReportMenu onClose={onClose} passedRoom={selectedRoom} defaultRoom={selectedRoomName} />
+        <ReportMenu onClose={onClose} selectedRoom={selectedRoom} />
       </Modal>
     </Flex>
   );
