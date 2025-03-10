@@ -54,7 +54,6 @@ class BuildBuildings(luigi.Task):
 
     def run(self):
         feature_str_by_id, rendering_entities_str_by_id = [load_as_json(input) for input in self.input()]
-        print({id: json.loads(feature) for id, feature in feature_str_by_id.items()})
         features_by_id: typing.Dict[int, UnitFeature] = {id: UnitFeature.parse_obj(json.loads(feature)) for id, feature in feature_str_by_id.items()}
         rendering_entities_by_id: typing.Dict[int, RenderingEntity] = {id: RenderingEntity.parse_obj(json.loads(rendering_entity)) for id, rendering_entity in rendering_entities_str_by_id.items()}
 
