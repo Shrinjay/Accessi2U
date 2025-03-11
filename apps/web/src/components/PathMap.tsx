@@ -4,7 +4,7 @@ import RouteChecklist from './RouteChecklist';
 import FloorMap from './FloorMap';
 import MapLegend from './MapLegend';
 import 'leaflet/dist/leaflet.css';
-import { ArrowRightIcon, ArrowLeftIcon } from '@chakra-ui/icons';
+import { ArrowRightIcon, ArrowLeftIcon, ArrowUpIcon, ArrowDownIcon } from '@chakra-ui/icons';
 import {
   Button,
   Drawer,
@@ -175,7 +175,7 @@ const PathMap = ({ roomsAlongPath, menuOpen }: Props) => {
                 borderRadius="6px"
                 p={4}
               >
-                {isOpen ? 'Close' : 'Open'} Checklist
+                {isOpen ? <ArrowDownIcon /> : <ArrowUpIcon />}
               </Button>
             </HStack>
           </DrawerHeader>
@@ -184,6 +184,7 @@ const PathMap = ({ roomsAlongPath, menuOpen }: Props) => {
               roomsAlongPath={roomsAlongPath}
               setCheckedIndex={setCheckedIndex}
               checkedIndex={checkedIndex}
+              isOpened={isOpen}
             />
           </DrawerBody>
         </DrawerContent>

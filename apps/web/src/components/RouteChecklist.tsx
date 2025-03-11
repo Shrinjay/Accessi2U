@@ -15,6 +15,7 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
+  Spacer,
 } from '@chakra-ui/react';
 import { theme } from '../styles';
 import { RoomViewModel, RoomTypeEnum } from '../hooks/useRooms';
@@ -29,9 +30,10 @@ type Props = {
   roomsAlongPath: RoomViewModel[];
   checkedIndex: number;
   setCheckedIndex: (index: number) => void;
+  isOpened: boolean;
 };
 
-export default function RouteChecklist({ roomsAlongPath, checkedIndex, setCheckedIndex }: Props) {
+export default function RouteChecklist({ roomsAlongPath, checkedIndex, setCheckedIndex, isOpened }: Props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const toStep = (room: RoomViewModel, index: number): Step => {
@@ -58,7 +60,7 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
       case RoomTypeEnum.CORRIDOR:
         return {
           ...partialStep,
-          instructions: `Walk down corridor ${room.name} until you reach the next corridor`,
+          instructions: `Walk down hallway ${room.name} until you reach the end of the hallway`,
         };
       case RoomTypeEnum.ELEVATOR:
         return {
@@ -93,8 +95,9 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
       <Stack divider={<StackDivider />} spacing="3">
         {steps
           .sort((a, b) => {
+            if (isOpened) return a.index - b.index;
+
             const isChecked = (index: number) => {
-              console.log('i tried', index, checkedIndex, index <= checkedIndex);
               return index <= checkedIndex;
             };
 
@@ -108,7 +111,7 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
                 <Heading size="sm" textTransform="uppercase">
                   {room.roomName}
                 </Heading>
-
+                <Spacer />
                 <Checkbox
                   value={room.index}
                   size="md"
