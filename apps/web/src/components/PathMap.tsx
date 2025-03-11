@@ -18,6 +18,7 @@ import {
   Box,
   Text,
   Flex,
+  HStack,
 } from '@chakra-ui/react';
 import { usePath } from '../hooks/usePath';
 import { useBuildings } from '../hooks/useBuildings';
@@ -156,50 +157,45 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
         roomsAlongPath={roomsAlongPath as any}
       />
 
-      <Text
+      <Box
         style={{
           position: 'absolute',
-          top: 5,
+          top: 50,
           marginInline: 'auto',
           zIndex: 1000,
-        }}
-        fontSize={'2xl'}
-        fontWeight="bold"
-      >
-        {selectedFloor?.name}
-      </Text>
+        }}>
+        <HStack>
+          {floorIndex == 0 ? (<> </>) : (
+            <> <ArrowLeftIcon
+                boxSize={6}
+                color={'#67487d'}
+                onClick={() => prevFloor()}
+                borderColor='#67487d'
+                borderWidth={2}
+                borderRadius={5}
+            /></>
+          )}
 
-      {floorIndex == 0 ? (<> </>) : (
-        <>
-          <ArrowLeftIcon
-            boxSize={10}
-            color={'67487d'}
-            onClick={() => prevFloor()}
-            style={{
-              position: 'absolute',
-              left: 2,
-              top: '40%',
-              zIndex: 1000,
-            }}
-          />
-        </>
-      )}
+          <Text
+            fontSize={'2xl'}
+            fontWeight="bold"
+          >
+            Floor: {selectedFloor?.name}
+          </Text>
 
-      {floorIndex < floorList.length - 1 ? (
-        <>
-          <ArrowRightIcon
-            boxSize={10}
-            color={'67487d'}
-            onClick={() => nextFloor()}
-            style={{
-              position: 'absolute',
-              right: 2,
-              top: '40%',
-              zIndex: 1000,
-            }}
-          />
-        </>
-      ) : (<> </>)}
+          {floorIndex < floorList.length - 1 ? (
+            <> <ArrowRightIcon
+                boxSize={6}
+                color={'#67487d'}
+                onClick={() => nextFloor()}
+                borderColor='#67487d'
+                borderWidth={2}
+                borderRadius={5}/> </>
+          ) : (<> </>)}
+        </HStack>
+
+      </Box>
+      
 
       <Button
         onClick={onOpen}

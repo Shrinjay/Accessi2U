@@ -330,7 +330,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
         </LayerGroup>
       </MapContainer>
 
-      <Button
+      {/* <Button
         onClick={onOpen}
         size="lg"
         colorScheme="purple"
@@ -351,7 +351,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
         }}
       >
         Report Issue
-      </Button>
+      </Button> */}
 
       <Modal blockScrollOnMount={true} isOpen={isOpen} onClose={onClose}>
         <ReportMenu onClose={onClose} selectedRoom={selectedRoom} />

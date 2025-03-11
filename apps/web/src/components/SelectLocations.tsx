@@ -167,16 +167,14 @@ export default function SelectLocations() {
               zIndex: 1000,
               width: 145
             }}
+            colorScheme="purple"
             p="2"
-            color="black"
-            bg="white"
-            _hover={{ bg: "#DDDDDD" }}
-            _active={{ bg: "#DDDDDD" }}
+            color="white"
+            bg="purple.500"
+            _hover={{ bg: '#67487d' }}
+            _active={{ bg: '#67487d' }}
             display="flex"
             flexDirection="column"
-            borderRadius={4}
-            borderColor={"darkgrey"}
-            borderWidth={2}
             onClick={changeMenuVisibility}
             >
           Open Route Select
