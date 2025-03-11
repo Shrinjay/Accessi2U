@@ -60,7 +60,7 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
       case RoomTypeEnum.CORRIDOR:
         return {
           ...partialStep,
-          instructions: `Walk down hallway ${room.name} until you reach the end of the hallway`,
+          instructions: `Walk down the hallway until you reach the end`,
         };
       case RoomTypeEnum.ELEVATOR:
         return {
