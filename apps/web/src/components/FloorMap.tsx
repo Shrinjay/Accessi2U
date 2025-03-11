@@ -61,6 +61,8 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
   const { rooms } = useRooms({ floorId: selectedFloor?.id });
   const { buildings } = useBuildings();
 
+  // console.log(rooms);
+
   const roomCentroids = rooms
     ?.filter((room) => {
       const shouldBeShown = !ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR.includes(room.roomType);
@@ -128,56 +130,6 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
         color: 'white',
       };
     }
-
-    // TODO: Restore the ability to deliniate room types on path by color
-    // if (checkedIndex < 0) {
-    //   if (properties['USE_TYPE'] == 'Stairs' || properties['USE_TYPE'] == 'Elevators') {
-    //     return {
-    //       // rooms on route
-    //       weight: 1,
-    //       fillColor: '#ffff00',
-    //       color: 'white',
-    //     };
-    //   } else {
-    //     return {
-    //       // rooms on route
-    //       weight: 1,
-    //       fillColor: '#ffff00',
-    //       color: 'white',
-    //     };
-    //   }
-    // } else {
-    //   // at least 1 step marked as completed
-    //   if (roomList.indexOf(properties['RM_NM']) < checkedIndex) {
-    //     // room has been visited
-    //     return {
-    //       weight: 1,
-    //       fillColor: '#0044d5',
-    //       color: 'white',
-    //     };
-    //   } else if (roomList.indexOf(properties['RM_NM']) == checkedIndex) {
-    //     // currently in room
-    //     return {
-    //       weight: 1,
-    //       fillColor: '#00b32c',
-    //       color: 'white',
-    //     };
-    //   } else if (properties['USE_TYPE'] == 'Stairs' || properties['USE_TYPE'] == 'Elevators') {
-    //     // staircase or elevator on route
-    //     return {
-    //       weight: 1,
-    //       fillColor: '#ffff00',
-    //       color: 'white',
-    //     };
-    //   } else {
-    //     // room is unvisited
-    //     return {
-    //       weight: 1,
-    //       fillColor: '#ffff00',
-    //       color: 'white',
-    //     };
-    //   }
-    // }
   };
 
   const getRoomNameLabel = ({ properties }, latlng) => {

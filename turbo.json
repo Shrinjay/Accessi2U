@@ -5,8 +5,11 @@
     "db:generate": {
       "cache": false
     },
+    "db:build": {
+      "dependsOn": ["^db:generate"]
+    },
     "build": {
-      "dependsOn": ["^db:generate", "^build"],
+      "dependsOn": ["^db:build", "^build"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {
