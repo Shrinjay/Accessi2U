@@ -73,8 +73,6 @@ const PathMap = ({ roomsAlongPath, menuOpen }: Props) => {
     }
   }, [checkedRoom]);
 
-  console.log('selectedFloor', selectedFloor);
-
   useEffect(() => {
     if (floors?.length && !selectedFloor) {
       setSelectedFloorId(floors[0].id);
@@ -161,9 +159,7 @@ const PathMap = ({ roomsAlongPath, menuOpen }: Props) => {
           )}
         </HStack>
       </Box>
-
-      <Drawer isOpen={!!roomsAlongPath?.length && !menuOpen} onClose={onClose} placement="bottom">
-        {isOpen && <DrawerOverlay />}
+      <Drawer isOpen onClose={onClose} placement="bottom" size="xs">
         <DrawerContent top={isOpen ? '15%' : '80%'}>
           <DrawerHeader>
             <HStack>
