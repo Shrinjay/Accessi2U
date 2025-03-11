@@ -19,19 +19,22 @@ import {
   Text,
   Flex,
   HStack,
+  Spacer,
 } from '@chakra-ui/react';
 import { usePath } from '../hooks/usePath';
 import { useBuildings } from '../hooks/useBuildings';
 import { useFloors } from '../hooks/useFloors';
 import { RoomViewModel, useRooms } from '../hooks/useRooms';
+
 // DWE
 const DEFAULT_CENTER = [43.47007771086484, -80.5395194675902];
 
 type Props = {
   roomsAlongPath: RoomViewModel[];
+  menuOpen: boolean;
 };
 
-const PathMap = ({ roomsAlongPath }: Props) => {
+const PathMap = ({ roomsAlongPath, menuOpen }: Props) => {
   const [selectedFloorId, setSelectedFloorId] = useState(undefined);
   const [selectedBuildingId, setSelectedBuildingId] = useState(undefined);
 
@@ -159,35 +162,28 @@ const PathMap = ({ roomsAlongPath }: Props) => {
         </HStack>
       </Box>
 
-      <Button
-        onClick={onOpen}
-        size="lg"
-        colorScheme="yellow"
-        bg="yellow.500"
-        fontSize="20px"
-        _hover={{ bg: '#D99A00' }}
-        _active={{ bg: '#C78C00' }}
-        fontWeight="bold"
-        borderRadius="6px"
-        px="12px"
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 5,
-          marginInline: 'auto',
-          zIndex: 1000,
-        }}
-      >
-        Open Checklist
-      </Button>
-
-      <Drawer isOpen={isOpen} onClose={onClose} placement="bottom" isFullHeight={true}>
-        <DrawerOverlay />
-        <DrawerContent>
-          <DrawerCloseButton />
+      <Drawer isOpen={!!roomsAlongPath?.length && !menuOpen} onClose={onClose} placement="bottom">
+        {isOpen && <DrawerOverlay />}
+        <DrawerContent top={isOpen ? '15%' : '85%'}>
           <DrawerHeader>
-            <Heading size="md">Step-by-Step Route</Heading>
+            <HStack>
+              <Heading size="md">Your Route</Heading>
+              <Spacer />
+              <Button
+                onClick={isOpen ? onClose : onOpen}
+                size="sm"
+                colorScheme="yellow"
+                bg="yellow.500"
+                fontSize="20px"
+                _hover={{ bg: '#D99A00' }}
+                _active={{ bg: '#C78C00' }}
+                fontWeight="bold"
+                borderRadius="6px"
+                p={4}
+              >
+                {isOpen ? 'Close' : 'Open'} Checklist
+              </Button>
+            </HStack>
           </DrawerHeader>
           <DrawerBody>
             <RouteChecklist

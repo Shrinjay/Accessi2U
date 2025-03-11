@@ -214,7 +214,7 @@ export default function SelectLocations() {
       )}
 
       {/* Right Panel (Map Area) */}
-      <PathMap roomsAlongPath={roomsAlongPath} />
+      <PathMap roomsAlongPath={roomsAlongPath} menuOpen={menuOpen} />
       {/* Add your map component here */}
     </Flex>
   );

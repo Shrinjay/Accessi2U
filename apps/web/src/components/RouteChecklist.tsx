@@ -91,24 +91,35 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
   return (
     <>
       <Stack divider={<StackDivider />} spacing="3">
-        {steps.map((room) => (
-          <Box key={room.index} style={theme}>
-            <HStack>
-              <Heading size="sm" textTransform="uppercase">
-                {room.roomName}
-              </Heading>
+        {steps
+          .sort((a, b) => {
+            const isChecked = (index: number) => {
+              console.log('i tried', index, checkedIndex, index <= checkedIndex);
+              return index <= checkedIndex;
+            };
 
-              <Checkbox
-                value={room.index}
-                size="md"
-                isChecked={room.index <= checkedIndex}
-                onChange={handleCheck}
-              ></Checkbox>
-            </HStack>
+            if (isChecked(a.index) && isChecked(b.index)) return a.index - b.index;
+            if (isChecked(a.index)) return 1;
+            if (isChecked(b.index)) return -1;
+          })
+          .map((room) => (
+            <Box key={room.index} style={theme}>
+              <HStack>
+                <Heading size="sm" textTransform="uppercase">
+                  {room.roomName}
+                </Heading>
 
-            <Text>{room.instructions}</Text>
-          </Box>
-        ))}
+                <Checkbox
+                  value={room.index}
+                  size="md"
+                  isChecked={room.index <= checkedIndex}
+                  onChange={handleCheck}
+                ></Checkbox>
+              </HStack>
+
+              <Text>{room.instructions}</Text>
+            </Box>
+          ))}
         {/* TODO: Make this work the way Carter expected it to */}
         {/* <Button
           alignSelf="center"
