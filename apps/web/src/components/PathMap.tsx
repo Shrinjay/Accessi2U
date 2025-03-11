@@ -90,21 +90,17 @@ const PathMap = ({ roomsAlongPath, menuOpen }: Props) => {
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => nextFloor(),
     onSwipedRight: () => prevFloor(),
-    onSwipedUp: onOpen,
+    onSwipedUp: () => {
+      console.log('up!');
+    },
     onSwipedDown: onClose,
-    swipeDuration: 200,
-    preventScrollOnSwipe: false,
+    swipeDuration: 100,
+    preventScrollOnSwipe: true,
     trackMouse: true,
   });
 
   return (
-    <Flex
-      display="flex"
-      justifyContent={'center'}
-      background="white"
-      {...swipeHandlers}
-      style={{ position: 'absolute' }}
-    >
+    <Flex display="flex" justifyContent={'center'} background="white" style={{ position: 'absolute' }}>
       <FloorMap
         selectedFloor={selectedFloor}
         center={center as any}
@@ -163,7 +159,7 @@ const PathMap = ({ roomsAlongPath, menuOpen }: Props) => {
       <Drawer isOpen={!!roomsAlongPath?.length && !menuOpen} onClose={onClose} placement="bottom">
         {isOpen && <DrawerOverlay />}
         <DrawerContent top={isOpen ? '15%' : '80%'}>
-          <DrawerHeader>
+          <DrawerHeader {...swipeHandlers}>
             <HStack>
               <Heading size="md">Your Route</Heading>
               <Spacer />

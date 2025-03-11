@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   TileLayer,
   GeoJSON,
@@ -10,6 +10,7 @@ import {
   FeatureGroup,
   Marker,
   Tooltip,
+  useMapEvents,
 } from 'react-leaflet';
 import L, { divIcon } from 'leaflet';
 import currentLocationIcon from './icons/circle-solid.svg';
@@ -23,6 +24,7 @@ import { getListHash } from '../../../server/src/lib/util';
 import { Floor } from 'database';
 import { Point } from 'geojson';
 import MapLegend from './MapLegend';
+import { ZoomChild } from './core/ZoomChild';
 
 function ChangeView({ center }) {
   const map = useMap();
@@ -51,22 +53,32 @@ const roomToCentroidGeoJson = (room: RoomViewModel): GeoJSON.Feature => ({
   geometry: { type: 'Point', coordinates: [room.centroid_lat, room.centroid_lon] },
 });
 
+const getMinArea = (zoomLevel: number) => {
+  if (zoomLevel <= 19) {
+    return 4e-9;
+  }
+
+  if (zoomLevel > 19) {
+    return 1e-9;
+  }
+};
+
 const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props) => {
   const [selectedRoom, setSelectedRoom] = useState<RoomViewModel>(null);
   const [selectedRoomName, setSelectedRoomName] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(19);
   const accessibilityMap = { Y: 'True', N: 'False' };
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const curFloor = selectedFloor?.name;
   const { rooms } = useRooms({ floorId: selectedFloor?.id });
   const { buildings } = useBuildings();
 
-  // console.log(rooms);
-
   const roomCentroids = rooms
     ?.filter((room) => {
       const shouldBeShown = !ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR.includes(room.roomType);
-      return room.area > 5e-9 && shouldBeShown;
+      return room.area > getMinArea(zoomLevel) && shouldBeShown;
     })
     ?.map(roomToCentroidGeoJson);
 
@@ -182,16 +194,16 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
   return (
     <Flex>
       <MapLegend />
-
       <MapContainer
         // @ts-ignore
         center={center}
-        zoom={19}
+        zoom={20}
         boxZoom={false}
         maxBoundsViscosity={1.0}
         maxZoom={21}
         minZoom={18}
       >
+        <ZoomChild setZoomLevel={setZoomLevel} />
         {/* <TileLayer
           //  @ts-ignore
           // attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
