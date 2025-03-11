@@ -109,7 +109,8 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
             <Text>{room.instructions}</Text>
           </Box>
         ))}
-        <Button
+        {/* TODO: Make this work the way Carter expected it to */}
+        {/* <Button
           alignSelf="center"
           mb="2"
           size="lg"
@@ -124,7 +125,7 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
           onClick={onOpen}
         >
           Route Completed
-        </Button>
+        </Button> */}
       </Stack>
 
       <Modal isOpen={isOpen} onClose={onClose} blockScrollOnMount={true}>

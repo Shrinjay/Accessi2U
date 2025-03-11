@@ -23,16 +23,15 @@ import {
 import { usePath } from '../hooks/usePath';
 import { useBuildings } from '../hooks/useBuildings';
 import { useFloors } from '../hooks/useFloors';
-import { useRooms } from '../hooks/useRooms';
+import { RoomViewModel, useRooms } from '../hooks/useRooms';
 // DWE
 const DEFAULT_CENTER = [43.47007771086484, -80.5395194675902];
 
 type Props = {
-  startRoomId: number;
-  endRoomId: number;
+  roomsAlongPath: RoomViewModel[];
 };
 
-const PathMap = ({ startRoomId, endRoomId }: Props) => {
+const PathMap = ({ roomsAlongPath }: Props) => {
   const [selectedFloorId, setSelectedFloorId] = useState(undefined);
   const [selectedBuildingId, setSelectedBuildingId] = useState(undefined);
 
@@ -46,7 +45,6 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
 
   const [checkedIndex, setCheckedIndex] = useState(-1);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { roomsAlongPath } = usePath(startRoomId, endRoomId);
 
   const checkedRoom = useMemo(() => {
     if (!roomsAlongPath?.length) return;
@@ -99,7 +97,13 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
   });
 
   return (
-    <Flex display="flex" justifyContent={'center'} background="white" {...swipeHandlers} style={{position: "absolute"}}>
+    <Flex
+      display="flex"
+      justifyContent={'center'}
+      background="white"
+      {...swipeHandlers}
+      style={{ position: 'absolute' }}
+    >
       <FloorMap
         selectedFloor={selectedFloor}
         center={center as any}
@@ -114,37 +118,45 @@ const PathMap = ({ startRoomId, endRoomId }: Props) => {
           top: 50,
           marginInline: 'auto',
           zIndex: 1000,
-        }}>
+        }}
+      >
         <HStack>
-          {floorIndex == 0 ? (<> </>) : (
-            <> <ArrowLeftIcon
+          {floorIndex == 0 ? (
+            <> </>
+          ) : (
+            <>
+              {' '}
+              <ArrowLeftIcon
                 boxSize={6}
                 color={'#67487d'}
                 onClick={() => prevFloor()}
-                borderColor='#67487d'
+                borderColor="#67487d"
                 borderWidth={2}
                 borderRadius={5}
-            /></>
+              />
+            </>
           )}
 
-          <Text
-            fontSize={'2xl'}
-            fontWeight="bold"
-          >
+          <Text fontSize={'2xl'} fontWeight="bold">
             Floor: {selectedFloor?.name}
           </Text>
 
-          {floorIndex < floorList.length - 1 ? (
-            <> <ArrowRightIcon
+          {floorIndex < floors?.length - 1 ? (
+            <>
+              {' '}
+              <ArrowRightIcon
                 boxSize={6}
                 color={'#67487d'}
                 onClick={() => nextFloor()}
-                borderColor='#67487d'
+                borderColor="#67487d"
                 borderWidth={2}
-                borderRadius={5}/> </>
-          ) : (<> </>)}
+                borderRadius={5}
+              />{' '}
+            </>
+          ) : (
+            <> </>
+          )}
         </HStack>
-
       </Box>
 
       <Button

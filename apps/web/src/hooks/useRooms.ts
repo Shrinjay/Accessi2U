@@ -1,9 +1,10 @@
 import { Room } from 'database';
 import { trpc } from '../trpc';
 import { useMemo, useState } from 'react';
+import { FloorViewModel } from './useFloors';
 
 export type RoomViewModel = Partial<
-  Omit<Room, 'created_at' | 'updated_at'> & {
+  Omit<Room & { floor: FloorViewModel }, 'created_at' | 'updated_at'> & {
     created_at: string;
     updated_at: string;
     geoJson: GeoJSON.Feature;

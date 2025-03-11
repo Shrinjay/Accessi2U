@@ -3,12 +3,16 @@ import { _room } from './index.js';
 import { _node } from '../node/index.js';
 import { _edge } from '../edge/index.js';
 
-export const pathToRoom = async (room: Room, toRoom: Room) => {
+type PathToRoomOptions = {
+  elevatorOnly: boolean;
+};
+
+export const pathToRoom = async (room: Room, toRoom: Room, options: PathToRoomOptions) => {
   const node = await _room.node(room);
   const toNode = await _room.node(toRoom);
 
   const initialEdges = await _node.edges(node);
-  const paths = await Promise.all(initialEdges.map((edge) => dfsPathInHypergraph(edge, toNode)));
+  const paths = await Promise.all(initialEdges.map((edge) => dfsPathInHypergraph(edge, toNode, options)));
 
   const path = paths.filter(Boolean).sort((a, b) => a.length - b.length)?.[0];
   return path;
@@ -17,6 +21,7 @@ export const pathToRoom = async (room: Room, toRoom: Room) => {
 const dfsPathInHypergraph = async (
   edge: Edge,
   toNode: Node,
+  pathToRoomOptions: PathToRoomOptions,
   path: Edge[] = [],
   visitedEdgeIds: Set<number> = new Set(),
   visitedNodeIds: Set<number> = new Set(),
@@ -47,14 +52,19 @@ const dfsPathInHypergraph = async (
     return nextPath;
   }
 
-  const elevatorOrStairNodes = nodes.filter(
-    (node) => node.node_type === NodeTypeEnum.ELEVATOR || node.node_type === NodeTypeEnum.STAIR,
-  );
+  const interFloorNodes = nodes.filter((node) => {
+    if (pathToRoomOptions.elevatorOnly) {
+      return node.node_type === NodeTypeEnum.ELEVATOR;
+    }
+
+    return node.node_type === NodeTypeEnum.ELEVATOR || node.node_type === NodeTypeEnum.STAIR;
+  });
+
   const isDifferentFloor = edge.floor_id !== toNode.floor_id;
-  if (isDifferentFloor && elevatorOrStairNodes.length > 0) {
+  if (isDifferentFloor && interFloorNodes.length > 0) {
     const outgoingInterfloorEdgesNested = [];
 
-    for (const node of elevatorOrStairNodes) {
+    for (const node of interFloorNodes) {
       if (visitedNodeIds.has(node.id)) {
         continue;
       }
@@ -67,7 +77,7 @@ const dfsPathInHypergraph = async (
 
     return await Promise.any(
       outgoingInterfloorEdges.map((edge) =>
-        dfsPathInHypergraph(edge, toNode, nextPath, nextVisitedEdgeIds, nextVisitedNodeIds),
+        dfsPathInHypergraph(edge, toNode, pathToRoomOptions, nextPath, nextVisitedEdgeIds, nextVisitedNodeIds),
       ),
     );
   }
@@ -99,7 +109,9 @@ const dfsPathInHypergraph = async (
   }
 
   const foundPath = await Promise.any(
-    outgoingEdges.map((edge) => dfsPathInHypergraph(edge, toNode, nextPath, nextVisitedEdgeIds, nextVisitedNodeIds)),
+    outgoingEdges.map((edge) =>
+      dfsPathInHypergraph(edge, toNode, pathToRoomOptions, nextPath, nextVisitedEdgeIds, nextVisitedNodeIds),
+    ),
   );
 
   return foundPath;
