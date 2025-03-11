@@ -164,7 +164,7 @@ const PathMap = ({ roomsAlongPath, menuOpen }: Props) => {
 
       <Drawer isOpen={!!roomsAlongPath?.length && !menuOpen} onClose={onClose} placement="bottom">
         {isOpen && <DrawerOverlay />}
-        <DrawerContent top={isOpen ? '15%' : '85%'}>
+        <DrawerContent top={isOpen ? '15%' : '80%'}>
           <DrawerHeader>
             <HStack>
               <Heading size="md">Your Route</Heading>
