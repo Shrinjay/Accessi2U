@@ -180,6 +180,7 @@ export default function SelectLocations() {
                   fontWeight="bold"
                   isDisabled={!completedInfo || isGeneratingPath}
                   onClick={pathSelected}
+                  isLoading={isGeneratingPath}
                 >
                   Confirm Route
                 </Button>
