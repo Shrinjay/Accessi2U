@@ -206,7 +206,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
       >
         {isLoading && (
           <Center h="full" bg="blackAlpha.200">
-            <Spinner size="xl" zIndex={99999} />
+            <Spinner size="xl" />
           </Center>
         )}
         <ZoomChild setZoomLevel={setZoomLevel} />
