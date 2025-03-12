@@ -20,11 +20,12 @@ import {
   Flex,
   HStack,
   Spacer,
+  Center,
+  Spinner,
 } from '@chakra-ui/react';
-import { usePath } from '../hooks/usePath';
 import { useBuildings } from '../hooks/useBuildings';
 import { useFloors } from '../hooks/useFloors';
-import { RoomViewModel, useRooms } from '../hooks/useRooms';
+import { RoomViewModel } from '../hooks/useRooms';
 
 // DWE
 const DEFAULT_CENTER = [43.47007771086484, -80.5395194675902];
@@ -32,14 +33,15 @@ const DEFAULT_CENTER = [43.47007771086484, -80.5395194675902];
 type Props = {
   roomsAlongPath: RoomViewModel[];
   menuOpen: boolean;
+  isLoading: boolean;
 };
 
-const PathMap = ({ roomsAlongPath, menuOpen }: Props) => {
+const PathMap = ({ roomsAlongPath, menuOpen, isLoading }: Props) => {
   const [selectedFloorId, setSelectedFloorId] = useState(undefined);
   const [selectedBuildingId, setSelectedBuildingId] = useState(undefined);
 
-  const { buildings } = useBuildings();
-  const { floors } = useFloors(selectedBuildingId, !!selectedBuildingId);
+  const { buildings, isLoading: isLoadingBuildings } = useBuildings();
+  const { floors, isLoading: isLoadingFloors } = useFloors(selectedBuildingId, !!selectedBuildingId);
 
   const selectedBuilding = buildings?.find((building) => building.id === selectedBuildingId);
   const selectedFloor = floors?.find((floor) => floor.id === selectedFloorId);
@@ -102,6 +104,7 @@ const PathMap = ({ roomsAlongPath, menuOpen }: Props) => {
   return (
     <Flex display="flex" justifyContent={'center'} background="white" style={{ position: 'absolute' }}>
       <FloorMap
+        isLoading={isLoading || isLoadingBuildings || isLoadingFloors}
         selectedFloor={selectedFloor}
         center={center as any}
         checkedIndex={checkedIndex}

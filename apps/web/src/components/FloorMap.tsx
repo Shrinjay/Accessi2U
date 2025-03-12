@@ -16,7 +16,7 @@ import L, { divIcon } from 'leaflet';
 import currentLocationIcon from './icons/circle-solid.svg';
 import 'leaflet/dist/leaflet.css';
 import ReportMenu from './ReportMenu';
-import { Button, Heading, useDisclosure, Text, Box, Modal, Flex } from '@chakra-ui/react';
+import { Button, Heading, useDisclosure, Text, Box, Modal, Flex, Center, Spinner } from '@chakra-ui/react';
 import { FloorViewModel, useFloors } from '../hooks/useFloors';
 import { RoomViewModel, useRooms } from '../hooks/useRooms';
 import { useBuildings } from '../hooks/useBuildings';
@@ -43,6 +43,7 @@ type Props = {
   center: [number, number];
   checkedIndex: number;
   roomsAlongPath?: RoomViewModel[];
+  isLoading: boolean;
 };
 
 const ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR = ['Corridor/Circulation Area', 'Stairs', 'Elevators'];
@@ -63,7 +64,7 @@ const getMinArea = (zoomLevel: number) => {
   }
 };
 
-const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props) => {
+const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoading }: Props) => {
   const [selectedRoom, setSelectedRoom] = useState<RoomViewModel>(null);
   const [selectedRoomName, setSelectedRoomName] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(19);
@@ -203,6 +204,11 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
         maxZoom={21}
         minZoom={18}
       >
+        {isLoading && (
+          <Center h="full" bg="blackAlpha.200">
+            <Spinner size="xl" zIndex={99999} />
+          </Center>
+        )}
         <ZoomChild setZoomLevel={setZoomLevel} />
         {/* <TileLayer
           //  @ts-ignore

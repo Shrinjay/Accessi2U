@@ -1,7 +1,8 @@
-import { Edge, Room, Node, NodeTypeEnum, EdgeTypeEnum } from 'database';
+import { Room, Node, NodeTypeEnum, EdgeTypeEnum } from 'database';
 import { _room } from './index.js';
 import { _node } from '../node/index.js';
 import { _edge } from '../edge/index.js';
+import { EdgeWithRoom } from '../node/edges.js';
 
 type PathToRoomOptions = {
   elevatorOnly: boolean;
@@ -19,13 +20,13 @@ export const pathToRoom = async (room: Room, toRoom: Room, options: PathToRoomOp
 };
 
 const dfsPathInHypergraph = async (
-  edge: Edge,
+  edge: EdgeWithRoom,
   toNode: Node,
   pathToRoomOptions: PathToRoomOptions,
-  path: Edge[] = [],
+  path: EdgeWithRoom[] = [],
   visitedEdgeIds: Set<number> = new Set(),
   visitedNodeIds: Set<number> = new Set(),
-): Promise<Edge[]> => {
+): Promise<EdgeWithRoom[]> => {
   // add edge to visited edge ids
   // check if node is at a different floor than current node
 

@@ -20,7 +20,7 @@ export default function SelectLocations() {
 
   const toast = useToast();
 
-  const { data: rooms } = trpc.listRooms.useQuery();
+  const { data: rooms, isLoading: isListingRooms } = trpc.listRooms.useQuery();
   const { roomsAlongPath, submit, isLoading: isGeneratingPath } = usePath(startPoint?.value, endPoint?.value);
 
   const options = useMemo(() => {
@@ -178,9 +178,8 @@ export default function SelectLocations() {
                   py={4}
                   borderRadius="8px"
                   fontWeight="bold"
-                  isDisabled={!completedInfo}
+                  isDisabled={!completedInfo || isGeneratingPath}
                   onClick={pathSelected}
-                  isLoading={isGeneratingPath}
                 >
                   Confirm Route
                 </Button>
@@ -214,7 +213,7 @@ export default function SelectLocations() {
       )}
 
       {/* Right Panel (Map Area) */}
-      <PathMap roomsAlongPath={roomsAlongPath} menuOpen={menuOpen} />
+      <PathMap roomsAlongPath={roomsAlongPath} menuOpen={menuOpen} isLoading={isGeneratingPath || isListingRooms} />
       {/* Add your map component here */}
     </Flex>
   );

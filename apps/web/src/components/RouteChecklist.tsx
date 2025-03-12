@@ -56,21 +56,48 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
       };
     }
 
+    const nextStep = roomsAlongPath[index + 1];
+
     switch (room.roomType) {
       case RoomTypeEnum.CORRIDOR:
+        if (nextStep.roomType === RoomTypeEnum.ELEVATOR) {
+          return {
+            ...partialStep,
+            instructions: `Walk down the hallway until you reach the elevator`,
+          };
+        }
+        if (nextStep.roomType === RoomTypeEnum.STAIR) {
+          return {
+            ...partialStep,
+            instructions: `Walk down the hallway until you reach the stairs`,
+          };
+        }
+        if (nextStep.roomType === RoomTypeEnum.CORRIDOR && nextStep.area >= 2.5e-8) {
+          return {
+            ...partialStep,
+            instructions: `Walk down the hallway until you reach the atrium`,
+          };
+        }
+        if (nextStep.roomType === RoomTypeEnum.CORRIDOR) {
+          return {
+            ...partialStep,
+            instructions: `Walk down the hallway until you reach the end`,
+          };
+        }
         return {
           ...partialStep,
-          instructions: `Walk down the hallway until you reach the end`,
+          instructions: `Walk down the hallway until you reach room ${nextStep.name}`,
         };
+
       case RoomTypeEnum.ELEVATOR:
         return {
           ...partialStep,
-          instructions: `Take the elevator ${room.name} the next floor`,
+          instructions: `Take the elevator to floor ${room.edge.to_floor.level}`,
         };
       case RoomTypeEnum.STAIR:
         return {
           ...partialStep,
-          instructions: `Take the stairs to the next floor`,
+          instructions: `Take the stairs to floor ${room.edge.to_floor.level}`,
         };
       default:
         return {
@@ -109,7 +136,7 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
             <Box key={room.index} style={theme}>
               <HStack>
                 <Heading size="sm" textTransform="uppercase">
-                  {room.roomName}
+                  <b>#{room.index + 1}:</b> {room.roomName}
                 </Heading>
                 <Spacer />
                 <Checkbox
