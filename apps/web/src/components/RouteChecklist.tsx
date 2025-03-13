@@ -15,24 +15,99 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
+  Spacer,
 } from '@chakra-ui/react';
 import { theme } from '../styles';
+import { RoomViewModel, RoomTypeEnum } from '../hooks/useRooms';
 
-export default function RouteChecklist({ roomList, checkedIndex, setCheckedIndex }) {
-  const [fullRoomData, setFullRoomData] = useState(roomList);
+type Step = {
+  index: number;
+  roomName: string;
+  instructions: string;
+};
+
+type Props = {
+  roomsAlongPath: RoomViewModel[];
+  checkedIndex: number;
+  setCheckedIndex: (index: number) => void;
+  isOpened: boolean;
+};
+
+export default function RouteChecklist({ roomsAlongPath, checkedIndex, setCheckedIndex, isOpened }: Props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  useEffect(() => {
-    const setData = async () => {
-      const newRooms = [];
-      for (let i = 0; i < roomList.length; i++) {
-        const newDict = { index: i, roomName: roomList[i], instructions: 'Go to this location next' };
-        newRooms.push(newDict);
-      }
-      setFullRoomData(newRooms);
+  const toStep = (room: RoomViewModel, index: number): Step => {
+    const partialStep = {
+      index: index,
+      roomName: room.name,
     };
-    setData();
-  }, []);
+
+    if (index === 0) {
+      return {
+        ...partialStep,
+        instructions: `Start at room ${room.name}`,
+      };
+    }
+
+    if (index === roomsAlongPath.length - 1) {
+      return {
+        ...partialStep,
+        instructions: `Arrive at room ${room.name}`,
+      };
+    }
+
+    const nextStep = roomsAlongPath[index + 1];
+
+    switch (room.roomType) {
+      case RoomTypeEnum.CORRIDOR:
+        if (nextStep.roomType === RoomTypeEnum.ELEVATOR) {
+          return {
+            ...partialStep,
+            instructions: `Walk down the hallway until you reach the elevator`,
+          };
+        }
+        if (nextStep.roomType === RoomTypeEnum.STAIR) {
+          return {
+            ...partialStep,
+            instructions: `Walk down the hallway until you reach the stairs`,
+          };
+        }
+        if (nextStep.roomType === RoomTypeEnum.CORRIDOR && nextStep.area >= 2.5e-8) {
+          return {
+            ...partialStep,
+            instructions: `Walk down the hallway until you reach the atrium`,
+          };
+        }
+        if (nextStep.roomType === RoomTypeEnum.CORRIDOR) {
+          return {
+            ...partialStep,
+            instructions: `Walk down the hallway until you reach the end`,
+          };
+        }
+        return {
+          ...partialStep,
+          instructions: `Walk down the hallway until you reach room ${nextStep.name}`,
+        };
+
+      case RoomTypeEnum.ELEVATOR:
+        return {
+          ...partialStep,
+          instructions: `Take the elevator to floor ${room.edge.to_floor.level}`,
+        };
+      case RoomTypeEnum.STAIR:
+        return {
+          ...partialStep,
+          instructions: `Take the stairs to floor ${room.edge.to_floor.level}`,
+        };
+      default:
+        return {
+          ...partialStep,
+          instructions: `Go to room ${room.name} next`,
+        };
+    }
+  };
+
+  const steps: Step[] = roomsAlongPath?.map((room, index) => toStep(room, index)) || [];
 
   const handleCheck = (event) => {
     if (event.target.checked) {
@@ -45,25 +120,38 @@ export default function RouteChecklist({ roomList, checkedIndex, setCheckedIndex
   return (
     <>
       <Stack divider={<StackDivider />} spacing="3">
-        {fullRoomData.map((room) => (
-          <Box key={room} style={theme}>
-            <HStack>
-              <Heading size="sm" textTransform="uppercase">
-                {room.roomName}
-              </Heading>
+        {steps
+          .sort((a, b) => {
+            if (isOpened) return a.index - b.index;
 
-              <Checkbox
-                value={room.index}
-                size="md"
-                isChecked={room.index <= checkedIndex}
-                onChange={handleCheck}
-              ></Checkbox>
-            </HStack>
+            const isChecked = (index: number) => {
+              return index <= checkedIndex;
+            };
 
-            <Text>{room.instructions}</Text>
-          </Box>
-        ))}
-        <Button
+            if (isChecked(a.index) && isChecked(b.index)) return a.index - b.index;
+            if (isChecked(a.index)) return 1;
+            if (isChecked(b.index)) return -1;
+          })
+          .map((room) => (
+            <Box key={room.index} style={theme}>
+              <HStack>
+                <Heading size="sm" textTransform="uppercase">
+                  <b>#{room.index + 1}:</b> {room.roomName}
+                </Heading>
+                <Spacer />
+                <Checkbox
+                  value={room.index}
+                  size="md"
+                  isChecked={room.index <= checkedIndex}
+                  onChange={handleCheck}
+                ></Checkbox>
+              </HStack>
+
+              <Text>{room.instructions}</Text>
+            </Box>
+          ))}
+        {/* TODO: Make this work the way Carter expected it to */}
+        {/* <Button
           alignSelf="center"
           mb="2"
           size="lg"
@@ -78,7 +166,7 @@ export default function RouteChecklist({ roomList, checkedIndex, setCheckedIndex
           onClick={onOpen}
         >
           Route Completed
-        </Button>
+        </Button> */}
       </Stack>
 
       <Modal isOpen={isOpen} onClose={onClose} blockScrollOnMount={true}>

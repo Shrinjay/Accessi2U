@@ -290,6 +290,7 @@ class NodeGen(luigi.Task):
 
                     node = self._create_room_node(building_id, floor_id, room, corridors, get_node_type(features_by_id[room_feature_id]))
                     node_by_feature_id[room_feature_id] = node
+                    print(f"generated node for {room.id}")
 
                 for room_feature_id, room_id in rooms_by_feature_id.items():
                     if room_feature_id in node_by_feature_id:
@@ -319,6 +320,7 @@ class NodeGen(luigi.Task):
 
                 for adjacent_elevator_node in adjacent_elevator_nodes:
                     self._create_inter_floor_edge(node_by_feature_id[feature_id], adjacent_elevator_node)
+                    print(f"generated interfloor edge for {adjacent_elevator_node.id}")
 
             for feature_id, adjacent_stair_nodes in adjacent_stair_node_map.items():
                 # TODO: Why are we not finding some nodes??
@@ -327,3 +329,4 @@ class NodeGen(luigi.Task):
 
                 for adjacent_stair_node in adjacent_stair_nodes:
                     self._create_inter_floor_edge(node_by_feature_id[feature_id], adjacent_stair_node)
+                    print(f"generated interfloor edge for {adjacent_stair_node.id}")

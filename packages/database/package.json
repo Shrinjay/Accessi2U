@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "prisma generate && tsc",
+    "db:build": "prisma generate && tsc",
     "db:generate": "prisma generate",
     "db:push": "prisma db push --skip-generate"
   },

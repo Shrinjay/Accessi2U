@@ -1,25 +1,32 @@
-import { Edge, Room, Node, NodeTypeEnum, Prisma, EdgeTypeEnum } from 'database';
+import { Room, Node, NodeTypeEnum, EdgeTypeEnum } from 'database';
 import { _room } from './index.js';
 import { _node } from '../node/index.js';
 import { _edge } from '../edge/index.js';
+import { EdgeWithRoom } from '../node/edges.js';
 
-export const pathToRoom = async (room: Room, toRoom: Room) => {
+type PathToRoomOptions = {
+  elevatorOnly: boolean;
+};
+
+export const pathToRoom = async (room: Room, toRoom: Room, options: PathToRoomOptions) => {
   const node = await _room.node(room);
   const toNode = await _room.node(toRoom);
 
   const initialEdges = await _node.edges(node);
-  const paths = await Promise.all(initialEdges.map((edge) => dfsPathInHypergraph(edge, toNode)));
+  const paths = await Promise.all(initialEdges.map((edge) => dfsPathInHypergraph(edge, toNode, options)));
 
   const path = paths.filter(Boolean).sort((a, b) => a.length - b.length)?.[0];
   return path;
 };
 
 const dfsPathInHypergraph = async (
-  edge: Edge,
+  edge: EdgeWithRoom,
   toNode: Node,
-  path: Edge[] = [],
+  pathToRoomOptions: PathToRoomOptions,
+  path: EdgeWithRoom[] = [],
   visitedEdgeIds: Set<number> = new Set(),
-): Promise<Edge[]> => {
+  visitedNodeIds: Set<number> = new Set(),
+): Promise<EdgeWithRoom[]> => {
   // add edge to visited edge ids
   // check if node is at a different floor than current node
 
@@ -35,6 +42,7 @@ const dfsPathInHypergraph = async (
   // get all of their edges that are not in visited edge ids
   // dfs those edges
 
+  const nextVisitedNodeIds = new Set(visitedNodeIds);
   const nextVisitedEdgeIds = visitedEdgeIds.add(edge.id);
   const nextPath = [...path, edge];
 
@@ -45,35 +53,67 @@ const dfsPathInHypergraph = async (
     return nextPath;
   }
 
-  const elevatorOrStairNodes = nodes.filter(
-    (node) => node.node_type === NodeTypeEnum.ELEVATOR || node.node_type === NodeTypeEnum.STAIR,
-  );
+  const interFloorNodes = nodes.filter((node) => {
+    if (pathToRoomOptions.elevatorOnly) {
+      return node.node_type === NodeTypeEnum.ELEVATOR;
+    }
+
+    return node.node_type === NodeTypeEnum.ELEVATOR || node.node_type === NodeTypeEnum.STAIR;
+  });
+
   const isDifferentFloor = edge.floor_id !== toNode.floor_id;
-  if (isDifferentFloor && elevatorOrStairNodes.length > 0) {
-    const outgoingInterfloorEdges = await Promise.all(elevatorOrStairNodes.map((node) => _node.edges(node)))
-      .then((edges) => edges.flat())
-      .then((edges) => edges.filter((edge) => !visitedEdgeIds.has(edge.id)));
+  if (isDifferentFloor && interFloorNodes.length > 0) {
+    const outgoingInterfloorEdgesNested = [];
 
-    const nextPaths = await Promise.all(
-      outgoingInterfloorEdges.map((edge) => dfsPathInHypergraph(edge, toNode, nextPath, nextVisitedEdgeIds)),
+    for (const node of interFloorNodes) {
+      if (visitedNodeIds.has(node.id)) {
+        continue;
+      }
+      nextVisitedNodeIds.add(node.id);
+      const outgoingInterfloorEdges = await _node.edges(node);
+      outgoingInterfloorEdgesNested.push(outgoingInterfloorEdges);
+    }
+
+    const outgoingInterfloorEdges = outgoingInterfloorEdgesNested.flat().filter((edge) => !visitedEdgeIds.has(edge.id));
+
+    return await Promise.any(
+      outgoingInterfloorEdges.map((edge) =>
+        dfsPathInHypergraph(edge, toNode, pathToRoomOptions, nextPath, nextVisitedEdgeIds, nextVisitedNodeIds),
+      ),
     );
-
-    return nextPaths.find(Boolean) || null;
   }
 
-  const connectionNodes = nodes.filter((node) => node.node_type === NodeTypeEnum.CONNECTION_POINT);
-  const outgoingEdges = await Promise.all(connectionNodes.map((connNode) => _node.edges(connNode)))
-    .then((edges) => edges.flat())
-    .then((edges) => edges.filter((edge) => !visitedEdgeIds.has(edge.id)))
-    .then((edges) => edges.filter((edge) => edge.edge_type === EdgeTypeEnum.REGULAR));
+  const connectionNodes = nodes
+    .filter((node) => {
+      if (visitedNodeIds.has(node.id)) {
+        return false;
+      }
+      nextVisitedNodeIds.add(node.id);
+      return true;
+    })
+    .filter((node) => node.node_type === NodeTypeEnum.CONNECTION_POINT);
+
+  const outgoingEdgesNested = [];
+
+  for (const node of connectionNodes) {
+    const outgoingEdges = await _node.edges(node);
+    outgoingEdgesNested.push(outgoingEdges);
+  }
+
+  const outgoingEdges = outgoingEdgesNested
+    .flat()
+    .filter((edge) => edge.edge_type === EdgeTypeEnum.REGULAR)
+    .filter((edge) => !visitedEdgeIds.has(edge.id));
 
   if (outgoingEdges.length === 0) {
-    return null;
+    throw new Error('No path found');
   }
 
-  const nextPaths = await Promise.all(
-    outgoingEdges.map((edge) => dfsPathInHypergraph(edge, toNode, nextPath, nextVisitedEdgeIds)),
+  const foundPath = await Promise.any(
+    outgoingEdges.map((edge) =>
+      dfsPathInHypergraph(edge, toNode, pathToRoomOptions, nextPath, nextVisitedEdgeIds, nextVisitedNodeIds),
+    ),
   );
 
-  return nextPaths.find(Boolean) || null;
+  return foundPath;
 };

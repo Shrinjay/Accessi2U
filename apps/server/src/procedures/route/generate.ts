@@ -8,11 +8,12 @@ import { handleError } from '../middleware/handle-error.js';
 const input = Yup.object({
   fromRoomId: Yup.number().required(),
   toRoomId: Yup.number().required(),
+  elevatorOnly: Yup.boolean().required(),
 });
 
-export const generateRoute = trpc.procedure.input(input).query(async ({ ctx, input }) => {
+export const generateRoute = procedure.input(input).mutation(async ({ ctx, input }) => {
   try {
-    const { fromRoomId, toRoomId } = input;
+    const { fromRoomId, toRoomId, elevatorOnly } = input;
 
     const fromRoom = await prisma.room.findUniqueOrThrow({
       where: { id: fromRoomId },
@@ -21,7 +22,7 @@ export const generateRoute = trpc.procedure.input(input).query(async ({ ctx, inp
       where: { id: toRoomId },
     });
 
-    const path = await _room.pathToRoom(fromRoom, toRoom);
+    const path = await _room.pathToRoom(fromRoom, toRoom, { elevatorOnly });
 
     return path;
   } catch (e) {

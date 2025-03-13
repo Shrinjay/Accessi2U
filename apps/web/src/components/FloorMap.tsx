@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   TileLayer,
   GeoJSON,
@@ -10,18 +10,21 @@ import {
   FeatureGroup,
   Marker,
   Tooltip,
+  useMapEvents,
 } from 'react-leaflet';
 import L, { divIcon } from 'leaflet';
 import currentLocationIcon from './icons/circle-solid.svg';
 import 'leaflet/dist/leaflet.css';
 import ReportMenu from './ReportMenu';
-import { Button, Heading, useDisclosure, Text, Box, Modal, Flex } from '@chakra-ui/react';
+import { Button, Heading, useDisclosure, Text, Box, Modal, Flex, Center, Spinner } from '@chakra-ui/react';
 import { FloorViewModel, useFloors } from '../hooks/useFloors';
 import { RoomViewModel, useRooms } from '../hooks/useRooms';
 import { useBuildings } from '../hooks/useBuildings';
 import { getListHash } from '../../../server/src/lib/util';
 import { Floor } from 'database';
 import { Point } from 'geojson';
+import MapLegend from './MapLegend';
+import { ZoomChild } from './core/ZoomChild';
 
 function ChangeView({ center }) {
   const map = useMap();
@@ -40,6 +43,7 @@ type Props = {
   center: [number, number];
   checkedIndex: number;
   roomsAlongPath?: RoomViewModel[];
+  isLoading: boolean;
 };
 
 const ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR = ['Corridor/Circulation Area', 'Stairs', 'Elevators'];
@@ -50,10 +54,22 @@ const roomToCentroidGeoJson = (room: RoomViewModel): GeoJSON.Feature => ({
   geometry: { type: 'Point', coordinates: [room.centroid_lat, room.centroid_lon] },
 });
 
-const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props) => {
+const getMinArea = (zoomLevel: number) => {
+  if (zoomLevel <= 19) {
+    return 4e-9;
+  }
+
+  if (zoomLevel > 19) {
+    return 1e-9;
+  }
+};
+
+const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoading }: Props) => {
   const [selectedRoom, setSelectedRoom] = useState<RoomViewModel>(null);
   const [selectedRoomName, setSelectedRoomName] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(19);
   const accessibilityMap = { Y: 'True', N: 'False' };
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const curFloor = selectedFloor?.name;
@@ -63,7 +79,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
   const roomCentroids = rooms
     ?.filter((room) => {
       const shouldBeShown = !ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR.includes(room.roomType);
-      return room.area > 5e-9 && shouldBeShown;
+      return room.area > getMinArea(zoomLevel) && shouldBeShown;
     })
     ?.map(roomToCentroidGeoJson);
 
@@ -127,56 +143,6 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
         color: 'white',
       };
     }
-
-    // TODO: Restore the ability to deliniate room types on path by color
-    // if (checkedIndex < 0) {
-    //   if (properties['USE_TYPE'] == 'Stairs' || properties['USE_TYPE'] == 'Elevators') {
-    //     return {
-    //       // rooms on route
-    //       weight: 1,
-    //       fillColor: '#ffff00',
-    //       color: 'white',
-    //     };
-    //   } else {
-    //     return {
-    //       // rooms on route
-    //       weight: 1,
-    //       fillColor: '#ffff00',
-    //       color: 'white',
-    //     };
-    //   }
-    // } else {
-    //   // at least 1 step marked as completed
-    //   if (roomList.indexOf(properties['RM_NM']) < checkedIndex) {
-    //     // room has been visited
-    //     return {
-    //       weight: 1,
-    //       fillColor: '#0044d5',
-    //       color: 'white',
-    //     };
-    //   } else if (roomList.indexOf(properties['RM_NM']) == checkedIndex) {
-    //     // currently in room
-    //     return {
-    //       weight: 1,
-    //       fillColor: '#00b32c',
-    //       color: 'white',
-    //     };
-    //   } else if (properties['USE_TYPE'] == 'Stairs' || properties['USE_TYPE'] == 'Elevators') {
-    //     // staircase or elevator on route
-    //     return {
-    //       weight: 1,
-    //       fillColor: '#ffff00',
-    //       color: 'white',
-    //     };
-    //   } else {
-    //     // room is unvisited
-    //     return {
-    //       weight: 1,
-    //       fillColor: '#ffff00',
-    //       color: 'white',
-    //     };
-    //   }
-    // }
   };
 
   const getRoomNameLabel = ({ properties }, latlng) => {
@@ -228,44 +194,29 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
 
   return (
     <Flex>
-      <Button
-        onClick={onOpen}
-        size="lg"
-        colorScheme="purple"
-        bg="purple.500"
-        fontSize="20px"
-        _hover={{ bg: '#67487d' }}
-        _active={{ bg: '#67487d' }}
-        fontWeight="bold"
-        borderRadius="6px"
-        px="12px"
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 75,
-          marginInline: 'auto',
-          zIndex: 1000,
-        }}
-      >
-        Report Issue
-      </Button>
+      <MapLegend />
       <MapContainer
         // @ts-ignore
         center={center}
-        zoom={19}
+        zoom={20}
         boxZoom={false}
         maxBoundsViscosity={1.0}
         maxZoom={21}
         minZoom={18}
       >
-        <TileLayer
+        {isLoading && (
+          <Center h="full" bg="blackAlpha.200">
+            <Spinner size="xl" />
+          </Center>
+        )}
+        <ZoomChild setZoomLevel={setZoomLevel} />
+        {/* <TileLayer
           //  @ts-ignore
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+          // attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url='https://tile.osm.ch/switzerland/{z}/{x}/{y}.png'
           maxZoom={21}
           tms={true}
-        />
+        /> */}
         <ChangeView center={center} />
         <LayerGroup>
           {currRoom && (
@@ -348,6 +299,30 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath }: Props
           })}
         </LayerGroup>
       </MapContainer>
+
+      {/* <Button
+        onClick={onOpen}
+        size="lg"
+        colorScheme="purple"
+        bg="purple.500"
+        fontSize="20px"
+        _hover={{ bg: '#67487d' }}
+        _active={{ bg: '#67487d' }}
+        fontWeight="bold"
+        borderRadius="6px"
+        px="12px"
+        style={{
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          bottom: 75,
+          marginInline: 'auto',
+          zIndex: 1000,
+        }}
+      >
+        Report Issue
+      </Button> */}
+
       <Modal blockScrollOnMount={true} isOpen={isOpen} onClose={onClose}>
         <ReportMenu onClose={onClose} selectedRoom={selectedRoom} />
       </Modal>

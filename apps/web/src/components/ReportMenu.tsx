@@ -16,9 +16,6 @@ import Select from 'react-select';
 import { theme } from '../styles';
 import { useSubmitReport } from '../hooks/useSubmitReport';
 import { RoomViewModel, useRooms } from '../hooks/useRooms';
-// I hate this as much as you do
-// https://github.com/prisma/prisma/issues/21474
-import { $Enums } from 'database';
 
 type Props = {
   selectedRoom: RoomViewModel;
@@ -34,17 +31,17 @@ export default function ReportMenu({ selectedRoom, onClose }: Props) {
 
   const toast = useToast();
 
-  const prettyPrintReportType = (reportType: $Enums.ReportTypeEnum) => {
+  const prettyPrintReportType = (reportType: string) => {
     switch (reportType) {
-      case $Enums.ReportTypeEnum.MISLABELED:
+      case 'MISLABELED':
         return 'Mislabelled';
-      case $Enums.ReportTypeEnum.UNDER_MAINTENANCE:
+      case 'UNDER_MAINTENANCE':
         return 'Under Maintenance';
-      case $Enums.ReportTypeEnum.OTHER:
+      case 'OTHER':
         return 'Other';
-      case $Enums.ReportTypeEnum.ELEVATOR_OUT_OF_SERVICE:
+      case 'ELEVATOR_OUT_OF_SERVICE':
         return 'Elevator Out of Service';
-      case $Enums.ReportTypeEnum.BATHROOM_NOT_ACCESSIBLE:
+      case 'BATHROOM_NOT_ACCESSIBLE':
         return 'Bathroom Not Accessible';
       default:
         return reportType;

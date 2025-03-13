@@ -159,6 +159,7 @@ class EdgeGen(luigi.Task):
                     edges_by_feature_id[feature_id] = self._create_edge_from_corridor_feature(building_id, floor_id, corridor)
 
                 self.edge_service.create_many(list(edges_by_feature_id.values()))
+                print("created edges")
 
                 shapely_corridors = [shapely.geometry.shape(corridor.geometry) for corridor in corridors_by_feature_id.values()]
                 # use this to retrieve the feature ids from the indexes that geo_adjacency gives to us
@@ -185,6 +186,8 @@ class EdgeGen(luigi.Task):
                             edges_by_feature_id[feature_id],
                             edges_by_feature_id[adjacent_feature_id]
                         )
+                        print(f"created connection point node for {feature_id} and {adjacent_feature_id}")
+
         self.output().touch()
 
     def output(self):
