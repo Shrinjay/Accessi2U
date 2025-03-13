@@ -12,3 +12,5 @@ tsconfig.tsbuildinfo
 
 .DS_Store
 **/%SystemDrive%/
+
+apps/ingest/.venv
