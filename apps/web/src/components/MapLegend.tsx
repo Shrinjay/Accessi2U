@@ -29,7 +29,7 @@ export default function MapLegend() {
                     <PopoverArrow bg='white' borderColor="darkgrey"/>
                     <PopoverBody>
                         <HStack >
-                            <Square size="3" bg='#d500ff'/>
+                            <Square size="3" bg='red' borderWidth={1} borderColor={"black"}/>
                             <Text fontSize={'md'}  >End Room</Text>
                         </HStack>
 
@@ -39,12 +39,12 @@ export default function MapLegend() {
                         </HStack> */}
 
                         <HStack>
-                            <Square size="3" bg="#00b32c" border="black"/>
+                            <Square size="3" bg="green" borderWidth={1} borderColor={"black"}/>
                             <Text fontSize={'md'}  >Completed Steps</Text>
                         </HStack>
 
                         <HStack>
-                            <Square size="3" bg="red"/>
+                            <Square size="3" bg="yellow" borderWidth={1} borderColor={"black"}/>
                             <Text fontSize={'md'} >Incomplete Steps</Text>
                         </HStack>
                     </PopoverBody>

@@ -122,7 +122,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
       // rooms on route
       return {
         weight: 1,
-        fillColor: '#00b32c',
+        fillColor: 'green',
         color: 'white',
       };
     }
@@ -131,7 +131,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
       // rooms on route
       return {
         weight: 1,
-        fillColor: 'red',
+        fillColor: 'yellow',
         color: 'white',
       };
     }
@@ -139,7 +139,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
     if (isLastRoom) {
       return {
         weight: 1,
-        fillColor: '#d500ff',
+        fillColor: 'red',
         color: 'white',
       };
     }
@@ -210,6 +210,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           </Center>
         )}
         <ZoomChild setZoomLevel={setZoomLevel} />
+
         {/* <TileLayer
           //  @ts-ignore
           // attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -217,7 +218,9 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           maxZoom={21}
           tms={true}
         /> */}
+
         <ChangeView center={center} />
+
         <LayerGroup>
           {currRoom && (
             <Marker

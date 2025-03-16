@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import RouteChecklist from './RouteChecklist';
 import FloorMap from './FloorMap';
-import MapLegend from './MapLegend';
 import 'leaflet/dist/leaflet.css';
 import { ArrowRightIcon, ArrowLeftIcon, ArrowUpIcon, ArrowDownIcon } from '@chakra-ui/icons';
 import {
@@ -34,9 +33,10 @@ type Props = {
   roomsAlongPath: RoomViewModel[];
   menuOpen: boolean;
   isLoading: boolean;
+  resetRoute: () => void;
 };
 
-const PathMap = ({ roomsAlongPath, menuOpen, isLoading }: Props) => {
+const PathMap = ({ roomsAlongPath, menuOpen, isLoading, resetRoute }: Props) => {
   const [selectedFloorId, setSelectedFloorId] = useState(undefined);
   const [selectedBuildingId, setSelectedBuildingId] = useState(undefined);
 
@@ -96,7 +96,7 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading }: Props) => {
       console.log('up!');
     },
     onSwipedDown: onClose,
-    swipeDuration: 100,
+    swipeDuration: 300,
     preventScrollOnSwipe: true,
     trackMouse: true,
   });
@@ -159,10 +159,10 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading }: Props) => {
         </HStack>
       </Box>
 
-      <Drawer isOpen={!!roomsAlongPath?.length && !menuOpen} onClose={onClose} placement="bottom">
+      <Drawer isOpen={!!roomsAlongPath?.length && !menuOpen} onClose={onClose} placement="bottom"  {...swipeHandlers}>
         {isOpen && <DrawerOverlay />}
         <DrawerContent top={isOpen ? '15%' : '80%'}>
-          <DrawerHeader {...swipeHandlers}>
+          <DrawerHeader>
             <HStack>
               <Heading size="md">Your Route</Heading>
               <Spacer />
@@ -188,6 +188,7 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading }: Props) => {
               setCheckedIndex={setCheckedIndex}
               checkedIndex={checkedIndex}
               isOpened={isOpen}
+              resetRoute={resetRoute}
             />
           </DrawerBody>
         </DrawerContent>
