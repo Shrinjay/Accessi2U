@@ -101,6 +101,12 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading, resetRoute }: Props) => 
     trackMouse: true,
   });
 
+  const resetPath = () => {
+    resetRoute()
+    setCheckedIndex(-1)
+    onClose()
+  }
+
   return (
     <Flex display="flex" justifyContent={'center'} background="white" style={{ position: 'absolute' }}>
       <FloorMap
@@ -115,7 +121,8 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading, resetRoute }: Props) => 
       <Box
         style={{
           position: 'absolute',
-          top: 50,
+          // top: 50,
+          bottom: "21%",
           marginInline: 'auto',
           zIndex: 1000,
         }}
@@ -188,7 +195,7 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading, resetRoute }: Props) => 
               setCheckedIndex={setCheckedIndex}
               checkedIndex={checkedIndex}
               isOpened={isOpen}
-              resetRoute={resetRoute}
+              resetRoute={resetPath}
             />
           </DrawerBody>
         </DrawerContent>

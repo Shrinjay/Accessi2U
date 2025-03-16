@@ -115,7 +115,7 @@ export default function SelectLocations() {
                     value={startPoint}
                     options={options}
                     onChange={setStart}
-                    placeholder="DWE 1351"
+                    placeholder="DWE 1431"
                     aria-errormessage='*Required'
                     aria-invalid={true}
                   />

@@ -25,6 +25,11 @@ import { Floor } from 'database';
 import { Point } from 'geojson';
 import MapLegend from './MapLegend';
 import { ZoomChild } from './core/ZoomChild';
+import { CiStar } from "react-icons/ci";
+import { FaStairs } from "react-icons/fa6";
+import { GiElevator } from "react-icons/gi";
+import { ImManWoman, ImMan, ImWoman } from "react-icons/im";
+
 
 function ChangeView({ center }) {
   const map = useMap();
