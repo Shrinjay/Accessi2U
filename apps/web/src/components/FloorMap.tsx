@@ -171,9 +171,14 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
     });
   };
 
-  const getRoomIcon = ({ properties }, latlng, roomIDsAlongPath: number[]) => {
-
-    if (properties.rm_standard == "Elevators") {
+  const getRoomIcon = ({ properties }, roomIDsAlongPath: number[]) => {
+    const final_id = roomIDsAlongPath[roomIDsAlongPath.length - 1]
+    if (final_id && (final_id == properties.rm_id)){
+      return new L.Icon({
+        iconUrl: starIcon,
+        iconSize: [20,20],
+      });
+    }else if (properties.rm_standard == "Elevators") {
       return new L.Icon({
         iconUrl: elevatorIcon,
         iconSize: [20,20],
@@ -334,7 +339,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
               <Marker
                 position={(room.geometry as Point).coordinates}
                 // @ts-ignore
-                icon={getRoomIcon(room, (room.geometry as Point).coordinates, roomIDsAlongPath)}
+                icon={getRoomIcon(room, roomIDsAlongPath)}
               />
             );
           })}
