@@ -4,7 +4,7 @@ import RouteChecklist from './RouteChecklist';
 import FloorMap from './FloorMap';
 import MapLegend from './MapLegend';
 import 'leaflet/dist/leaflet.css';
-import { ArrowRightIcon, ArrowLeftIcon, ArrowUpIcon, ArrowDownIcon } from '@chakra-ui/icons';
+import { ArrowRightIcon, ArrowLeftIcon, ArrowUpIcon, ArrowDownIcon, EditIcon } from '@chakra-ui/icons';
 import {
   Button,
   Drawer,
@@ -34,9 +34,10 @@ type Props = {
   roomsAlongPath: RoomViewModel[];
   menuOpen: boolean;
   isLoading: boolean;
+  changeMenuVisibility: () => void;
 };
 
-const PathMap = ({ roomsAlongPath, menuOpen, isLoading }: Props) => {
+const PathMap = ({ roomsAlongPath, menuOpen, isLoading, changeMenuVisibility }: Props) => {
   const [selectedFloorId, setSelectedFloorId] = useState(undefined);
   const [selectedBuildingId, setSelectedBuildingId] = useState(undefined);
 
@@ -165,6 +166,10 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading }: Props) => {
           <DrawerHeader {...swipeHandlers}>
             <HStack>
               <Heading size="md">Your Route</Heading>
+              <EditIcon
+                color={'#67487d'}
+                onClick={() => changeMenuVisibility()}
+              />
               <Spacer />
               <Button
                 onClick={isOpen ? onClose : onOpen}

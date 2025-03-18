@@ -214,7 +214,7 @@ export default function SelectLocations() {
       )}
 
       {/* Right Panel (Map Area) */}
-      <PathMap roomsAlongPath={roomsAlongPath} menuOpen={menuOpen} isLoading={isGeneratingPath || isListingRooms} />
+      <PathMap roomsAlongPath={roomsAlongPath} menuOpen={menuOpen} isLoading={isGeneratingPath || isListingRooms} changeMenuVisibility={changeMenuVisibility}/>
       {/* Add your map component here */}
     </Flex>
   );

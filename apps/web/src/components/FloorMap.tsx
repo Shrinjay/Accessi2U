@@ -25,6 +25,7 @@ import { Floor } from 'database';
 import { Point } from 'geojson';
 import MapLegend from './MapLegend';
 import { ZoomChild } from './core/ZoomChild';
+import { ReportsSummary } from './ReportsSummary';
 
 function ChangeView({ center }) {
   const map = useMap();
@@ -259,6 +260,10 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
                       Accessible: {accessibilityMap[room.geoJson.properties.brg_accessible]}
                     </Text>
 
+                    <Text fontSize="sm" fontWeight="normal">
+                      Reports: <ReportsSummary roomId={room.id} />
+                    </Text>
+
                     <Button
                       size="sm"
                       colorScheme="yellow"
@@ -299,30 +304,6 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           })}
         </LayerGroup>
       </MapContainer>
-
-      {/* <Button
-        onClick={onOpen}
-        size="lg"
-        colorScheme="purple"
-        bg="purple.500"
-        fontSize="20px"
-        _hover={{ bg: '#67487d' }}
-        _active={{ bg: '#67487d' }}
-        fontWeight="bold"
-        borderRadius="6px"
-        px="12px"
-        style={{
-          position: 'absolute',
-          left: 0,
-          right: 0,
-          bottom: 75,
-          marginInline: 'auto',
-          zIndex: 1000,
-        }}
-      >
-        Report Issue
-      </Button> */}
-
       <Modal blockScrollOnMount={true} isOpen={isOpen} onClose={onClose}>
         <ReportMenu onClose={onClose} selectedRoom={selectedRoom} />
       </Modal>
