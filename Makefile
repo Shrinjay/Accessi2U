@@ -1,3 +1,5 @@
+SHELL := /bin/bash 
+
 setup:
 	@cd apps/ingest && source .venv/bin/activate && make setup
 	@cd packages/database && yarn prisma migrate deploy

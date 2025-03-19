@@ -20,3 +20,9 @@ body,
   bottom: 0px !important;
   top: unset !important;
 }
+
+.leaflet-popup-content p {
+  margin: 8px !important; 
+  // padding: 0 !important; 
+  line-height: 1;
+}

@@ -238,6 +238,7 @@ export default function SelectLocations() {
         roomsAlongPath={roomsAlongPath}
         menuOpen={menuOpen}
         isLoading={isGeneratingPath || isListingRooms}
+        changeMenuVisibility={changeMenuVisibility}
         resetRoute={pathReset}
       />
       {/* Add your map component here */}

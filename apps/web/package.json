@@ -33,6 +33,7 @@
     "@trpc/server": "^11.0.0-rc.711",
     "@types/geojson": "^7946.0.16",
     "database": "*",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.4.1",
     "leaflet": "^1.9.4",
     "leaflet-rotatedmarker": "^0.2.0",
