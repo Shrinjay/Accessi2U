@@ -105,17 +105,14 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const map = async () => {
     const geolocationService = new GeolocationService();
     const state: any = await geolocationService.queryPermissionsState();
-    if (state === 'prompt') {
-      await geolocationService.requestPermissions();
-    }
+    await geolocationService.requestPermissions();
+    await geolocationService.start();
 
-    if (state === 'granted') {
-      await geolocationService.start();
-      geolocationService.addEventListener('update', (event: any) => {
-        console.log('Geolocation update:', event);
-        setHeading(isNaN(event.details.compassHeading) ? 0 : event.details.compassHeading);
-      });
-    }
+    await geolocationService.start();
+    geolocationService.addEventListener('update', (event: any) => {
+      console.log('Geolocation update:', event);
+      setHeading(isNaN(event.details.compassHeading) ? 0 : event.details.compassHeading);
+    });
   };
 
   useEffect(() => {
