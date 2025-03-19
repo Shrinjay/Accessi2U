@@ -7,6 +7,8 @@ import { theme } from '../styles';
 import PathMap from './PathMap';
 import { trpc } from '../trpc';
 import { usePath } from '../hooks/usePath';
+import { buildErrorMessage } from 'vite';
+import { GeolocationService } from '../services/geolocation';
 
 export default function SelectLocations() {
   const [startPoint, setStart] = useState(null);
@@ -17,6 +19,7 @@ export default function SelectLocations() {
   const [isLoading, setIsLoading] = useState(false);
   const [menuOpen, setMenuOpen] = useState(true);
   const [errorMsg, setErrorMsg] = useState('Please Enter Your Location & Final Location');
+  const [errorVisible, setErrorVisible] = useState(true);
 
   const toast = useToast();
 
@@ -45,7 +48,8 @@ export default function SelectLocations() {
 
   const pathSelected = async () => {
     setIsLoading(true);
-
+    const geolocaitonService = new GeolocationService();
+    geolocaitonService.requestPermissions();
     try {
       await submit(accessible);
       setMenuOpen(false);
@@ -67,6 +71,12 @@ export default function SelectLocations() {
     setMenuOpen(!menuOpen);
   };
 
+  const pathReset = () => {
+    setStart(null);
+    setEnd(null);
+    setMenuOpen(true);
+  };
+
   return (
     <Flex height="100vh" width="100vw" bg="gray.100">
       {/* Left Panel */}
@@ -85,14 +95,14 @@ export default function SelectLocations() {
               width: { xs: '100%', md: '50%', lg: '30%' },
             }}
           >
-            <CloseIcon style={{ right: 0 }} onClick={changeMenuVisibility} />
+            <CloseIcon sx={{ right: 0 }} onClick={changeMenuVisibility} alignSelf={'flex-end'} />
 
             <VStack spacing={4} height="100%" width="100%" align="stretch">
               <HStack spacing={2} align="center" justify="center">
                 <Heading size="xl" fontSize={'3xl'} textAlign="center" mt="30px">
                   Where are you located?
                 </Heading>
-                <Image src={locationIcon} alt="Location Icon" boxSize="40px" mt="20px" />
+                {/* <Image src={locationIcon} alt="Location Icon" boxSize="40px" mt="20px" /> */}
               </HStack>
 
               <VStack spacing={5} width="100%" flex={1} align="stretch">
@@ -107,8 +117,13 @@ export default function SelectLocations() {
                     value={startPoint}
                     options={options}
                     onChange={setStart}
-                    placeholder="E7 4003"
+                    placeholder="DWE 1431"
+                    aria-errormessage="*Required"
+                    aria-invalid={true}
                   />
+                  <Text fontSize="xs" fontWeight="thin" mt={0} ml={2}>
+                    *Required
+                  </Text>
 
                   <Text fontSize={'2xl'} fontWeight="bold" mb={2} mt="30px">
                     Final Location
@@ -120,8 +135,11 @@ export default function SelectLocations() {
                     value={endPoint}
                     options={options}
                     onChange={setEnd}
-                    placeholder="E7 5003"
+                    placeholder="DWE 1432"
                   />
+                  <Text fontSize="xs" fontWeight="thin" mt={0} ml={2}>
+                    *Required
+                  </Text>
                 </Box>
                 <VStack spacing={2} align="flex-start" width="100%">
                   <Text fontSize={['2xl']} fontWeight="bold" mb={2} color="brand.500" mt="10px">
@@ -151,7 +169,8 @@ export default function SelectLocations() {
                   </HStack> */}
                 </VStack>
 
-                <Button
+                {/* TODO: Maybe with cookies, unlikely*/}
+                {/* <Button
                   size="md"
                   colorScheme="yellow"
                   bg="yellow.500"
@@ -163,11 +182,11 @@ export default function SelectLocations() {
                   px="12px"
                 >
                   Save
-                </Button>
+                </Button> */}
 
-                <Text fontSize={['sm']} mb="-1" fontFamily="body" color="red">
+                {/* <Text fontSize={['sm']} mb="-1" fontFamily="body" color="red">
                   {errorMsg}
-                </Text>
+                </Text> */}
 
                 <Button
                   size="lg"
@@ -181,6 +200,7 @@ export default function SelectLocations() {
                   isDisabled={!completedInfo || isGeneratingPath}
                   onClick={pathSelected}
                   isLoading={isGeneratingPath}
+                  onMouseOver={() => setErrorVisible(true)}
                 >
                   Confirm Route
                 </Button>
@@ -214,7 +234,13 @@ export default function SelectLocations() {
       )}
 
       {/* Right Panel (Map Area) */}
-      <PathMap roomsAlongPath={roomsAlongPath} menuOpen={menuOpen} isLoading={isGeneratingPath || isListingRooms} changeMenuVisibility={changeMenuVisibility}/>
+      <PathMap
+        roomsAlongPath={roomsAlongPath}
+        menuOpen={menuOpen}
+        isLoading={isGeneratingPath || isListingRooms}
+        changeMenuVisibility={changeMenuVisibility}
+        resetRoute={pathReset}
+      />
       {/* Add your map component here */}
     </Flex>
   );

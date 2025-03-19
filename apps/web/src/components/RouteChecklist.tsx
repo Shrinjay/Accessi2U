@@ -31,9 +31,10 @@ type Props = {
   checkedIndex: number;
   setCheckedIndex: (index: number) => void;
   isOpened: boolean;
+  resetRoute: () => void;
 };
 
-export default function RouteChecklist({ roomsAlongPath, checkedIndex, setCheckedIndex, isOpened }: Props) {
+export default function RouteChecklist({ roomsAlongPath, checkedIndex, setCheckedIndex, isOpened, resetRoute }: Props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const toStep = (room: RoomViewModel, index: number): Step => {
@@ -144,14 +145,13 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
                   size="md"
                   isChecked={room.index <= checkedIndex}
                   onChange={handleCheck}
-                ></Checkbox>
+                />
               </HStack>
 
               <Text>{room.instructions}</Text>
             </Box>
           ))}
-        {/* TODO: Make this work the way Carter expected it to */}
-        {/* <Button
+        <Button
           alignSelf="center"
           mb="2"
           size="lg"
@@ -166,7 +166,7 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
           onClick={onOpen}
         >
           Route Completed
-        </Button> */}
+        </Button>
       </Stack>
 
       <Modal isOpen={isOpen} onClose={onClose} blockScrollOnMount={true}>
@@ -178,21 +178,16 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
               <Box
                 bg="white"
                 boxShadow="sm"
-                display="flex"
                 flexDirection="column"
-                my="-1"
-                alignItems="left"
-                padding={2}
+                padding={1}
               >
-                <Text fontSize="md" mb={2} mt={-1}>
+                <Text fontSize="md" mt={-1}>
                   Clicking "Confirm" will exit the current route and return to route select screen. Click "Cancel" to
                   return to the current route.
                 </Text>
 
-                <HStack align="center" spacing={5}>
+                <HStack spacing={6} mt={3}>
                   <Button
-                    alignSelf="center"
-                    mt="2"
                     size="md"
                     colorScheme="yellow"
                     bg="yellow.500"
@@ -202,12 +197,12 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
                     fontWeight="bold"
                     borderRadius="6px"
                     px="6px"
+                    onClick={resetRoute}
                   >
                     Confirm
                   </Button>
+
                   <Button
-                    alignSelf="center"
-                    mt="2"
                     size="md"
                     colorScheme="purple"
                     bg="purple.500"
@@ -221,6 +216,7 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
                   >
                     Cancel
                   </Button>
+
                 </HStack>
               </Box>
             </ModalBody>

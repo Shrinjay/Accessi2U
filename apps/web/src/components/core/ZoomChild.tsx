@@ -1,4 +1,5 @@
-import { useMapEvents } from 'react-leaflet';
+import { useEffect } from 'react';
+import { useMap, useMapEvents } from 'react-leaflet';
 
 type Props = {
   setZoomLevel: (zoomLevel: number) => void;

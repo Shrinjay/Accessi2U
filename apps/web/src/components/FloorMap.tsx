@@ -13,7 +13,11 @@ import {
   useMapEvents,
 } from 'react-leaflet';
 import L, { divIcon } from 'leaflet';
-import currentLocationIcon from './icons/circle-solid.svg';
+import currentLocationIcon from './icons/marker.svg';
+import elevatorIcon from './icons/elevatorIcon.svg';
+import stairsIcon from './icons/stairs.svg';
+import starIcon from './icons/star.svg';
+import washroomIcon from './icons/washroom-both-genders.svg';
 import 'leaflet/dist/leaflet.css';
 import ReportMenu from './ReportMenu';
 import { Button, Heading, useDisclosure, Text, Box, Modal, Flex, Center, Spinner } from '@chakra-ui/react';
@@ -26,6 +30,8 @@ import { Point } from 'geojson';
 import MapLegend from './MapLegend';
 import { ZoomChild } from './core/ZoomChild';
 import { ReportsSummary } from './ReportsSummary';
+import 'leaflet-rotatedmarker';
+import { GeolocationService } from '../services/geolocation';
 
 function ChangeView({ center }) {
   const map = useMap();
@@ -47,11 +53,12 @@ type Props = {
   isLoading: boolean;
 };
 
-const ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR = ['Corridor/Circulation Area', 'Stairs', 'Elevators'];
+const ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR = ['Corridor/Circulation Area'];
+const ROOM_TYPES_FOR_ICONS = ['Elevators', 'Stairs', 'Toilets/Showers'];
 
 const roomToCentroidGeoJson = (room: RoomViewModel): GeoJSON.Feature => ({
   type: 'Feature',
-  properties: { rm_id: room.id, RM_NM: room.name },
+  properties: { rm_id: room.id, RM_NM: room.name, rm_standard: room.roomType },
   geometry: { type: 'Point', coordinates: [room.centroid_lat, room.centroid_lon] },
 });
 
@@ -71,6 +78,8 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const [zoomLevel, setZoomLevel] = useState(19);
   const accessibilityMap = { Y: 'True', N: 'False' };
 
+  const [heading, setHeading] = useState(0);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const curFloor = selectedFloor?.name;
@@ -80,7 +89,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const roomCentroids = rooms
     ?.filter((room) => {
       const shouldBeShown = !ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR.includes(room.roomType);
-      return room.area > getMinArea(zoomLevel) && shouldBeShown;
+      return (room.area > getMinArea(zoomLevel) && shouldBeShown) || ROOM_TYPES_FOR_ICONS.includes(room.roomType);
     })
     ?.map(roomToCentroidGeoJson);
 
@@ -93,6 +102,18 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const roomIDsAlongPath = useMemo(() => {
     return roomsAlongPath?.map((room) => room.id) || [];
   }, [roomsAlongPath]);
+
+  const initGeolocation = async () => {
+    const geolocationService = new GeolocationService();
+    await geolocationService.start();
+    geolocationService.addEventListener('update', (event: any) => {
+      setHeading(isNaN(event.detail.compassHeading) ? 0 : event.detail.compassHeading);
+    });
+  };
+
+  useEffect(() => {
+    initGeolocation();
+  }, []);
 
   const currRoom = useMemo(() => {
     return roomsAlongPath?.[checkedIndex + 1];
@@ -123,7 +144,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
       // rooms on route
       return {
         weight: 1,
-        fillColor: '#00b32c',
+        fillColor: 'green',
         color: 'white',
       };
     }
@@ -132,7 +153,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
       // rooms on route
       return {
         weight: 1,
-        fillColor: 'red',
+        fillColor: 'yellow',
         color: 'white',
       };
     }
@@ -140,7 +161,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
     if (isLastRoom) {
       return {
         weight: 1,
-        fillColor: '#d500ff',
+        fillColor: 'red',
         color: 'white',
       };
     }
@@ -162,8 +183,44 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const getCurrentLocationIcon = () => {
     return new L.Icon({
       iconUrl: currentLocationIcon,
-      iconSize: [12, 12],
+      iconSize: [48, 48],
     });
+  };
+
+  const getRoomIcon = ({ properties }, roomIDsAlongPath: number[]) => {
+    const final_id = roomIDsAlongPath[roomIDsAlongPath.length - 1];
+    if (final_id && final_id == properties.rm_id) {
+      return new L.Icon({
+        iconUrl: starIcon,
+        iconSize: [20, 20],
+      });
+    } else if (properties.rm_standard == 'Elevators') {
+      return new L.Icon({
+        iconUrl: elevatorIcon,
+        iconSize: [20, 20],
+      });
+    } else if (properties.rm_standard == 'Stairs') {
+      return new L.Icon({
+        iconUrl: stairsIcon,
+        iconSize: [20, 20],
+      });
+    } else if (properties.rm_standard == 'Toilets/Showers') {
+      return new L.Icon({
+        iconUrl: washroomIcon,
+        iconSize: [20, 20],
+      });
+    } else {
+      return new L.divIcon({
+        className: 'icon',
+        style: {
+          fontSize: '10px',
+        },
+        html: `
+        <p style="font-size:10px;">${properties.RM_NM.split(' ')[1]}</p>
+        `,
+        iconSize: [30, 30],
+      });
+    }
   };
 
   const floorFilter = ({ properties }) => {
@@ -211,6 +268,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           </Center>
         )}
         <ZoomChild setZoomLevel={setZoomLevel} />
+
         {/* <TileLayer
           //  @ts-ignore
           // attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -218,14 +276,21 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           maxZoom={21}
           tms={true}
         /> */}
+
         <ChangeView center={center} />
+
         <LayerGroup>
           {currRoom && (
-            <Marker
-              position={[currRoom?.geoJson?.properties?.lat, currRoom?.geoJson?.properties?.lon]}
-              // @ts-ignore
-              icon={getCurrentLocationIcon()}
-            />
+            <>
+              <Marker
+                key={heading}
+                position={[currRoom?.geoJson?.properties?.lat, currRoom?.geoJson?.properties?.lon]}
+                // @ts-ignore
+                icon={getCurrentLocationIcon()}
+                rotationAngle={heading}
+                rotationOrigin={'center'}
+              />
+            </>
           )}
           {buildings?.map((building, index) => {
             return (
@@ -281,6 +346,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
                     </Button>
                   </Box>
                 </Popup>
+
                 <GeoJSON
                   key={getListHash([room.geoJson, getRoomStyle(room, roomIDsAlongPath)])}
                   data={room.geoJson}
@@ -297,10 +363,20 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
               <Marker
                 position={(room.geometry as Point).coordinates}
                 // @ts-ignore
-                icon={getRoomNameLabel(room, (room.geometry as Point).coordinates)}
+                icon={getRoomIcon(room, roomIDsAlongPath)}
               />
             );
           })}
+
+          {/* {roomCentroids?.map?.((room, index) => {
+            return (
+              <Marker
+                position={(room.geometry as Point).coordinates}
+                // @ts-ignore
+                icon={getRoomNameLabel(room, (room.geometry as Point).coordinates)}
+              />
+            );
+          })} */}
         </LayerGroup>
       </MapContainer>
       <Modal blockScrollOnMount={true} isOpen={isOpen} onClose={onClose}>

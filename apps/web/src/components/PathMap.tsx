@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import RouteChecklist from './RouteChecklist';
 import FloorMap from './FloorMap';
-import MapLegend from './MapLegend';
 import 'leaflet/dist/leaflet.css';
 import { ArrowRightIcon, ArrowLeftIcon, ArrowUpIcon, ArrowDownIcon, EditIcon } from '@chakra-ui/icons';
 import {
@@ -35,9 +34,10 @@ type Props = {
   menuOpen: boolean;
   isLoading: boolean;
   changeMenuVisibility: () => void;
+  resetRoute: () => void;
 };
 
-const PathMap = ({ roomsAlongPath, menuOpen, isLoading, changeMenuVisibility }: Props) => {
+const PathMap = ({ roomsAlongPath, menuOpen, isLoading, changeMenuVisibility, resetRoute }: Props) => {
   const [selectedFloorId, setSelectedFloorId] = useState(undefined);
   const [selectedBuildingId, setSelectedBuildingId] = useState(undefined);
 
@@ -97,10 +97,16 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading, changeMenuVisibility }: 
       console.log('up!');
     },
     onSwipedDown: onClose,
-    swipeDuration: 100,
+    swipeDuration: 300,
     preventScrollOnSwipe: true,
     trackMouse: true,
   });
+
+  const resetPath = () => {
+    resetRoute()
+    setCheckedIndex(-1)
+    onClose()
+  }
 
   return (
     <Flex display="flex" justifyContent={'center'} background="white" style={{ position: 'absolute' }}>
@@ -116,7 +122,8 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading, changeMenuVisibility }: 
       <Box
         style={{
           position: 'absolute',
-          top: 50,
+          // top: 50,
+          bottom: "21%",
           marginInline: 'auto',
           zIndex: 1000,
         }}
@@ -160,10 +167,10 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading, changeMenuVisibility }: 
         </HStack>
       </Box>
 
-      <Drawer isOpen={!!roomsAlongPath?.length && !menuOpen} onClose={onClose} placement="bottom">
+      <Drawer isOpen={!!roomsAlongPath?.length && !menuOpen} onClose={onClose} placement="bottom"  {...swipeHandlers}>
         {isOpen && <DrawerOverlay />}
         <DrawerContent top={isOpen ? '15%' : '80%'}>
-          <DrawerHeader {...swipeHandlers}>
+          <DrawerHeader>
             <HStack>
               <Heading size="md">Your Route</Heading>
               <EditIcon
@@ -193,6 +200,7 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading, changeMenuVisibility }: 
               setCheckedIndex={setCheckedIndex}
               checkedIndex={checkedIndex}
               isOpened={isOpen}
+              resetRoute={resetPath}
             />
           </DrawerBody>
         </DrawerContent>
