@@ -245,23 +245,22 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
             return (
               <FeatureGroup key={index}>
                 <Popup>
-                  <Box bg="white" boxShadow="sm" display="flex" flexDirection="column" my="-1">
-                    <Heading size="md" fontSize="lg" textAlign="center" mt="0px">
+                  <Box bg="white" boxShadow="sm" display="flex" flexDirection="column" p="1" gap="0">
+                    <Heading size="md" fontSize="lg" textAlign="center" mt="0px" >
                       {room.name}
                     </Heading>
 
                     <Text fontSize="sm" fontWeight="normal">
-                      Room Type: {room.geoJson.properties.rm_standard}
+                      <strong>Room Type:</strong> {room.geoJson.properties.rm_standard}
                     </Text>
                     <Text fontSize="sm" fontWeight="normal">
-                      Department: {room.geoJson.properties.Departments_name}
+                      <strong>Department:</strong> {room.geoJson.properties.Departments_name}
                     </Text>
                     <Text fontSize="sm" fontWeight="normal">
-                      Accessible: {accessibilityMap[room.geoJson.properties.brg_accessible]}
+                      <strong>Accessible:</strong> {accessibilityMap[room.geoJson.properties.brg_accessible]}
                     </Text>
-
                     <Text fontSize="sm" fontWeight="normal">
-                      Reports: <ReportsSummary roomId={room.id} />
+                      <strong>Reports:</strong> <ReportsSummary roomId={room.id} />
                     </Text>
 
                     <Button

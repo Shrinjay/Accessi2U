@@ -18,3 +18,9 @@ body,
 .css-17pwl6t {
   height: 20vh !important;
 }
+
+.leaflet-popup-content p {
+  margin: 8px !important; 
+  // padding: 0 !important; 
+  line-height: 1;
+}
