@@ -102,10 +102,10 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading, resetRoute }: Props) => 
   });
 
   const resetPath = () => {
-    resetRoute()
-    setCheckedIndex(-1)
-    onClose()
-  }
+    resetRoute();
+    setCheckedIndex(-1);
+    onClose();
+  };
 
   return (
     <Flex display="flex" justifyContent={'center'} background="white" style={{ position: 'absolute' }}>
@@ -122,7 +122,7 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading, resetRoute }: Props) => 
         style={{
           position: 'absolute',
           // top: 50,
-          bottom: "21%",
+          bottom: '21%',
           marginInline: 'auto',
           zIndex: 1000,
         }}
@@ -166,7 +166,7 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading, resetRoute }: Props) => 
         </HStack>
       </Box>
 
-      <Drawer isOpen={!!roomsAlongPath?.length && !menuOpen} onClose={onClose} placement="bottom"  {...swipeHandlers}>
+      <Drawer isOpen={!!roomsAlongPath?.length && !menuOpen} onClose={onClose} placement="bottom" {...swipeHandlers}>
         {isOpen && <DrawerOverlay />}
         <DrawerContent top={isOpen ? '15%' : '80%'}>
           <DrawerHeader>

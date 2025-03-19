@@ -140,12 +140,7 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
                   <b>#{room.index + 1}:</b> {room.roomName}
                 </Heading>
                 <Spacer />
-                <Checkbox
-                  value={room.index}
-                  size="md"
-                  isChecked={room.index <= checkedIndex}
-                  onChange={handleCheck}
-                />
+                <Checkbox value={room.index} size="md" isChecked={room.index <= checkedIndex} onChange={handleCheck} />
               </HStack>
 
               <Text>{room.instructions}</Text>
@@ -175,12 +170,7 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
             <ModalHeader ml={2}>Confirm Exit</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <Box
-                bg="white"
-                boxShadow="sm"
-                flexDirection="column"
-                padding={1}
-              >
+              <Box bg="white" boxShadow="sm" flexDirection="column" padding={1}>
                 <Text fontSize="md" mt={-1}>
                   Clicking "Confirm" will exit the current route and return to route select screen. Click "Cancel" to
                   return to the current route.
@@ -216,7 +206,6 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
                   >
                     Cancel
                   </Button>
-
                 </HStack>
               </Box>
             </ModalBody>
