@@ -287,6 +287,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           {currRoom && (
             <>
               <Marker
+                key={heading}
                 position={[currRoom?.geoJson?.properties?.lat, currRoom?.geoJson?.properties?.lon]}
                 // @ts-ignore
                 icon={getCurrentLocationIcon()}

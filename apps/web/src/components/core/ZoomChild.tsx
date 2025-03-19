@@ -17,6 +17,7 @@ export const ZoomChild = ({ setZoomLevel, heading }: Props) => {
 
   useEffect(() => {
     map.invalidateSize();
+    console.log('heading', heading);
   }, [heading]);
 
   return <></>;
