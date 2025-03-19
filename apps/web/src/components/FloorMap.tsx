@@ -254,10 +254,6 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
     }
   };
 
-  useEffect(() => {
-    map.invalidateSize();
-  }, [heading]);
-
   return (
     <Flex>
       <MapLegend />
