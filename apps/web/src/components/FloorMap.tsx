@@ -13,7 +13,7 @@ import {
   useMapEvents,
 } from 'react-leaflet';
 import L, { divIcon } from 'leaflet';
-import currentLocationIcon from './icons/circle-solid.svg';
+import currentLocationIcon from './icons/marker.svg';
 import elevatorIcon from './icons/elevatorIcon.svg';
 import stairsIcon from './icons/stairs.svg';
 import starIcon from './icons/star.svg';
@@ -29,7 +29,8 @@ import { Floor } from 'database';
 import { Point } from 'geojson';
 import MapLegend from './MapLegend';
 import { ZoomChild } from './core/ZoomChild';
-
+import 'leaflet-rotatedmarker';
+import { GeolocationService } from '../services/geolocation';
 
 function ChangeView({ center }) {
   const map = useMap();
@@ -52,7 +53,7 @@ type Props = {
 };
 
 const ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR = ['Corridor/Circulation Area'];
-const ROOM_TYPES_FOR_ICONS = ["Elevators", "Stairs", "Toilets/Showers"];
+const ROOM_TYPES_FOR_ICONS = ['Elevators', 'Stairs', 'Toilets/Showers'];
 
 const roomToCentroidGeoJson = (room: RoomViewModel): GeoJSON.Feature => ({
   type: 'Feature',
@@ -76,6 +77,8 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const [zoomLevel, setZoomLevel] = useState(19);
   const accessibilityMap = { Y: 'True', N: 'False' };
 
+  const [heading, setHeading] = useState(0);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const curFloor = selectedFloor?.name;
@@ -85,7 +88,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const roomCentroids = rooms
     ?.filter((room) => {
       const shouldBeShown = !ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR.includes(room.roomType);
-      return (room.area > getMinArea(zoomLevel) && shouldBeShown) || (ROOM_TYPES_FOR_ICONS.includes(room.roomType));
+      return (room.area > getMinArea(zoomLevel) && shouldBeShown) || ROOM_TYPES_FOR_ICONS.includes(room.roomType);
     })
     ?.map(roomToCentroidGeoJson);
 
@@ -98,6 +101,26 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const roomIDsAlongPath = useMemo(() => {
     return roomsAlongPath?.map((room) => room.id) || [];
   }, [roomsAlongPath]);
+
+  const map = async () => {
+    const geolocationService = new GeolocationService();
+    const state: any = await geolocationService.queryPermissionsState();
+    if (state === 'prompt') {
+      await geolocationService.requestPermissions();
+    }
+
+    if (state === 'granted') {
+      await geolocationService.start();
+      geolocationService.addEventListener('update', (event: any) => {
+        console.log('Geolocation update:', event);
+        setHeading(isNaN(event.details.compassHeading) ? 0 : event.details.compassHeading);
+      });
+    }
+  };
+
+  useEffect(() => {
+    map();
+  }, []);
 
   const currRoom = useMemo(() => {
     return roomsAlongPath?.[checkedIndex + 1];
@@ -167,31 +190,31 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const getCurrentLocationIcon = () => {
     return new L.Icon({
       iconUrl: currentLocationIcon,
-      iconSize: [12, 12],
+      iconSize: [48, 48],
     });
   };
 
   const getRoomIcon = ({ properties }, roomIDsAlongPath: number[]) => {
-    const final_id = roomIDsAlongPath[roomIDsAlongPath.length - 1]
-    if (final_id && (final_id == properties.rm_id)){
+    const final_id = roomIDsAlongPath[roomIDsAlongPath.length - 1];
+    if (final_id && final_id == properties.rm_id) {
       return new L.Icon({
         iconUrl: starIcon,
-        iconSize: [20,20],
+        iconSize: [20, 20],
       });
-    }else if (properties.rm_standard == "Elevators") {
+    } else if (properties.rm_standard == 'Elevators') {
       return new L.Icon({
         iconUrl: elevatorIcon,
-        iconSize: [20,20],
+        iconSize: [20, 20],
       });
-    } else if (properties.rm_standard == "Stairs") {
+    } else if (properties.rm_standard == 'Stairs') {
       return new L.Icon({
         iconUrl: stairsIcon,
-        iconSize: [20,20],
+        iconSize: [20, 20],
       });
-    } else if (properties.rm_standard == "Toilets/Showers") {
+    } else if (properties.rm_standard == 'Toilets/Showers') {
       return new L.Icon({
         iconUrl: washroomIcon,
-        iconSize: [20,20],
+        iconSize: [20, 20],
       });
     } else {
       return new L.divIcon({
@@ -251,6 +274,9 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
             <Spinner size="xl" />
           </Center>
         )}
+        <Center>
+          <h1>Heading is: {heading}</h1>
+        </Center>
         <ZoomChild setZoomLevel={setZoomLevel} />
 
         {/* <TileLayer
@@ -265,11 +291,13 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
 
         <LayerGroup>
           {currRoom && (
-            <Marker
-              position={[currRoom?.geoJson?.properties?.lat, currRoom?.geoJson?.properties?.lon]}
-              // @ts-ignore
-              icon={getCurrentLocationIcon()}
-            />
+            <>
+              <Marker
+                position={[currRoom?.geoJson?.properties?.lat, currRoom?.geoJson?.properties?.lon]}
+                // @ts-ignore
+                icon={getCurrentLocationIcon()}
+              />
+            </>
           )}
           {buildings?.map((building, index) => {
             return (
@@ -322,7 +350,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
                     </Button>
                   </Box>
                 </Popup>
-                
+
                 <GeoJSON
                   key={getListHash([room.geoJson, getRoomStyle(room, roomIDsAlongPath)])}
                   data={room.geoJson}
