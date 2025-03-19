@@ -159,11 +159,12 @@ export class GeolocationService extends EventTarget {
       window.addEventListener('deviceorientationabsolute', this.handleDeviceOrientation);
     } else if (HAS_ORIENTATION && HAS_WEBKIT_COMPASS_HEADING) {
       window.addEventListener('deviceorientation', this.handleDeviceOrientation);
+      console.log('deviceorientation handler added');
     }
   }
 
   private handleDeviceOrientation = (ev: DeviceOrientationEvent) => {
-    console.log('ev', ev);
+    console.log('handleDeviceOrientation', ev);
     if (!ev.absolute && ev.webkitCompassHeading) {
       this.compassHeading = ev.webkitCompassHeading;
     } else if (ev.absolute) {
