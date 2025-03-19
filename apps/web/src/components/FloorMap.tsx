@@ -76,6 +76,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const [selectedRoomName, setSelectedRoomName] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(19);
   const accessibilityMap = { Y: 'True', N: 'False' };
+  const map = useMap();
 
   const [heading, setHeading] = useState(0);
 
@@ -104,7 +105,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
 
   const geolocationService = new GeolocationService();
 
-  const map = async () => {
+  const initGeolocation = async () => {
     const state: any = await geolocationService.queryPermissionsState();
     await geolocationService.requestPermissions();
     await geolocationService.start();
@@ -116,7 +117,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   };
 
   useEffect(() => {
-    map();
+    initGeolocation();
   }, []);
 
   const currRoom = useMemo(() => {
@@ -253,6 +254,10 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
       return false;
     }
   };
+
+  useEffect(() => {
+    map.invalidateSize();
+  }, [heading]);
 
   return (
     <Flex>
