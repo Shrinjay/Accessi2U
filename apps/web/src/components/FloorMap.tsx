@@ -111,7 +111,8 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
     await geolocationService.start();
     geolocationService.addEventListener('update', (event: any) => {
       console.log('Geolocation update:', event);
-      setHeading(isNaN(event.detail.compassHeading) ? 0 : event.detail.compassHeading);
+      // setHeading(isNaN(event.detail.compassHeading) ? 0 : event.detail.compassHeading);
+      setHeading(event.detail.latitude);
     });
   };
 

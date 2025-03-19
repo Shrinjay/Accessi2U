@@ -154,6 +154,7 @@ export class GeolocationService extends EventTarget {
   }
 
   private bindDeviceOrientationEvents() {
+    console.log('bindDeviceOrientationEvents', HAS_ORIENTATION, HAS_ORIENTATION_ABSOLUTE, HAS_WEBKIT_COMPASS_HEADING);
     if (HAS_ORIENTATION_ABSOLUTE) {
       window.addEventListener('deviceorientationabsolute', this.handleDeviceOrientation);
     } else if (HAS_ORIENTATION && HAS_WEBKIT_COMPASS_HEADING) {
@@ -162,6 +163,7 @@ export class GeolocationService extends EventTarget {
   }
 
   private handleDeviceOrientation = (ev: DeviceOrientationEvent) => {
+    console.log('ev', ev);
     if (!ev.absolute && ev.webkitCompassHeading) {
       this.compassHeading = ev.webkitCompassHeading;
     } else if (ev.absolute) {
