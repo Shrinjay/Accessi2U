@@ -102,15 +102,10 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
     return roomsAlongPath?.map((room) => room.id) || [];
   }, [roomsAlongPath]);
 
-  const geolocationService = new GeolocationService();
-
   const initGeolocation = async () => {
-    const state: any = await geolocationService.queryPermissionsState();
-    await geolocationService.requestPermissions();
-    await geolocationService.start();
+    const geolocationService = new GeolocationService();
     await geolocationService.start();
     geolocationService.addEventListener('update', (event: any) => {
-      console.log('Geolocation update:', event);
       setHeading(isNaN(event.detail.compassHeading) ? 0 : event.detail.compassHeading);
     });
   };
@@ -271,7 +266,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
             <Spinner size="xl" />
           </Center>
         )}
-        <ZoomChild setZoomLevel={setZoomLevel} heading={heading} />
+        <ZoomChild setZoomLevel={setZoomLevel} />
 
         {/* <TileLayer
           //  @ts-ignore
