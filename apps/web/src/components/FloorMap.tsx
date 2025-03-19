@@ -292,6 +292,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
                 // @ts-ignore
                 icon={getCurrentLocationIcon()}
                 rotationAngle={heading}
+                rotationOrigin={'center'}
               />
             </>
           )}
