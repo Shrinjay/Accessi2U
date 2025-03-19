@@ -80,8 +80,10 @@ export class GeolocationService extends EventTarget {
   async requestPermissions(): Promise<void> {
     // not all browsers require a permission to access those events
     try {
+      console.log('requesting permission');
       this.deviceOrientationPermissionState = await DeviceOrientationEvent.requestPermission();
     } catch (err) {
+      console.log('error requesting permission', err);
       this.deviceOrientationPermissionState = 'granted';
     }
 
