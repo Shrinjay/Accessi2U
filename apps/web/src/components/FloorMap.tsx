@@ -76,7 +76,6 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const [selectedRoomName, setSelectedRoomName] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(19);
   const accessibilityMap = { Y: 'True', N: 'False' };
-  const map = useMap();
 
   const [heading, setHeading] = useState(0);
 
@@ -276,7 +275,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
             <Spinner size="xl" />
           </Center>
         )}
-        <ZoomChild setZoomLevel={setZoomLevel} />
+        <ZoomChild setZoomLevel={setZoomLevel} heading={heading} />
 
         {/* <TileLayer
           //  @ts-ignore
