@@ -271,9 +271,6 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
             <Spinner size="xl" />
           </Center>
         )}
-        <Center h="full">
-          <h1>Heading is: {heading}</h1>
-        </Center>
         <ZoomChild setZoomLevel={setZoomLevel} />
 
         {/* <TileLayer
@@ -293,6 +290,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
                 position={[currRoom?.geoJson?.properties?.lat, currRoom?.geoJson?.properties?.lon]}
                 // @ts-ignore
                 icon={getCurrentLocationIcon()}
+                rotationAngle={heading}
               />
             </>
           )}
