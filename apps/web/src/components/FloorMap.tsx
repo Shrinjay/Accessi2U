@@ -102,12 +102,12 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
     return roomsAlongPath?.map((room) => room.id) || [];
   }, [roomsAlongPath]);
 
+  const geolocationService = new GeolocationService();
+
   const map = async () => {
-    const geolocationService = new GeolocationService();
     const state: any = await geolocationService.queryPermissionsState();
     await geolocationService.requestPermissions();
     await geolocationService.start();
-
     await geolocationService.start();
     geolocationService.addEventListener('update', (event: any) => {
       console.log('Geolocation update:', event);

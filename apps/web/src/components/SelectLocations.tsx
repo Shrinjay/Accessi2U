@@ -8,6 +8,7 @@ import PathMap from './PathMap';
 import { trpc } from '../trpc';
 import { usePath } from '../hooks/usePath';
 import { buildErrorMessage } from 'vite';
+import { GeolocationService } from '../services/geolocation';
 
 export default function SelectLocations() {
   const [startPoint, setStart] = useState(null);
@@ -47,7 +48,8 @@ export default function SelectLocations() {
 
   const pathSelected = async () => {
     setIsLoading(true);
-
+    const geolocaitonService = new GeolocationService();
+    geolocaitonService.requestPermissions();
     try {
       await submit(accessible);
       setMenuOpen(false);
@@ -73,7 +75,7 @@ export default function SelectLocations() {
     setStart(null);
     setEnd(null);
     setMenuOpen(true);
-  }
+  };
 
   return (
     <Flex height="100vh" width="100vw" bg="gray.100">
@@ -93,7 +95,7 @@ export default function SelectLocations() {
               width: { xs: '100%', md: '50%', lg: '30%' },
             }}
           >
-            <CloseIcon sx={{ right: 0 }} onClick={changeMenuVisibility} alignSelf={"flex-end"}/>
+            <CloseIcon sx={{ right: 0 }} onClick={changeMenuVisibility} alignSelf={'flex-end'} />
 
             <VStack spacing={4} height="100%" width="100%" align="stretch">
               <HStack spacing={2} align="center" justify="center">
@@ -116,7 +118,7 @@ export default function SelectLocations() {
                     options={options}
                     onChange={setStart}
                     placeholder="DWE 1431"
-                    aria-errormessage='*Required'
+                    aria-errormessage="*Required"
                     aria-invalid={true}
                   />
                   <Text fontSize="xs" fontWeight="thin" mt={0} ml={2}>
@@ -232,11 +234,12 @@ export default function SelectLocations() {
       )}
 
       {/* Right Panel (Map Area) */}
-      <PathMap 
-      roomsAlongPath={roomsAlongPath} 
-      menuOpen={menuOpen} 
-      isLoading={isGeneratingPath || isListingRooms} 
-      resetRoute={pathReset}/>
+      <PathMap
+        roomsAlongPath={roomsAlongPath}
+        menuOpen={menuOpen}
+        isLoading={isGeneratingPath || isListingRooms}
+        resetRoute={pathReset}
+      />
       {/* Add your map component here */}
     </Flex>
   );
