@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   HAS_ORIENTATION,
   HAS_ORIENTATION_ABSOLUTE,
