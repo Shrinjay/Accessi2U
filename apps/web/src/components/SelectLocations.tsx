@@ -13,6 +13,7 @@ import MapLegend from './MapLegend';
 import MapTutorial from './MapTutorial';
 import Pseudonyms from '../../../ingest/data/Eng_Pseudonyms.json';
 import { roomByName } from '../../../server/src/procedures/room';
+import { useRooms } from '../hooks/useRooms';
 
 export default function SelectLocations() {
   const [startPoint, setStart] = useState(null);
@@ -28,13 +29,22 @@ export default function SelectLocations() {
   const toast = useToast();
 
   const { data: rooms, isLoading: isListingRooms } = trpc.listRooms.useQuery();
+  const { rooms: startRooms, isLoading: isLoadingStartRoom } = useRooms(
+    {
+      roomIds: startPoint?.value ? [startPoint.value] : [],
+    },
+    !!startPoint?.value,
+  );
   const { roomsAlongPath, submit, isLoading: isGeneratingPath } = usePath(startPoint?.value, endPoint?.value);
 
   const options = useMemo(() => {
-    return rooms?.map((room) => (
-      { value: room.id, 
-        label: room.name + (Pseudonyms[room.name]? " (" + Pseudonyms[room.name] + ")" : "") }
-    )) || [];
+    return (
+      rooms?.map((room) => ({
+        value: room.id,
+        label: `${room.name} ${Pseudonyms[room.name] ? `(${Pseudonyms[room.name]})` : ''} ${room.node?.length ? '' : ' [Unavailable]'}`,
+        isDisabled: !room.node?.length,
+      })) || []
+    );
   }, [rooms]);
 
   useEffect(() => {
@@ -123,6 +133,7 @@ export default function SelectLocations() {
                     isDisabled={isLoading}
                     value={startPoint}
                     options={options}
+                    isOptionDisabled={(option) => option.isDisabled}
                     onChange={setStart}
                     placeholder="DWE 1431"
                     aria-errormessage="*Required"
@@ -139,6 +150,7 @@ export default function SelectLocations() {
                     styles={theme}
                     isClearable
                     isDisabled={isLoading}
+                    isOptionDisabled={(option) => option.isDisabled}
                     value={endPoint}
                     options={options}
                     onChange={setEnd}
@@ -213,12 +225,11 @@ export default function SelectLocations() {
                 >
                   Confirm Route
                 </Button>
-                
+
                 <HStack spacing={4}>
                   <MapLegend />
-                  <MapTutorial/>
+                  <MapTutorial />
                 </HStack>
-                
               </VStack>
             </VStack>
           </Box>
@@ -250,9 +261,10 @@ export default function SelectLocations() {
 
       {/* Right Panel (Map Area) */}
       <PathMap
+        startRoom={startRooms?.[0]}
         roomsAlongPath={roomsAlongPath}
         menuOpen={menuOpen}
-        isLoading={isGeneratingPath || isListingRooms}
+        isLoading={isGeneratingPath || isListingRooms || isLoadingStartRoom}
         changeMenuVisibility={changeMenuVisibility}
         resetRoute={pathReset}
       />

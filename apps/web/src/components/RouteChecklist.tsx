@@ -118,16 +118,36 @@ export default function RouteChecklist({ roomsAlongPath, checkedIndex, setChecke
     }
   };
 
+  const isChecked = (index: number) => {
+    return index <= checkedIndex;
+  };
+
+  const areAllStepsChecked = steps.every((step) => isChecked(step.index));
+
   return (
     <>
       <Stack divider={<StackDivider />} spacing="3">
+        {areAllStepsChecked && !isOpened && (
+          <Button
+            alignSelf="center"
+            mb="2"
+            size="lg"
+            colorScheme="yellow"
+            bg="yellow.500"
+            fontSize="20px"
+            _hover={{ bg: '#D99A00' }}
+            _active={{ bg: '#C78C00' }}
+            fontWeight="bold"
+            borderRadius="6px"
+            px="6px"
+            onClick={onOpen}
+          >
+            Route Completed
+          </Button>
+        )}
         {steps
           .sort((a, b) => {
             if (isOpened) return a.index - b.index;
-
-            const isChecked = (index: number) => {
-              return index <= checkedIndex;
-            };
 
             if (isChecked(a.index) && isChecked(b.index)) return a.index - b.index;
             if (isChecked(a.index)) return 1;

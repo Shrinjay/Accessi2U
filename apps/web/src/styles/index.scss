@@ -22,7 +22,15 @@ body,
 }
 
 .leaflet-popup-content p {
-  margin: 8px !important; 
-  // padding: 0 !important; 
+  margin: 8px !important;
+  // padding: 0 !important;
   line-height: 1;
+}
+
+.filter-yellow {
+  filter: invert(86%) sepia(63%) saturate(3160%) hue-rotate(359deg) brightness(105%) contrast(108%) opacity(0.8);
+}
+
+.filter-purple {
+  filter: invert(17%) sepia(68%) saturate(5257%) hue-rotate(296deg) brightness(122%) contrast(123%);
 }

@@ -30,6 +30,7 @@ import { RoomViewModel } from '../hooks/useRooms';
 const DEFAULT_CENTER = [43.47007771086484, -80.5395194675902];
 
 type Props = {
+  startRoom?: RoomViewModel;
   roomsAlongPath: RoomViewModel[];
   menuOpen: boolean;
   isLoading: boolean;
@@ -37,7 +38,7 @@ type Props = {
   resetRoute: () => void;
 };
 
-const PathMap = ({ roomsAlongPath, menuOpen, isLoading, changeMenuVisibility, resetRoute }: Props) => {
+const PathMap = ({ startRoom, roomsAlongPath, menuOpen, isLoading, changeMenuVisibility, resetRoute }: Props) => {
   const [selectedFloorId, setSelectedFloorId] = useState(undefined);
   const [selectedBuildingId, setSelectedBuildingId] = useState(undefined);
 
@@ -59,9 +60,10 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading, changeMenuVisibility, re
 
   const center = useMemo(() => {
     if (!!checkedRoom) return [checkedRoom.centroid_lat, checkedRoom.centroid_lon];
+    if (!!startRoom) return [startRoom.centroid_lat, startRoom.centroid_lon];
     if (!!selectedBuilding) return [selectedBuilding.centroid_lat, selectedBuilding.centroid_lon];
     return DEFAULT_CENTER;
-  }, [selectedBuilding, checkedRoom]);
+  }, [selectedBuilding, checkedRoom, startRoom]);
 
   useEffect(() => {
     if (!selectedBuilding && buildings?.length) {
@@ -73,8 +75,11 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading, changeMenuVisibility, re
     if (checkedRoom) {
       setSelectedBuildingId(buildings.find((building) => building.id === checkedRoom.floor.building_id)?.id);
       setSelectedFloorId(checkedRoom.floor.id);
+    } else if (startRoom) {
+      setSelectedBuildingId(buildings.find((building) => building.id === startRoom.floor.building_id)?.id);
+      setSelectedFloorId(startRoom.floor.id);
     }
-  }, [checkedRoom]);
+  }, [checkedRoom, startRoom]);
 
   useEffect(() => {
     if (floors?.length && !selectedFloor) {
@@ -173,10 +178,7 @@ const PathMap = ({ roomsAlongPath, menuOpen, isLoading, changeMenuVisibility, re
           <DrawerHeader>
             <HStack>
               <Heading size="md">Your Route</Heading>
-              <EditIcon
-                color={'#67487d'}
-                onClick={() => changeMenuVisibility()}
-              />
+              <EditIcon color={'#67487d'} onClick={() => changeMenuVisibility()} />
               <Spacer />
               <Button
                 onClick={isOpen ? onClose : onOpen}

@@ -1,18 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  GeoJSON,
-  MapContainer,
-  useMap,
-  LayerGroup,
-  Popup,
-  FeatureGroup,
-  Marker,
-} from 'react-leaflet';
+import { GeoJSON, MapContainer, useMap, LayerGroup, Popup, FeatureGroup, Marker } from 'react-leaflet';
 import L, { divIcon } from 'leaflet';
 import currentLocationIcon from './icons/marker.svg';
 import elevatorIcon from './icons/elevatorIcon.svg';
 import stairsIcon from './icons/stairs.svg';
-import foodIcon from './icons/cutlery.svg';  
+import foodIcon from './icons/cutlery.svg';
 import pinIcon from './icons/pin.svg';
 import mensRoomIcon from './icons/washroom-men.svg';
 import womensRoomIcon from './icons/washroom-women.svg';
@@ -34,13 +26,13 @@ import engWashrooms from '../../../ingest/data/Eng_Washrooms.json';
 
 function ChangeView({ center }) {
   const map = useMap();
-  map.panTo(center);
 
   useEffect(() => {
     setTimeout(() => {
       map.invalidateSize();
+      map.panTo(center);
     }, 250);
-  }, [map]);
+  }, [center]);
   return null;
 }
 
@@ -85,12 +77,10 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const { rooms } = useRooms({ floorId: selectedFloor?.id });
   const { buildings } = useBuildings();
 
-  const roomCentroids = rooms
-    ?.filter((room) => {
-      const shouldBeShown = !ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR.includes(room.roomType);
-      return (room.area > getMinArea(zoomLevel) && shouldBeShown) || ROOM_TYPES_FOR_ICONS.includes(room.roomType);
-    })
-    ?.map(roomToCentroidGeoJson);
+  const roomCentroids = rooms?.filter((room) => {
+    const shouldBeShown = !ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR.includes(room.roomType);
+    return (room.area > getMinArea(zoomLevel) && shouldBeShown) || ROOM_TYPES_FOR_ICONS.includes(room.roomType);
+  });
 
   useEffect(() => {
     if (selectedRoom != null) {
@@ -173,53 +163,70 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
     });
   };
 
-  const getRoomIcon = ({ properties }, roomIDsAlongPath: number[]) => {
+  const getRoomIcon = (room: RoomViewModel, roomIDsAlongPath: number[]) => {
+    const roomGeoJson = roomToCentroidGeoJson(room);
+    const properties = roomGeoJson.properties;
+
     const final_id = roomIDsAlongPath[roomIDsAlongPath.length - 1];
-    if (final_id && final_id == properties.rm_id) {
+    const isAlongPath = roomIDsAlongPath.includes(room.id);
+
+    if (final_id && final_id == room.id) {
       return new L.divIcon({
         className: 'icon',
         style: {
           fontSize: '10px',
         },
-        html: `<object data=${pinIcon} type="image/svg+xml"  class="logo"> </object>
+        html: `<object data=${pinIcon} type="image/svg+xml"  class=${isAlongPath ? `"logo filter-purple"` : `"logo"`}/>
           <p style="font-size:10px;">${properties.RM_NM.split(' ')[1]}</p>
           `,
         iconSize: [30, 30],
       });
     } else if (properties.rm_standard == 'Elevators') {
-      return new L.Icon({
-        iconUrl: elevatorIcon,
-        iconSize: [20, 20],
+      return new L.divIcon({
+        className: 'icon',
+        style: {
+          fontSize: '10px',
+        },
+        html: `
+        <object data=${elevatorIcon} type="image/svg+xml"  class=${isAlongPath ? `"logo filter-yellow"` : `"logo"`} />
+        `,
+        iconSize: [30, 30],
       });
     } else if (properties.rm_standard == 'Stairs') {
-      return new L.Icon({
-        iconUrl: stairsIcon,
-        iconSize: [20, 20],
+      return new L.divIcon({
+        className: 'icon',
+        style: {
+          fontSize: '10px',
+        },
+        html: `
+        <object data=${stairsIcon} type="image/svg+xml"  class=${isAlongPath ? `"logo filter-yellow"` : `"logo"`} />
+        `,
+        iconSize: [30, 30],
       });
     } else if (properties.rm_standard == 'Toilets/Showers') {
-      var washroom = engWashrooms[properties.RM_NM]
+      var washroom = engWashrooms[properties.RM_NM];
 
-      if (washroom){
-        let washroomType = washroom.Gender
+      if (washroom) {
+        let washroomType = washroom.Gender;
 
-        if (washroomType == "M"){
+        if (washroomType == 'M') {
           return new L.Icon({
             iconUrl: mensRoomIcon,
             iconSize: [20, 20],
           });
-        } else if (washroomType =="W"){
+        } else if (washroomType == 'W') {
           return new L.Icon({
             iconUrl: womensRoomIcon,
             iconSize: [20, 20],
           });
-        } else if (washroomType == "GN") {
+        } else if (washroomType == 'GN') {
           return new L.Icon({
             iconUrl: neutralWashroomIcon,
             iconSize: [20, 20],
           });
         }
       }
-    } else if (properties.rm_standard == "Food Facilities") {
+    } else if (properties.rm_standard == 'Food Facilities') {
       return new L.Icon({
         iconUrl: foodIcon,
         iconSize: [20, 20],
@@ -236,7 +243,6 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
         `,
       iconSize: [30, 30],
     });
-
   };
 
   const floorFilter = ({ properties }) => {
@@ -317,7 +323,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
               <FeatureGroup key={index}>
                 <Popup>
                   <Box bg="white" boxShadow="sm" display="flex" flexDirection="column" p="1" gap="0">
-                    <Heading size="md" fontSize="lg" textAlign="center" mt="0px" >
+                    <Heading size="md" fontSize="lg" textAlign="center" mt="0px">
                       {room.name}
                     </Heading>
 
@@ -365,9 +371,10 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           })}
 
           {roomCentroids?.map?.((room, index) => {
+            const roomGeoJson = roomToCentroidGeoJson(room);
             return (
               <Marker
-                position={(room.geometry as Point).coordinates}
+                position={(roomGeoJson.geometry as Point).coordinates}
                 // @ts-ignore
                 icon={getRoomIcon(room, roomIDsAlongPath)}
               />
