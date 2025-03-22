@@ -1,0 +1,614 @@
+{
+    "CPH 1329": {
+      "Gender": "GN",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "CPH 1331": {
+      "Gender": "GN",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "CPH 2378": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "CPH 2381": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "CPH 3976": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "CPH 3979": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "CPH 4337": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "CPH 4340": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "DWE 1508": {
+      "Gender": "GN",
+      "Accessible Button": "No",
+      "Accessible Stall": "Unknown",
+      "Change Table": "No"
+    },
+    "DWE 1528": {
+      "Gender": "M",
+      "Accessible Button": "Unknown",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "DWE 1552": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "DWE 1907": {
+      "Gender": "M",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "DWE 1911": {
+      "Gender": "W",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "DWE 2552": {
+      "Gender": "W",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "DWE 2553": {
+      "Gender": "M",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "DWE 2560": {
+      "Gender": "M (Staff)",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "DWE 2563": {
+      "Gender": "GN",
+      "Accessible Button": "No",
+      "Accessible Stall": "Unknown",
+      "Change Table": "Unknown"
+    },
+    "DWE 2568": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "DWE 2907": {
+      "Gender": "M",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "DWE 2911": {
+      "Gender": "W",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "DWE 3531": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "DWE 3536": {
+      "Gender": "M (Staff)",
+      "Accessible Button": "No",
+      "Accessible Stall": "Unknown",
+      "Change Table": "Unknown"
+    },
+    "E2 1941": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "E2 1942": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E2 2410": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "E2 2416": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E2 2419": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "E2 3411": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "E2 3418": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E2 3418A": {
+      "Gender": "GN",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "Yes"
+    },
+    "E2 3420": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "E3 1121": {
+      "Gender": "GN",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "Yes"
+    },
+    "E3 1122": {
+      "Gender": "GN",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E3 2126": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "E3 2143": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "E3 2154": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "E3 2159": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "E3 3137": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E3 3138": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E3 4103": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E3 4104": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E5 1901": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+   "E5 1902": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E5 2901": {
+      "Gender": "GN",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E5 2902": {
+      "Gender": "GN",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E5 3901": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E5 3902": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E5 4901": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E5 4902": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E5 5901": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E5 5902": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E5 6901": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E5 6902": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E6 1902": {
+      "Gender": "GN",
+      "Accessible Button": "N/A - no door",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E6 1906": {
+      "Gender": "GN",
+      "Accessible Button": "N/A - no door",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E6 2902": {
+      "Gender": "M",
+      "Accessible Button": "N/A - no door",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E6 2906": {
+      "Gender": "W",
+      "Accessible Button": "N/A - no door",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E6 3902": {
+      "Gender": "M",
+      "Accessible Button": "N/A - no door",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E6 3906": {
+      "Gender": "W",
+      "Accessible Button": "N/A - no door",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E6 4902": {
+      "Gender": "M",
+      "Accessible Button": "N/A - no door",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E6 4906": {
+      "Gender": "W",
+      "Accessible Button": "N/A - no door",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E6 5902": {
+      "Gender": "M",
+      "Accessible Button": "N/A - no door",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E6 5906": {
+      "Gender": "W",
+      "Accessible Button": "N/A - no door",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 1912": {
+      "Gender": "W",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 1913": {
+      "Gender": "M",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 1914": {
+      "Gender": "GN",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 2912": {
+      "Gender": "W",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 2913": {
+      "Gender": "M",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 2914": {
+      "Gender": "GN",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "Yes"
+    },
+    "E7 3912": {
+      "Gender": "W",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 3913": {
+      "Gender": "M",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 4912": {
+      "Gender": "W",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 4913": {
+      "Gender": "M",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 4914": {
+      "Gender": "GN",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 5912": {
+      "Gender": "W",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 5913": {
+      "Gender": "M",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 6912": {
+      "Gender": "W",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 6913": {
+      "Gender": "M",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 7912": {
+      "Gender": "W",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 7913": {
+      "Gender": "M",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "E7 7914": {
+      "Gender": "GN",
+      "Accessible Button": "Yes",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "EIT 1903": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "EIT 1904": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "EIT 1906": {
+      "Gender": "GN",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "Yes"
+    },
+    "EIT 2902": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "EIT 2903": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "EIT 2905": {
+      "Gender": "GN",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "Yes"
+    },
+    "EIT 3901": {
+      "Gender": "GN",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "Yes"
+    },
+    "EIT 3906": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "EIT 3907": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "EIT 4902": {
+      "Gender": "GN",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "Yes"
+    },
+    "EIT 4903": {
+      "Gender": "GN",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "EIT 4909": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "EIT 4910": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "EIT 5903": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "EIT 5904": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "RCH 125": {
+      "Gender": "GN",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "RCH 126": {
+      "Gender": "GN",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "RCH 215": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "RCH 226": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "No",
+      "Change Table": "No"
+    },
+    "RCH 303": {
+      "Gender": "W",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    },
+    "RCH 311": {
+      "Gender": "M",
+      "Accessible Button": "No",
+      "Accessible Stall": "Yes",
+      "Change Table": "No"
+    }
+}

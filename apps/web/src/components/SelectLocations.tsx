@@ -9,6 +9,10 @@ import { trpc } from '../trpc';
 import { usePath } from '../hooks/usePath';
 import { buildErrorMessage } from 'vite';
 import { GeolocationService } from '../services/geolocation';
+import MapLegend from './MapLegend';
+import MapTutorial from './MapTutorial';
+import Pseudonyms from '../../../ingest/data/Eng_Pseudonyms.json';
+import { roomByName } from '../../../server/src/procedures/room';
 
 export default function SelectLocations() {
   const [startPoint, setStart] = useState(null);
@@ -27,7 +31,10 @@ export default function SelectLocations() {
   const { roomsAlongPath, submit, isLoading: isGeneratingPath } = usePath(startPoint?.value, endPoint?.value);
 
   const options = useMemo(() => {
-    return rooms?.map((room) => ({ value: room.id, label: room.name })) || [];
+    return rooms?.map((room) => (
+      { value: room.id, 
+        label: room.name + (Pseudonyms[room.name]? " (" + Pseudonyms[room.name] + ")" : "") }
+    )) || [];
   }, [rooms]);
 
   useEffect(() => {
@@ -191,7 +198,7 @@ export default function SelectLocations() {
                 <Button
                   size="lg"
                   colorScheme="brand"
-                  bg="#4D2161"
+                  bg="purple.500"
                   color="white"
                   fontSize="18px"
                   py={4}
@@ -200,10 +207,18 @@ export default function SelectLocations() {
                   isDisabled={!completedInfo || isGeneratingPath}
                   onClick={pathSelected}
                   isLoading={isGeneratingPath}
+                  _hover={{ bg: '#4D2161' }}
+                  _active={{ bg: '#4D2161' }}
                   onMouseOver={() => setErrorVisible(true)}
                 >
                   Confirm Route
                 </Button>
+                
+                <HStack spacing={4}>
+                  <MapLegend />
+                  <MapTutorial/>
+                </HStack>
+                
               </VStack>
             </VStack>
           </Box>
@@ -222,8 +237,8 @@ export default function SelectLocations() {
             p="2"
             color="white"
             bg="purple.500"
-            _hover={{ bg: '#67487d' }}
-            _active={{ bg: '#67487d' }}
+            _hover={{ bg: '#4D2161' }}
+            _active={{ bg: '#4D2161' }}
             display="flex"
             flexDirection="column"
             onClick={changeMenuVisibility}

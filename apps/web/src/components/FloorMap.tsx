@@ -1,37 +1,36 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
-  TileLayer,
   GeoJSON,
   MapContainer,
-  LayersControl,
   useMap,
   LayerGroup,
   Popup,
   FeatureGroup,
   Marker,
-  Tooltip,
-  useMapEvents,
 } from 'react-leaflet';
 import L, { divIcon } from 'leaflet';
 import currentLocationIcon from './icons/marker.svg';
 import elevatorIcon from './icons/elevatorIcon.svg';
 import stairsIcon from './icons/stairs.svg';
-import starIcon from './icons/star.svg';
-import washroomIcon from './icons/washroom-both-genders.svg';
+import foodIcon from './icons/cutlery.svg';  
+import pinIcon from './icons/pin.svg';
+import mensRoomIcon from './icons/washroom-men.svg';
+import womensRoomIcon from './icons/washroom-women.svg';
+import neutralWashroomIcon from './icons/washroom-stall.svg';
 import 'leaflet/dist/leaflet.css';
 import ReportMenu from './ReportMenu';
-import { Button, Heading, useDisclosure, Text, Box, Modal, Flex, Center, Spinner } from '@chakra-ui/react';
+import { Button, Heading, useDisclosure, Text, Box, Modal, Flex, Center, Spinner, position } from '@chakra-ui/react';
 import { FloorViewModel, useFloors } from '../hooks/useFloors';
 import { RoomViewModel, useRooms } from '../hooks/useRooms';
 import { useBuildings } from '../hooks/useBuildings';
 import { getListHash } from '../../../server/src/lib/util';
 import { Floor } from 'database';
 import { Point } from 'geojson';
-import MapLegend from './MapLegend';
 import { ZoomChild } from './core/ZoomChild';
 import { ReportsSummary } from './ReportsSummary';
 import 'leaflet-rotatedmarker';
 import { GeolocationService } from '../services/geolocation';
+import engWashrooms from '../../../ingest/data/Eng_Washrooms.json';
 
 function ChangeView({ center }) {
   const map = useMap();
@@ -161,23 +160,10 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
     if (isLastRoom) {
       return {
         weight: 1,
-        fillColor: 'red',
+        fillColor: 'magenta',
         color: 'white',
       };
     }
-  };
-
-  const getRoomNameLabel = ({ properties }, latlng) => {
-    return new L.divIcon({
-      className: 'icon',
-      style: {
-        fontSize: '10px',
-      },
-      html: `
-      <p style="font-size:10px;">${properties.RM_NM.split(' ')[1]}</p>
-      `,
-      iconSize: [30, 30],
-    });
   };
 
   const getCurrentLocationIcon = () => {
@@ -190,9 +176,15 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const getRoomIcon = ({ properties }, roomIDsAlongPath: number[]) => {
     const final_id = roomIDsAlongPath[roomIDsAlongPath.length - 1];
     if (final_id && final_id == properties.rm_id) {
-      return new L.Icon({
-        iconUrl: starIcon,
-        iconSize: [20, 20],
+      return new L.divIcon({
+        className: 'icon',
+        style: {
+          fontSize: '10px',
+        },
+        html: `<object data=${pinIcon} type="image/svg+xml"  class="logo"> </object>
+          <p style="font-size:10px;">${properties.RM_NM.split(' ')[1]}</p>
+          `,
+        iconSize: [30, 30],
       });
     } else if (properties.rm_standard == 'Elevators') {
       return new L.Icon({
@@ -205,22 +197,46 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
         iconSize: [20, 20],
       });
     } else if (properties.rm_standard == 'Toilets/Showers') {
+      var washroom = engWashrooms[properties.RM_NM]
+
+      if (washroom){
+        let washroomType = washroom.Gender
+
+        if (washroomType == "M"){
+          return new L.Icon({
+            iconUrl: mensRoomIcon,
+            iconSize: [20, 20],
+          });
+        } else if (washroomType =="W"){
+          return new L.Icon({
+            iconUrl: womensRoomIcon,
+            iconSize: [20, 20],
+          });
+        } else if (washroomType == "GN") {
+          return new L.Icon({
+            iconUrl: neutralWashroomIcon,
+            iconSize: [20, 20],
+          });
+        }
+      }
+    } else if (properties.rm_standard == "Food Facilities") {
       return new L.Icon({
-        iconUrl: washroomIcon,
+        iconUrl: foodIcon,
         iconSize: [20, 20],
       });
-    } else {
-      return new L.divIcon({
-        className: 'icon',
-        style: {
-          fontSize: '10px',
-        },
-        html: `
+    }
+
+    return new L.divIcon({
+      className: 'icon',
+      style: {
+        fontSize: '10px',
+      },
+      html: `
         <p style="font-size:10px;">${properties.RM_NM.split(' ')[1]}</p>
         `,
-        iconSize: [30, 30],
-      });
-    }
+      iconSize: [30, 30],
+    });
+
   };
 
   const floorFilter = ({ properties }) => {
@@ -231,15 +247,6 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
       return false;
     }
   };
-
-  // const classNumFilter = ({ properties }) => {
-  //   // https://gis.stackexchange.com/questions/189988/filtering-geojson-data-to-include-in-leaflet-map
-  //   if (properties['FL_NM'] === curFloor && properties['rm_standard'] === 'Classroom') {
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // };
 
   const otherNumFilter = ({ properties }) => {
     // https://gis.stackexchange.com/questions/189988/filtering-geojson-data-to-include-in-leaflet-map
@@ -252,7 +259,6 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
 
   return (
     <Flex>
-      <MapLegend />
       <MapContainer
         // @ts-ignore
         center={center}
