@@ -20,6 +20,7 @@ export const listRooms = procedure.input(input).query(async ({ ctx, input }) => 
     },
     include: {
       floor: true,
+      node: true,
     },
   });
 
