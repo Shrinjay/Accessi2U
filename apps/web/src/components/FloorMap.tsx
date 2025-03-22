@@ -19,7 +19,7 @@ import womensRoomIcon from './icons/washroom-women.svg';
 import neutralWashroomIcon from './icons/washroom-stall.svg';
 import 'leaflet/dist/leaflet.css';
 import ReportMenu from './ReportMenu';
-import { Button, Heading, useDisclosure, Text, Box, Modal, Flex, Center, Spinner } from '@chakra-ui/react';
+import { Button, Heading, useDisclosure, Text, Box, Modal, Flex, Center, Spinner, position } from '@chakra-ui/react';
 import { FloorViewModel, useFloors } from '../hooks/useFloors';
 import { RoomViewModel, useRooms } from '../hooks/useRooms';
 import { useBuildings } from '../hooks/useBuildings';
@@ -176,9 +176,15 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const getRoomIcon = ({ properties }, roomIDsAlongPath: number[]) => {
     const final_id = roomIDsAlongPath[roomIDsAlongPath.length - 1];
     if (final_id && final_id == properties.rm_id) {
-      return new L.Icon({
-        iconUrl: pinIcon,
-        iconSize: [20, 20],
+      return new L.divIcon({
+        className: 'icon',
+        style: {
+          fontSize: '10px',
+        },
+        html: `<object data=${pinIcon} type="image/svg+xml"  class="logo"> </object>
+          <p style="font-size:10px;">${properties.RM_NM.split(' ')[1]}</p>
+          `,
+        iconSize: [30, 30],
       });
     } else if (properties.rm_standard == 'Elevators') {
       return new L.Icon({
