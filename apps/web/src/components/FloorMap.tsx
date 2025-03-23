@@ -176,7 +176,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
         style: {
           fontSize: '10px',
         },
-        html: `<object data=${pinIcon} type="image/svg+xml"  class=${isAlongPath ? `"logo filter-purple"` : `"logo"`}/>
+        html: `<object data=${pinIcon} type="image/svg+xml"  class="logo"> </object>
           <p style="font-size:10px;">${properties.RM_NM.split(' ')[1]}</p>
           `,
         iconSize: [30, 30],
