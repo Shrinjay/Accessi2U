@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
-import { Button, Checkbox, VStack, Text, Box, Flex, Heading, Image, Spacer, HStack, useToast, Divider } from '@chakra-ui/react';
-import { CloseIcon } from '@chakra-ui/icons';
+import { Button, Checkbox, VStack, Text, Box, Flex, Heading,
+   Image, Spacer, HStack, useToast, Divider,
+  Accordion, AccordionButton, AccordionItem, AccordionIcon, AccordionPanel } from '@chakra-ui/react';
 import locationIcon from '/src/components/icon.svg';
 import { theme } from '../styles';
 import PathMap from './PathMap';
@@ -101,7 +102,6 @@ export default function SelectLocations() {
             p="6"
             bg="white"
             boxShadow="lg"
-            display="flex"
             flexDirection="column"
             sx={{
               left: 0,
@@ -109,66 +109,129 @@ export default function SelectLocations() {
               width: { xs: '100%', md: '50%', lg: '30%' },
             }}
           >
+            <Accordion allowToggle={true} reduceMotion defaultIndex={0}>
+                <AccordionItem>
+                  <AccordionButton>
+                    <Heading fontSize={'3xl'} mt="20px" mr={2}>
+                      Generate Route
+                    </Heading>
+                    <AccordionIcon justifySelf={"end"}/>
+                  </AccordionButton>
 
-            <VStack spacing={4} height="100%" width="100%" align="stretch">
-              <HStack spacing={2} align="center" justify="center">
-                <Heading size="xl" fontSize={'3xl'} textAlign="center" mt="30px">
-                  Where are you located?
-                </Heading>
-                {/* <Image src={locationIcon} alt="Location Icon" boxSize="40px" mt="20px" /> */}
-              </HStack>
+                  <AccordionPanel>
+                    <Box width="100%">
+                      <Text fontSize={'2xl'} fontWeight="bold" mb={2} mt="20px">
+                        Your Location
+                      </Text>
+                      <Select
+                        styles={theme}
+                        isClearable
+                        isDisabled={isLoading}
+                        value={startPoint}
+                        options={options}
+                        isOptionDisabled={(option) => option.isDisabled}
+                        onChange={setStart}
+                        placeholder="DWE 1431"
+                        aria-errormessage="*Required"
+                        aria-invalid={true}
+                      />
+                      <Text fontSize="xs" fontWeight="thin" mt={0} ml={2}>
+                        *Required
+                      </Text>
 
-              <VStack spacing={5} width="100%" flex={1} align="stretch">
-                <Box width="100%">
-                  <Text fontSize={'2xl'} fontWeight="bold" mb={2} mt="20px">
-                    Your Location
-                  </Text>
-                  <Select
-                    styles={theme}
-                    isClearable
-                    isDisabled={isLoading}
-                    value={startPoint}
-                    options={options}
-                    isOptionDisabled={(option) => option.isDisabled}
-                    onChange={setStart}
-                    placeholder="DWE 1431"
-                    aria-errormessage="*Required"
-                    aria-invalid={true}
-                  />
-                  <Text fontSize="xs" fontWeight="thin" mt={0} ml={2}>
-                    *Required
-                  </Text>
+                      <Text fontSize={'2xl'} fontWeight="bold" mb={2} mt="30px">
+                        Final Location
+                      </Text>
+                      <Select
+                        styles={theme}
+                        isClearable
+                        isDisabled={isLoading}
+                        isOptionDisabled={(option) => option.isDisabled}
+                        value={endPoint}
+                        options={options}
+                        onChange={setEnd}
+                        placeholder="DWE 1432"
+                      />
+                      <Text fontSize="xs" fontWeight="thin" mt={0} ml={2}>
+                        *Required
+                      </Text>
 
-                  <Text fontSize={'2xl'} fontWeight="bold" mb={2} mt="30px">
-                    Final Location
-                  </Text>
-                  <Select
-                    styles={theme}
-                    isClearable
-                    isDisabled={isLoading}
-                    isOptionDisabled={(option) => option.isDisabled}
-                    value={endPoint}
-                    options={options}
-                    onChange={setEnd}
-                    placeholder="DWE 1432"
-                  />
-                  <Text fontSize="xs" fontWeight="thin" mt={0} ml={2}>
-                    *Required
-                  </Text>
-                </Box>
+                      <Text fontSize={['2xl']} fontWeight="bold" mb={2} color="brand.500" mt="10px">
+                        {' '}
+                        Select your Preferences
+                      </Text>
 
-                  <Text fontSize={['2xl']} fontWeight="bold" mb={2} color="brand.500" mt="10px">
-                    {' '}
-                    Select your Preferences
-                  </Text>
+                      <HStack>
+                        <Checkbox isChecked={accessible} onChange={(e) => setAccessible(e.target.checked)} />
+                        <Text fontSize={['md']} mt="5px" fontFamily="body">
+                          Elevator only
+                        </Text>
+                      </HStack>
 
-                  <HStack>
-                    <Checkbox isChecked={accessible} onChange={(e) => setAccessible(e.target.checked)} />
-                    <Text fontSize={['md']} mt="5px" fontFamily="body">
-                      Elevator only
+                      <Button
+                        size="lg"
+                        colorScheme="brand"
+                        bg="purple.500"
+                        color="white"
+                        fontSize="18px"
+                        py={4}
+                        borderRadius="8px"
+                        fontWeight="bold"
+                        isDisabled={!completedInfo || isGeneratingPath}
+                        onClick={pathSelected}
+                        isLoading={isGeneratingPath}
+                        mt={6}
+                        _hover={{ bg: '#4D2161' }}
+                        _active={{ bg: '#4D2161' }}
+                      >
+                        Confirm Route
+                      </Button>
+                    </Box>
+                  </AccordionPanel>
+                </AccordionItem>
+                <AccordionItem>
+                  <AccordionButton>
+                    <Heading fontSize={'3xl'} fontWeight="bold" mt="20px" mr={2}>
+                      Select Floor
+                    </Heading>
+                    <AccordionIcon/>
+                  </AccordionButton>
+
+                  <AccordionPanel>
+                    <Select
+                      styles={theme}
+                      isClearable
+                      isDisabled={isLoading}
+                      value={selectedFloor}
+                      options={floorOptions}
+                      onChange={setSelectedFloor}
+                      placeholder="DWE_01"
+                    />
+                    <Text fontSize="xs" fontWeight="thin" mt={0} ml={2}>
+                        *Required
                     </Text>
-                  </HStack>
 
+                    <Button
+                      size="lg"
+                      colorScheme="brand"
+                      bg="purple.500"
+                      color="white"
+                      fontSize="18px"
+                      py={4}
+                      borderRadius="8px"
+                      fontWeight="bold"
+                      mt={6}
+                      isDisabled={selectedFloor == null}
+                      onClick={() => setMenuOpen(false)}
+                      isLoading={isGeneratingPath}
+                      _hover={{ bg: '#4D2161' }}
+                      _active={{ bg: '#4D2161' }}
+                    >
+                      View Floor
+                    </Button>
+                  </AccordionPanel>
+                </AccordionItem>
+            </Accordion>
                   {/* TODO: Lol maybe one day */}
                   {/* <HStack>
                     <Checkbox isChecked={indoors} onChange={(e) => setIndoors(e.target.checked)} />
@@ -199,68 +262,10 @@ export default function SelectLocations() {
                 >
                   Save
                 </Button> */}
-
-                <Button
-                  size="lg"
-                  colorScheme="brand"
-                  bg="purple.500"
-                  color="white"
-                  fontSize="18px"
-                  py={4}
-                  borderRadius="8px"
-                  fontWeight="bold"
-                  isDisabled={!completedInfo || isGeneratingPath}
-                  onClick={pathSelected}
-                  isLoading={isGeneratingPath}
-                  _hover={{ bg: '#4D2161' }}
-                  _active={{ bg: '#4D2161' }}
-                >
-                  Confirm Route
-                </Button>
-
-                <HStack spacing={4}>
+            <HStack spacing={4} mt={6} >
                   <MapLegend />
                   <MapTutorial />
-                </HStack>
-
-                <Divider/>
-
-                <Text fontSize={'3xl'} fontWeight="bold" mb={2} mt="20px">
-                    Select Floor
-                </Text>
-                <Select
-                  styles={theme}
-                  isClearable
-                  isDisabled={isLoading}
-                  value={selectedFloor}
-                  options={floorOptions}
-                  onChange={setSelectedFloor}
-                  placeholder="DWE_01"
-                />
-                <Text fontSize="xs" fontWeight="thin" mt={0} ml={2}>
-                    *Required
-                </Text>
-
-                <Button
-                  size="lg"
-                  colorScheme="brand"
-                  bg="purple.500"
-                  color="white"
-                  fontSize="18px"
-                  py={4}
-                  borderRadius="8px"
-                  fontWeight="bold"
-                  isDisabled={selectedFloor == null}
-                  onClick={() => setMenuOpen(false)}
-                  isLoading={isGeneratingPath}
-                  _hover={{ bg: '#4D2161' }}
-                  _active={{ bg: '#4D2161' }}
-                >
-                  View Floor
-                </Button>
-
-              </VStack>
-            </VStack>
+            </HStack>
           </Box>
         </>
       ) : (
