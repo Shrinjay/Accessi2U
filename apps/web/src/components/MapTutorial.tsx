@@ -3,9 +3,16 @@ import {Button, HStack, Popover, PopoverArrow, PopoverBody, PopoverCloseButton, 
 export default function MapTutorial() {
     return(
         <>
-            <Popover placement='bottom-end' >
+            <Popover placement='bottom-end'>
                 <PopoverTrigger >
                     <Button
+                        style={{
+                            position: 'absolute',
+                            right: 10,
+                            top: 10,
+                            zIndex: 1000,
+                            width: 90,
+                            }}
                         colorScheme="yellow"
                         p="2"
                         color="white"
@@ -28,22 +35,19 @@ export default function MapTutorial() {
                     </Text>
 
                     <Text fontSize="sm">
-                        1. Select start & end locations
+                        1. Input start & end locations
                     </Text> 
                     <Text fontSize="sm">
-                        2. Touch "Confirm route"
+                        2. Select "Confirm route"
                     </Text> 
                     <Text fontSize="sm">
                         3. View route on map
                     </Text>
                     <Text fontSize="sm">
-                        4. View steps at bottom
+                        4. Select arrow to view Steps
                     </Text> 
                     <Text fontSize="sm">
                         5. Check completed steps
-                    </Text>
-                    <Text fontSize="sm">
-                        Click Up Arrow to expand Checklist
                     </Text>
                     <Text fontSize="sm">
                         6. Complete route to return
@@ -54,19 +58,19 @@ export default function MapTutorial() {
                     </Text>
 
                     <Text fontSize="sm">
-                        1. Touch any room on map
+                        1. Select any room on map
                     </Text> 
                     <Text fontSize="sm">
-                        2. Touch "Report Issue"
+                        2. Select "Report Issue"
                     </Text> 
                     <Text fontSize="sm">
-                        3. Select Error Type
+                        3. Select error type
                     </Text>
                     <Text fontSize="sm">
-                        4. Type Comments (if needed)
+                        4. Type comments (if needed)
                     </Text> 
                     <Text fontSize="sm">
-                        5. touch "Submit"
+                        5. Select "Submit"
                     </Text>
                     </PopoverBody>
                 </PopoverContent>

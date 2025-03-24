@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { Button, Checkbox, VStack, Text, Box, Flex, Heading,
    Image, Spacer, HStack, useToast, Divider,
-  Accordion, AccordionButton, AccordionItem, AccordionIcon, AccordionPanel } from '@chakra-ui/react';
+  Accordion, AccordionButton, AccordionItem, AccordionIcon, AccordionPanel,
+  Tabs, TabList, TabPanels, TabPanel, Tab } from '@chakra-ui/react';
 import locationIcon from '/src/components/icon.svg';
 import { theme } from '../styles';
 import PathMap from './PathMap';
@@ -95,6 +96,9 @@ export default function SelectLocations() {
   return (
     <Flex height="100vh" width="100vw" bg="gray.100">
       {/* Left Panel */}
+      <MapLegend />
+      <MapTutorial />
+
 
       {menuOpen ? (
         <>
@@ -109,17 +113,17 @@ export default function SelectLocations() {
               width: { xs: '100%', md: '50%', lg: '30%' },
             }}
           >
-            <Accordion allowToggle={true} reduceMotion defaultIndex={0}>
-                <AccordionItem>
-                  <AccordionButton>
-                    <Heading fontSize={'3xl'} mt="20px" mr={2}>
-                      Generate Route
-                    </Heading>
-                    <AccordionIcon justifySelf={"end"}/>
-                  </AccordionButton>
-
-                  <AccordionPanel>
-                    <Box width="100%">
+            <Tabs isFitted variant={"enclosed"} colorScheme='purple'>
+              <TabList>
+                <Tab>Find Route</Tab>
+                <Tab>Map View</Tab>
+              </TabList>
+              <TabPanels>
+                <TabPanel>
+                <Heading fontSize={'3xl'} mt="10px" mb="10px" mr={2}>
+                    Select Route Start/End
+                </Heading>
+                <Box width="100%">
                       <Text fontSize={'2xl'} fontWeight="bold" mb={2} mt="20px">
                         Your Location
                       </Text>
@@ -187,18 +191,12 @@ export default function SelectLocations() {
                         Confirm Route
                       </Button>
                     </Box>
-                  </AccordionPanel>
-                </AccordionItem>
-                <AccordionItem>
-                  <AccordionButton>
-                    <Heading fontSize={'3xl'} fontWeight="bold" mt="20px" mr={2}>
-                      Select Floor
-                    </Heading>
-                    <AccordionIcon/>
-                  </AccordionButton>
-
-                  <AccordionPanel>
-                    <Select
+                </TabPanel>
+                <TabPanel>
+                <Heading fontSize={'3xl'} mt="10px" mb="10px" mr={2}>
+                    Select Floor
+                </Heading>
+                <Select
                       styles={theme}
                       isClearable
                       isDisabled={isLoading}
@@ -229,9 +227,9 @@ export default function SelectLocations() {
                     >
                       View Floor
                     </Button>
-                  </AccordionPanel>
-                </AccordionItem>
-            </Accordion>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
                   {/* TODO: Lol maybe one day */}
                   {/* <HStack>
                     <Checkbox isChecked={indoors} onChange={(e) => setIndoors(e.target.checked)} />
@@ -262,10 +260,6 @@ export default function SelectLocations() {
                 >
                   Save
                 </Button> */}
-            <HStack spacing={4} mt={6} >
-                  <MapLegend />
-                  <MapTutorial />
-            </HStack>
           </Box>
         </>
       ) : (

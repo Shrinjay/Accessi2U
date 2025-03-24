@@ -15,6 +15,13 @@ export default function MapLegend() {
             <Popover placement='bottom-start' >
                 <PopoverTrigger >
                     <Button
+                        style={{
+                                position: 'absolute',
+                                right: 110,
+                                top: 10,
+                                zIndex: 1000,
+                                width: 90,
+                            }}
                         colorScheme="yellow"
                         p="2"
                         color="white"
@@ -31,7 +38,7 @@ export default function MapLegend() {
                 <PopoverContent color="black" bg="white" borderColor="darkgrey" borderWidth={2} borderRadius={4} width={230}>
                     <PopoverCloseButton borderColor="darkgrey" borderWidth={2}/>
                     <PopoverArrow bg='white' borderColor="darkgrey"/>
-                    <PopoverBody>
+                    <PopoverBody bg="white">
                         <HStack >
                             <Square size="3" bg='magenta' borderWidth={1} borderColor={"black"}/>
                             <Text fontSize={'md'}  >End Room</Text>
