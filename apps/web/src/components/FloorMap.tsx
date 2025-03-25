@@ -20,7 +20,7 @@ import { Floor } from 'database';
 import { Point } from 'geojson';
 import { ZoomChild } from './core/ZoomChild';
 import { ReportsSummary } from './ReportsSummary';
-import 'leaflet-rotatedmarker';
+// import 'leaflet-rotatedmarker';
 import { GeolocationService } from '../services/geolocation';
 import engWashrooms from '../../../ingest/data/Eng_Washrooms.json';
 
