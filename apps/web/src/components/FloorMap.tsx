@@ -29,8 +29,8 @@ function ChangeView({ center, heading }) {
 
   useEffect(() => {
     setTimeout(() => {
-      map.invalidateSize();
-      map.panTo(center);
+      map?.invalidateSize();
+      map?.panTo(center);
     }, 250);
   }, [center]);
 
@@ -78,12 +78,10 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const { rooms } = useRooms({ floorId: selectedFloor?.id });
   const { buildings } = useBuildings();
 
-  const roomCentroids = useMemo(() => {
-    return rooms?.filter((room) => {
-      const shouldBeShown = !ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR.includes(room.roomType);
-      return (room.area > getMinArea(zoomLevel) && shouldBeShown) || ROOM_TYPES_FOR_ICONS.includes(room.roomType);
-    });
-  }, [rooms, zoomLevel]);
+  const roomCentroids = rooms?.filter((room) => {
+    const shouldBeShown = !ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR.includes(room.roomType);
+    return (room.area > getMinArea(zoomLevel) && shouldBeShown) || ROOM_TYPES_FOR_ICONS.includes(room.roomType);
+  });
 
   useEffect(() => {
     if (selectedRoom != null) {
@@ -167,18 +165,17 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
     });
   };
 
-  const getRoomIcon = useCallback((room: RoomViewModel, roomIDsAlongPath: number[]) => {
+  const getRoomIcon = (room: RoomViewModel, roomIDsAlongPath: number[]) => {
     const roomGeoJson = roomToCentroidGeoJson(room);
     const properties = roomGeoJson.properties;
 
     const final_id = roomIDsAlongPath[roomIDsAlongPath.length - 1];
     const isAlongPath = roomIDsAlongPath.includes(room.id);
-
     if (final_id && final_id == room.id) {
       return new L.icon({
-        className: 'logo',
+        // className: 'logo',
         iconUrl: pinIcon,
-        iconSize: [20, 20],
+        iconSize: [30, 30],
       });
     } else if (properties.rm_standard == 'Elevators') {
       return new L.icon({
@@ -228,11 +225,11 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
         fontSize: '10px',
       },
       html: `
-        <p style="font-size:10px;">${properties.RM_NM.split(' ')[1]}</p>
-        `,
+      <p style="font-size:10px;">${properties.RM_NM.split(' ')[1]}</p>
+      `,
       iconSize: [30, 30],
     });
-  }, []);
+  };
 
   const floorFilter = ({ properties }) => {
     // https://gis.stackexchange.com/questions/189988/filtering-geojson-data-to-include-in-leaflet-map

@@ -63,16 +63,16 @@ const dfsPathInHypergraph = async (
 
   const isDifferentFloor = edge.floor_id !== toNode.floor_id;
   if (isDifferentFloor && interFloorNodes.length > 0) {
-    const outgoingInterfloorEdgesNested = [];
+    const outgoingInterfloorEdgesNested: EdgeWithRoom[][] = [];
 
-    for (const node of interFloorNodes) {
+    await asyncBatch(interFloorNodes, 2, async (node) => {
       if (visitedNodeIds.has(node.id)) {
-        continue;
+        return;
       }
       nextVisitedNodeIds.add(node.id);
       const outgoingInterfloorEdges = await _node.edges(node);
       outgoingInterfloorEdgesNested.push(outgoingInterfloorEdges);
-    }
+    });
 
     const outgoingInterfloorEdges = outgoingInterfloorEdgesNested.flat().filter((edge) => !visitedEdgeIds.has(edge.id));
 
@@ -93,12 +93,12 @@ const dfsPathInHypergraph = async (
     })
     .filter((node) => node.node_type === NodeTypeEnum.CONNECTION_POINT);
 
-  const outgoingEdgesNested = [];
+  const outgoingEdgesNested: EdgeWithRoom[][] = [];
 
-  for (const node of connectionNodes) {
+  await asyncBatch(connectionNodes, 2, async (node) => {
     const outgoingEdges = await _node.edges(node);
     outgoingEdgesNested.push(outgoingEdges);
-  }
+  });
 
   const outgoingEdges = outgoingEdgesNested
     .flat()
@@ -117,3 +117,46 @@ const dfsPathInHypergraph = async (
 
   return foundPath;
 };
+
+const asyncBatch = async <T = any>(
+  items: T[],
+  size: number,
+  callback: (item: T) => Promise<any>,
+  sleepDuration?: number,
+): Promise<void> => {
+  const batches = batch(items, size);
+  const count = batches.length - 1;
+
+  console.log(`Processing ${count} in batches of ${size}`);
+
+  for (let i = 0; i < batches.length; i++) {
+    try {
+      console.log(`Starting batch ${i} of ${count}`);
+      const batch = batches[i];
+      await Promise.all(batch.map(callback));
+
+      console.log(`Processed batch ${i} of ${count}`);
+      if (!sleepDuration) continue;
+
+      console.log(`Sleeping for ${sleepDuration} milliseconds`);
+      await sleep(sleepDuration);
+    } catch (error) {
+      console.log(`Error on batch ${i} of ${count}`);
+      console.log(error.message);
+    }
+  }
+};
+
+export const batch = <T = any>(items: T[], size: number): T[][] => {
+  return items.reduce((acc, item, index) => {
+    const batchIndex = Math.floor(index / size);
+
+    if (!acc[batchIndex]) acc[batchIndex] = [];
+    acc[batchIndex].push(item);
+
+    return acc;
+  }, []);
+};
+
+export const sleep = async (durationInMs: number) =>
+  new Promise((resolve) => setTimeout(() => resolve('done'), durationInMs));

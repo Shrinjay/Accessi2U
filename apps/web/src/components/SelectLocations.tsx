@@ -29,6 +29,7 @@ import locationIcon from '/src/components/icon.svg';
 import { theme } from '../styles';
 import PathMap from './PathMap';
 import { trpc } from '../trpc';
+import Pseudonyms from '../../../ingest/data/Eng_Pseudonyms.json';
 import { usePath } from '../hooks/usePath';
 import { buildErrorMessage } from 'vite';
 import { GeolocationService } from '../services/geolocation';
@@ -50,7 +51,13 @@ export default function SelectLocations() {
   const { data: floors, isLoading: isListingFloors } = trpc.listFloors.useQuery();
   const { roomsAlongPath, submit, isLoading: isGeneratingPath } = usePath(startPoint?.value, endPoint?.value);
   const options = useMemo(() => {
-    return rooms?.map((room) => ({ value: room.id, label: room.name })) || [];
+    return (
+      rooms?.map((room) => ({
+        value: room.id,
+        label: `${room.name} ${Pseudonyms[room.name] ? `(${Pseudonyms[room.name]})` : ''} ${room.node?.length ? '' : '(Unavailable)'}`,
+        isDisabled: !room?.node?.length,
+      })) || []
+    );
   }, [rooms]);
 
   const floorOptions = useMemo(() => {
