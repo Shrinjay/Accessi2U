@@ -33,10 +33,6 @@ function ChangeView({ center, heading }) {
       map.panTo(center);
     }, 250);
   }, [center]);
-
-  useEffect(() => {
-    map.invalidateSize();
-  }, [heading]);
   return null;
 }
 
