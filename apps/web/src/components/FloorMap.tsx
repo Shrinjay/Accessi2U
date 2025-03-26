@@ -95,6 +95,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   }, [selectedRoom]);
 
   const roomIDsAlongPath = useMemo(() => {
+    console.log(roomsAlongPath);
     return roomsAlongPath?.map((room) => room.id) || [];
   }, [roomsAlongPath]);
 
@@ -377,11 +378,9 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           })}
 
           {roomCentroids?.map?.((room, index) => {
-            console.log('re-rendering room centroids');
             const roomGeoJson = roomToCentroidGeoJson(room);
             return (
               <Marker
-                key={index}
                 position={(roomGeoJson.geometry as Point).coordinates}
                 // @ts-ignore
                 icon={getRoomIcon(room, roomIDsAlongPath)}
