@@ -175,15 +175,10 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
     const isAlongPath = roomIDsAlongPath.includes(room.id);
 
     if (final_id && final_id == room.id) {
-      return new L.divIcon({
-        className: 'icon',
-        style: {
-          fontSize: '10px',
-        },
-        html: `<object data=${pinIcon} type="image/svg+xml"  class="logo"> </object>
-          <p style="font-size:10px;">${properties.RM_NM.split(' ')[1]}</p>
-          `,
-        iconSize: [30, 30],
+      return new L.icon({
+        className: 'logo',
+        iconUrl: pinIcon,
+        iconSize: [20, 20],
       });
     } else if (properties.rm_standard == 'Elevators') {
       return new L.icon({
@@ -287,16 +282,14 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
 
         <LayerGroup>
           {currRoom && (
-            <>
-              <Marker
-                key={heading}
-                position={[currRoom?.geoJson?.properties?.lat, currRoom?.geoJson?.properties?.lon]}
-                // @ts-ignore
-                icon={getCurrentLocationIcon()}
-                rotationAngle={heading}
-                rotationOrigin={'center'}
-              />
-            </>
+            <Marker
+              key={heading}
+              position={[currRoom?.geoJson?.properties?.lat, currRoom?.geoJson?.properties?.lon]}
+              // @ts-ignore
+              icon={getCurrentLocationIcon()}
+              rotationAngle={heading}
+              rotationOrigin={'center'}
+            />
           )}
           {buildings?.map((building, index) => {
             return (
