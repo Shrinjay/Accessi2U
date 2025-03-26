@@ -65,7 +65,7 @@ const dfsPathInHypergraph = async (
   if (isDifferentFloor && interFloorNodes.length > 0) {
     const outgoingInterfloorEdgesNested: EdgeWithRoom[][] = [];
 
-    await asyncBatch(interFloorNodes, 2, async (node) => {
+    await asyncBatch(interFloorNodes, 3, async (node) => {
       if (visitedNodeIds.has(node.id)) {
         return;
       }
@@ -95,7 +95,7 @@ const dfsPathInHypergraph = async (
 
   const outgoingEdgesNested: EdgeWithRoom[][] = [];
 
-  await asyncBatch(connectionNodes, 2, async (node) => {
+  await asyncBatch(connectionNodes, 3, async (node) => {
     const outgoingEdges = await _node.edges(node);
     outgoingEdgesNested.push(outgoingEdges);
   });
