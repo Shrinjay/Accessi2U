@@ -266,7 +266,7 @@ export default function SelectLocations() {
               flexDirection="column"
               onClick={changeMenuVisibility}
             >
-              Open Route Select
+              Route Select
             </Button>
           )}
         </>
