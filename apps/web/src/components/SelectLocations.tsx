@@ -31,6 +31,8 @@ import { trpc } from '../trpc';
 import { usePath } from '../hooks/usePath';
 import { buildErrorMessage } from 'vite';
 import { GeolocationService } from '../services/geolocation';
+import MapLegend from './MapLegend';
+import MapTutorial from './MapTutorial';
 
 export default function SelectLocations() {
   const [startPoint, setStart] = useState(null);
