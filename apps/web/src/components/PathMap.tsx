@@ -39,7 +39,15 @@ type Props = {
   chosenFloor: {};
 };
 
-const PathMap = ({ startRoom, roomsAlongPath, menuOpen, isLoading, changeMenuVisibility, resetRoute, chosenFloor}: Props) => {
+const PathMap = ({
+  startRoom,
+  roomsAlongPath,
+  menuOpen,
+  isLoading,
+  changeMenuVisibility,
+  resetRoute,
+  chosenFloor,
+}: Props) => {
   const [selectedFloorId, setSelectedFloorId] = useState(undefined);
   const [selectedBuildingId, setSelectedBuildingId] = useState(undefined);
   const { buildings, isLoading: isLoadingBuildings } = useBuildings();
@@ -84,7 +92,7 @@ const PathMap = ({ startRoom, roomsAlongPath, menuOpen, isLoading, changeMenuVis
   useEffect(() => {
     if (floors?.length && !selectedFloor) {
       setSelectedFloorId(floors[0].id);
-    } 
+    }
   }, [selectedFloorId, floors]);
 
   useEffect(() => {

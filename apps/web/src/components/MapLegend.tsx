@@ -9,6 +9,7 @@ import {
   PopoverTrigger,
   Square,
   Text,
+  useDisclosure,
 } from '@chakra-ui/react';
 import currentLocationIcon from './icons/marker.svg';
 import elevatorIcon from './icons/elevatorIcon.svg';
@@ -20,11 +21,14 @@ import neutralWashroomIcon from './icons/washroom-stall.svg';
 import foodIcon from './icons/cutlery.svg';
 
 export default function MapLegend() {
+  const { isOpen, onToggle, onClose } = useDisclosure();
+
   return (
     <>
-      <Popover placement="bottom-start">
+      <Popover placement="bottom-start" isOpen={isOpen}>
         <PopoverTrigger>
           <Button
+            onClick={onToggle}
             style={{
               position: 'absolute',
               right: 110,
@@ -46,21 +50,21 @@ export default function MapLegend() {
         </PopoverTrigger>
 
         <PopoverContent color="black" bg="white" borderColor="darkgrey" borderWidth={2} borderRadius={4} width={230}>
-          <PopoverCloseButton borderColor="darkgrey" borderWidth={2} />
+          <PopoverCloseButton borderColor="darkgrey" borderWidth={2} onClick={onClose} />
           <PopoverArrow bg="white" borderColor="darkgrey" />
           <PopoverBody bg="white">
             <HStack>
-              <Square size="3" bg="magenta" borderWidth={1} borderColor={'black'} />
+              <Square size="3" bg="magenta" opacity={0.3} borderWidth={1} borderColor={'black'} />
               <Text fontSize={'md'}>End Room</Text>
             </HStack>
 
             <HStack>
-              <Square size="3" bg="green" borderWidth={1} borderColor={'black'} />
+              <Square size="3" bg="green" opacity={0.3} borderWidth={1} borderColor={'black'} />
               <Text fontSize={'md'}>Completed Steps</Text>
             </HStack>
 
             <HStack>
-              <Square size="3" bg="yellow" borderWidth={1} borderColor={'black'} />
+              <Square size="3" bg="yellow" opacity={0.3} borderWidth={1} borderColor={'black'} />
               <Text fontSize={'md'}>Incomplete Steps</Text>
             </HStack>
 
