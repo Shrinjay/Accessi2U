@@ -23,7 +23,7 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 import { useBuildings } from '../hooks/useBuildings';
-import { useFloors } from '../hooks/useFloors';
+import { FloorViewModel, useFloors } from '../hooks/useFloors';
 import { RoomViewModel } from '../hooks/useRooms';
 
 // DWE
@@ -36,14 +36,22 @@ type Props = {
   isLoading: boolean;
   changeMenuVisibility: () => void;
   resetRoute: () => void;
+  chosenFloor: { value: number; label: string };
 };
 
-const PathMap = ({ startRoom, roomsAlongPath, menuOpen, isLoading, changeMenuVisibility, resetRoute }: Props) => {
+const PathMap = ({
+  startRoom,
+  roomsAlongPath,
+  menuOpen,
+  isLoading,
+  changeMenuVisibility,
+  resetRoute,
+  chosenFloor,
+}: Props) => {
   const [selectedFloorId, setSelectedFloorId] = useState(undefined);
   const [selectedBuildingId, setSelectedBuildingId] = useState(undefined);
-
   const { buildings, isLoading: isLoadingBuildings } = useBuildings();
-  const { floors, isLoading: isLoadingFloors } = useFloors(selectedBuildingId, !!selectedBuildingId);
+  const { floors, isLoading: isLoadingFloors } = useFloors();
 
   const selectedBuilding = buildings?.find((building) => building.id === selectedBuildingId);
   const selectedFloor = floors?.find((floor) => floor.id === selectedFloorId);
@@ -86,6 +94,18 @@ const PathMap = ({ startRoom, roomsAlongPath, menuOpen, isLoading, changeMenuVis
       setSelectedFloorId(floors[0].id);
     }
   }, [selectedFloorId, floors]);
+
+  useEffect(() => {
+    if (chosenFloor) {
+      setSelectedFloorId(chosenFloor.value);
+    }
+  }, [chosenFloor]);
+
+  useEffect(() => {
+    if (chosenFloor) {
+      setSelectedBuildingId(selectedFloor.building_id);
+    }
+  }, [selectedFloor]);
 
   const nextFloor = () => {
     setSelectedFloorId(floors[Math.min(floorIndex + 1, floors?.length || 0 - 1)].id);

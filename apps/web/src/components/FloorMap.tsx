@@ -24,7 +24,7 @@ import 'leaflet-rotatedmarker';
 import { GeolocationService } from '../services/geolocation';
 import engWashrooms from '../../../ingest/data/Eng_Washrooms.json';
 
-function ChangeView({ center }) {
+function ChangeView({ center, heading }) {
   const map = useMap();
 
   useEffect(() => {
@@ -33,6 +33,10 @@ function ChangeView({ center }) {
       map.panTo(center);
     }, 250);
   }, [center]);
+
+  useEffect(() => {
+    map.invalidateSize();
+  }, [heading]);
   return null;
 }
 
@@ -176,7 +180,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
         style: {
           fontSize: '10px',
         },
-        html: `<object data=${pinIcon} type="image/svg+xml"  class=${isAlongPath ? `"logo filter-purple"` : `"logo"`}/>
+        html: `<object data=${pinIcon} type="image/svg+xml"  class="logo"> </object>
           <p style="font-size:10px;">${properties.RM_NM.split(' ')[1]}</p>
           `,
         iconSize: [30, 30],
@@ -289,7 +293,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           tms={true}
         /> */}
 
-        <ChangeView center={center} />
+        <ChangeView center={center} heading={heading} />
 
         <LayerGroup>
           {currRoom && (

@@ -10,8 +10,8 @@ export type FloorViewModel = Partial<
   }
 >;
 
-export const useFloors = (buildingId?: number, enabled = true) => {
-  const { isLoading, data: floors } = trpc.listFloors.useQuery({ buildingId }, { enabled });
+export const useFloors = () => {
+  const { isLoading, data: floors } = trpc.listFloors.useQuery();
 
   const { isLoading: isRendering, data: floorGeoJsons } = trpc.render.useQuery({
     renderingEntitiyIds: floors?.map((floor) => floor.rendering_entity_id) || [],
