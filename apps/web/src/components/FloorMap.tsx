@@ -296,7 +296,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           tms={true}
         /> */}
 
-        <ChangeView center={center} heading={heading} />
+        {/* <ChangeView center={center} heading={heading} /> */}
 
         <LayerGroup>
           {currRoom && (
