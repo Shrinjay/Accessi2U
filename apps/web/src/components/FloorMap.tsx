@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { GeoJSON, MapContainer, useMap, LayerGroup, Popup, FeatureGroup, Marker } from 'react-leaflet';
 import L, { divIcon } from 'leaflet';
 import currentLocationIcon from './icons/marker.svg';
@@ -34,9 +34,6 @@ function ChangeView({ center, heading }) {
     }, 250);
   }, [center]);
 
-  useEffect(() => {
-    map.invalidateSize();
-  }, [heading]);
   return null;
 }
 
@@ -170,7 +167,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
     });
   };
 
-  const getRoomIcon = (room: RoomViewModel, roomIDsAlongPath: number[]) => {
+  const getRoomIcon = useCallback((room: RoomViewModel, roomIDsAlongPath: number[]) => {
     const roomGeoJson = roomToCentroidGeoJson(room);
     const properties = roomGeoJson.properties;
 
@@ -240,7 +237,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
         `,
       iconSize: [30, 30],
     });
-  };
+  }, []);
 
   const floorFilter = ({ properties }) => {
     // https://gis.stackexchange.com/questions/189988/filtering-geojson-data-to-include-in-leaflet-map
