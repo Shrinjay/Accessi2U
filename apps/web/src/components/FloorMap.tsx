@@ -87,8 +87,8 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   });
 
   useEffect(() => {
-    alert('zoom level changed');
-  }, [zoomLevel]);
+    alert('room centroids changed');
+  }, [roomCentroids]);
 
   useEffect(() => {
     if (selectedRoom != null) {
