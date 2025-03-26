@@ -188,7 +188,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           fontSize: '10px',
         },
         html: `
-        <object data=${elevatorIcon} type="image/svg+xml"  class=${isAlongPath ? `"logo filter-yellow"` : `"logo"`} />
+        <object data=${elevatorIcon} type="image/svg+xml"  />
         `,
         iconSize: [30, 30],
       });
@@ -199,7 +199,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           fontSize: '10px',
         },
         html: `
-        <object data=${stairsIcon} type="image/svg+xml"  class=${isAlongPath ? `"logo filter-yellow"` : `"logo"`} />
+        <object data=${stairsIcon} type="image/svg+xml"  />
         `,
         iconSize: [30, 30],
       });
