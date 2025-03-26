@@ -82,11 +82,17 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   const { buildings } = useBuildings();
 
   const roomCentroids = useMemo(() => {
+    console.log('room centroids changed');
     return rooms?.filter((room) => {
       const shouldBeShown = !ROOM_TYPES_TO_NOT_SHOW_CENTROIDS_FOR.includes(room.roomType);
       return (room.area > getMinArea(zoomLevel) && shouldBeShown) || ROOM_TYPES_FOR_ICONS.includes(room.roomType);
     });
   }, [rooms, zoomLevel]);
+
+  useEffect(() => console.log('rooms changed'), [rooms]);
+  useEffect(() => console.log('roomCentroids changed'), [roomCentroids]);
+  useEffect(() => console.log('roomsAlongPath changed'), [roomsAlongPath]);
+  useEffect(() => console.log('zoomlevel'), [zoomLevel]);
 
   useEffect(() => {
     if (selectedRoom != null) {
