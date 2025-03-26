@@ -189,6 +189,10 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
         iconSize: [30, 30],
       });
     } else if (properties.rm_standard == 'Elevators') {
+      return new L.icon({
+        iconUrl: elevatorIcon,
+        iconSize: [20, 20],
+      });
       return new L.divIcon({
         className: 'icon',
         style: {
