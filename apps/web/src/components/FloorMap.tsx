@@ -190,29 +190,15 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
       });
     } else if (properties.rm_standard == 'Elevators') {
       return new L.icon({
+        className: isAlongPath ? 'logo filter-yellow' : 'logo',
         iconUrl: elevatorIcon,
         iconSize: [20, 20],
       });
-      return new L.divIcon({
-        className: 'icon',
-        style: {
-          fontSize: '10px',
-        },
-        html: `
-        <object data=${elevatorIcon} type="image/svg+xml"  class=${isAlongPath ? `"logo filter-yellow"` : `"logo"`} />
-        `,
-        iconSize: [30, 30],
-      });
     } else if (properties.rm_standard == 'Stairs') {
-      return new L.divIcon({
-        className: 'icon',
-        style: {
-          fontSize: '10px',
-        },
-        html: `
-        <object data=${stairsIcon} type="image/svg+xml"  class=${isAlongPath ? `"logo filter-yellow"` : `"logo"`} />
-        `,
-        iconSize: [30, 30],
+      return new L.icon({
+        className: isAlongPath ? 'logo filter-yellow' : 'logo',
+        iconUrl: stairsIcon,
+        iconSize: [20, 20],
       });
     } else if (properties.rm_standard == 'Toilets/Showers') {
       var washroom = engWashrooms[properties.RM_NM];
