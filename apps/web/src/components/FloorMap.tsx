@@ -87,7 +87,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   });
 
   useEffect(() => {
-    alert('room centroids changed');
+    console.log(roomCentroids, 'changed');
   }, [roomCentroids]);
 
   useEffect(() => {
