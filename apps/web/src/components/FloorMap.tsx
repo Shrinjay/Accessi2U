@@ -87,6 +87,10 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   });
 
   useEffect(() => {
+    alert('zoom level changed');
+  }, [zoomLevel]);
+
+  useEffect(() => {
     if (selectedRoom != null) {
       setSelectedRoomName({ value: selectedRoom.name, label: selectedRoom.name });
     }
@@ -299,7 +303,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           {currRoom && (
             <>
               <Marker
-                // key={heading}
+                key={heading}
                 position={[currRoom?.geoJson?.properties?.lat, currRoom?.geoJson?.properties?.lon]}
                 // @ts-ignore
                 icon={getCurrentLocationIcon()}
