@@ -254,7 +254,7 @@ export default function SelectLocations() {
                 left: 50,
                 top: 10,
                 zIndex: 1000,
-                width: 145,
+                width: 100,
               }}
               colorScheme="purple"
               p="2"
