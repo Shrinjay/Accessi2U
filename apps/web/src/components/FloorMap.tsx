@@ -33,6 +33,10 @@ function ChangeView({ center, heading }) {
       map.panTo(center);
     }, 250);
   }, [center]);
+
+  useEffect(() => {
+    map.invalidateSize();
+  }, [heading]);
   return null;
 }
 
@@ -188,7 +192,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           fontSize: '10px',
         },
         html: `
-        <object data=${elevatorIcon} type="image/svg+xml"  />
+        <object data=${elevatorIcon} type="image/svg+xml"  class=${isAlongPath ? `"logo filter-yellow"` : `"logo"`} />
         `,
         iconSize: [30, 30],
       });
@@ -199,7 +203,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           fontSize: '10px',
         },
         html: `
-        <object data=${stairsIcon} type="image/svg+xml"  />
+        <object data=${stairsIcon} type="image/svg+xml"  class=${isAlongPath ? `"logo filter-yellow"` : `"logo"`} />
         `,
         iconSize: [30, 30],
       });
