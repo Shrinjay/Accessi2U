@@ -25,7 +25,7 @@ export default function MapTutorial() {
             style={{
               position: 'absolute',
               right: 10,
-              top: 10,
+              top: 30,
               zIndex: 1000,
               width: 90,
             }}

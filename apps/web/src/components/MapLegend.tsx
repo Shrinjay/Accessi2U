@@ -32,7 +32,7 @@ export default function MapLegend() {
             style={{
               position: 'absolute',
               right: 110,
-              top: 10,
+              top: 30,
               zIndex: 1000,
               width: 90,
             }}

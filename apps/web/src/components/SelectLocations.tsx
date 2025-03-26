@@ -23,6 +23,7 @@ import {
   TabPanels,
   TabPanel,
   Tab,
+  Stack,
 } from '@chakra-ui/react';
 import locationIcon from '/src/components/icon.svg';
 import { theme } from '../styles';
@@ -101,8 +102,10 @@ export default function SelectLocations() {
   return (
     <Flex height="100vh" width="100vw" bg="gray.100">
       {/* Left Panel */}
-      <MapLegend />
-      <MapTutorial />
+      <Stack direction="row" pt={12}>
+        <MapLegend />
+        <MapTutorial />
+      </Stack>
 
       {menuOpen ? (
         <>
@@ -267,28 +270,7 @@ export default function SelectLocations() {
           </Box>
         </>
       ) : (
-        <>
-          <Button
-            style={{
-              position: 'absolute',
-              left: 50,
-              top: 10,
-              zIndex: 1000,
-              width: 145,
-            }}
-            colorScheme="purple"
-            p="2"
-            color="white"
-            bg="purple.500"
-            _hover={{ bg: '#67487d' }}
-            _active={{ bg: '#67487d' }}
-            display="flex"
-            flexDirection="column"
-            onClick={changeMenuVisibility}
-          >
-            Open Route Select
-          </Button>
-        </>
+        <></>
       )}
 
       {/* Right Panel (Map Area) */}
