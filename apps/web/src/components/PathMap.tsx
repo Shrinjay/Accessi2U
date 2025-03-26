@@ -80,6 +80,10 @@ const PathMap = ({
   }, [selectedBuildingId, buildings]);
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [menuOpen]);
+
+  useEffect(() => {
     if (checkedRoom) {
       setSelectedBuildingId(buildings.find((building) => building.id === checkedRoom.floor.building_id)?.id);
       setSelectedFloorId(checkedRoom.floor.id);
