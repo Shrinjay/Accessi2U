@@ -100,7 +100,7 @@ export default function SelectLocations() {
   };
 
   return (
-    <Flex height="100vh" width="100vw" bg="gray.100">
+    <Flex height="100%" width="100%" bg="gray.100">
       {/* Left Panel */}
       <MapLegend />
       <MapTutorial />
@@ -109,6 +109,7 @@ export default function SelectLocations() {
         <Box
           p="6"
           width={{ xs: 'full', sm: 'full', md: '50%', lg: '30%' }}
+          height="full"
           bg="white"
           boxShadow="lg"
           flexDirection="column"
