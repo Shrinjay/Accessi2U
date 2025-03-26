@@ -134,7 +134,7 @@ const PathMap = ({
   };
 
   return (
-    <Flex display="flex" justifyContent={'center'} background="white" style={{ position: 'absolute' }}>
+    <Flex display="flex" justifyContent={'center'} background="white" height="100%" width="100%" pos="absolute">
       <FloorMap
         isLoading={isLoading || isLoadingBuildings || isLoadingFloors}
         selectedFloor={selectedFloor}

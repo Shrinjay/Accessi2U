@@ -261,7 +261,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
   };
 
   return (
-    <Flex>
+    <Flex height="full" w="full">
       <MapContainer
         // @ts-ignore
         center={center}
