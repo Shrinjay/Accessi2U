@@ -36,7 +36,7 @@ type Props = {
   isLoading: boolean;
   changeMenuVisibility: () => void;
   resetRoute: () => void;
-  chosenFloor: {};
+  chosenFloor: { value: number; label: string };
 };
 
 const PathMap = ({
