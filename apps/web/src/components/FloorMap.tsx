@@ -314,6 +314,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
           {buildings?.map((building, index) => {
             return (
               <GeoJSON
+                key={index}
                 data={building.geoJson}
                 // @ts-ignore
                 style={{
@@ -381,6 +382,7 @@ const FloorMap = ({ selectedFloor, center, checkedIndex, roomsAlongPath, isLoadi
             const roomGeoJson = roomToCentroidGeoJson(room);
             return (
               <Marker
+                key={index}
                 position={(roomGeoJson.geometry as Point).coordinates}
                 // @ts-ignore
                 icon={getRoomIcon(room, roomIDsAlongPath)}
