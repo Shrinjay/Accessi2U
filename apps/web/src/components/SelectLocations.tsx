@@ -44,6 +44,7 @@ export default function SelectLocations() {
   const [accessible, setAccessible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [menuOpen, setMenuOpen] = useState(true);
+  const [tabIndex, setTabIndex] = useState(0);
 
   const toast = useToast();
 
@@ -125,7 +126,7 @@ export default function SelectLocations() {
             zIndex: 1001,
           }}
         >
-          <Tabs isFitted variant={'enclosed'} colorScheme="purple">
+          <Tabs isFitted variant={'enclosed'} colorScheme="purple" onChange={(index) => setTabIndex(index)}>
             <TabList>
               <Tab>Find Route</Tab>
               <Tab>Map View</Tab>
@@ -242,39 +243,33 @@ export default function SelectLocations() {
               </TabPanel>
             </TabPanels>
           </Tabs>
-          {/* TODO: Lol maybe one day */}
-          {/* <HStack>
-                    <Checkbox isChecked={indoors} onChange={(e) => setIndoors(e.target.checked)} />
-                    <Text fontSize={['md']} mt="5px" fontFamily="body">
-                      Indoor only
-                    </Text>
-                  </HStack> */}
-
-          {/* TODO: LMFAO probably never */}
-          {/* <HStack>
-                    <Checkbox />
-                    <Text fontSize={['md']} mt="5px" fontFamily="body">
-                      Hands-free
-                    </Text>
-                  </HStack> */}
-
-          {/* TODO: Maybe with cookies, unlikely*/}
-          {/* <Button
-                  size="md"
-                  colorScheme="yellow"
-                  bg="yellow.500"
-                  fontSize="14px"
-                  _hover={{ bg: '#D99A00' }}
-                  _active={{ bg: '#C78C00' }}
-                  fontWeight="bold"
-                  borderRadius="6px"
-                  px="12px"
-                >
-                  Save
-                </Button> */}
         </Box>
       ) : (
-        <></>
+        <>
+          {/* only show on map view */}
+          {tabIndex === 1 && (
+            <Button
+              style={{
+                position: 'absolute',
+                left: 50,
+                top: 10,
+                zIndex: 1000,
+                width: 145,
+              }}
+              colorScheme="purple"
+              p="2"
+              color="white"
+              bg="purple.500"
+              _hover={{ bg: '#67487d' }}
+              _active={{ bg: '#67487d' }}
+              display="flex"
+              flexDirection="column"
+              onClick={changeMenuVisibility}
+            >
+              Open Route Select
+            </Button>
+          )}
+        </>
       )}
 
       {/* Right Panel (Map Area) */}
